@@ -79,7 +79,9 @@ Deno.serve(async (req) => {
             values.push(current.trim());
 
             try {
-                const amount = parseFloat(values[amountIdx]);
+                // Remove commas from amount (handles formats like "3,000.00")
+                const amountStr = (values[amountIdx] || '').replace(/,/g, '');
+                const amount = parseFloat(amountStr);
                 if (isNaN(amount)) {
                     errors.push(`Row ${i + 1}: Invalid amount`);
                     continue;
