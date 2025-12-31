@@ -6,6 +6,7 @@ import { X, Upload, Image as ImageIcon } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import CategoryCombobox from "./CategoryCombobox";
+import { format } from "date-fns";
 
 export default function ExpenseForm({ expense, onSubmit, onCancel }) {
     const { data: allExpenses = [] } = useQuery({
@@ -27,11 +28,21 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
 
     useEffect(() => {
         if (expense) {
+            // Format date to yyyy-MM-dd for date input
+            let dateValue = new Date().toISOString().split('T')[0];
+            if (expense.date) {
+                try {
+                    dateValue = format(new Date(expense.date), 'yyyy-MM-dd');
+                } catch (e) {
+                    console.error('Date formatting error:', e);
+                }
+            }
+            
             setFormData({
                 description: expense.description || "",
                 amount: expense.amount || "",
                 category: expense.category || "Materials",
-                date: expense.date || new Date().toISOString().split('T')[0],
+                date: dateValue,
                 vendor: expense.vendor || "",
                 photos: expense.photos || [],
                 notes: expense.notes || ""
