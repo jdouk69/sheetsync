@@ -40,12 +40,12 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             <div className="flex items-start justify-between mb-2">
                                 <div>
                                     {expense.vendor && (
-                                        <div className="flex items-center gap-2 text-sm text-slate-700 font-semibold mb-1">
+                                        <div className="flex items-center gap-2 text-lg text-slate-700 font-semibold mb-1">
                                             <Building2 className="w-4 h-4" />
                                             {expense.vendor}
                                         </div>
                                     )}
-                                    <h3 className="text-lg text-slate-900">
+                                    <h3 className="text-sm text-slate-900">
                                         {expense.description}
                                     </h3>
                                     <div className="flex flex-wrap gap-2 mt-2">
