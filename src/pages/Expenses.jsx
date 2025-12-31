@@ -141,10 +141,27 @@ export default function ExpensesPage() {
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (projectsLoading) {
+    if (authLoading || projectsLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-slate-600">Loading...</div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-slate-50">
+                <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Authentication Required</h2>
+                    <p className="text-slate-600 mb-6">You need to be logged in to view expenses.</p>
+                    <button
+                        onClick={() => base44.auth.redirectToLogin()}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        Log In
+                    </button>
+                </div>
             </div>
         );
     }
