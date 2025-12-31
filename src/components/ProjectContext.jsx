@@ -12,7 +12,15 @@ export function ProjectProvider({ children }) {
         queryFn: async () => {
             const user = await base44.auth.me();
             if (!user) return [];
-            return base44.entities.Project.filter({ created_by: user.email }, '-created_date');
+            
+            // Get all projects
+            const allProjects = await base44.entities.Project.list('-created_date');
+            
+            // Filter to show projects where user is creator OR in sharedWithUsers
+            return allProjects.filter(project => 
+                project.created_by === user.email || 
+                (project.sharedWithUsers && project.sharedWithUsers.includes(user.email))
+            );
         },
     });
 

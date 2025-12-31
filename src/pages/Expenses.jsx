@@ -42,9 +42,9 @@ export default function ExpensesPage() {
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
             if (!currentProjectId || !user) return [];
+            // Get all expenses for this project (regardless of who created them)
             return base44.entities.Expense.filter({ 
-                projectId: currentProjectId,
-                created_by: user.email 
+                projectId: currentProjectId
             }, '-date');
         },
         enabled: !!currentProjectId && !!user,
