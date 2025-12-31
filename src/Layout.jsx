@@ -48,10 +48,9 @@ function LayoutContent({ children, currentPageName }) {
                                 >
                                     {t('reports')}
                                 </Link>
-                            </div>
-                            </div>
+                        </div>
 
-                            <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2">
                             <button
                                 onClick={toggleLanguage}
                                 className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
@@ -67,37 +66,36 @@ function LayoutContent({ children, currentPageName }) {
                                 <LogOut className="w-4 h-4" />
                                 <span className="hidden md:inline">{t('logout')}</span>
                             </button>
-                            </div>
-                            </div>
+                        </div>
+                    </div>
 
-                            <div className="border-t border-slate-200 py-3">
-                            <ProjectSelector />
-                            </div>
-                            </div>
+                    <div className="border-t border-slate-200 py-3">
+                        <ProjectSelector />
+                    </div>
 
-                <div className="md:hidden flex gap-2 pb-3">
-                    <Link
-                        to={createPageUrl('Expenses')}
-                        className={`flex-1 px-4 py-2 rounded-lg text-center transition-colors ${
-                            currentPageName === 'Expenses'
-                                ? 'bg-blue-100 text-blue-700 font-medium'
-                                : 'text-slate-600 hover:bg-slate-100'
-                        }`}
-                    >
-                        {t('expenses')}
-                    </Link>
-                    <Link
-                        to={createPageUrl('Reports')}
-                        className={`flex-1 px-4 py-2 rounded-lg text-center transition-colors ${
-                            currentPageName === 'Reports'
-                                ? 'bg-blue-100 text-blue-700 font-medium'
-                                : 'text-slate-600 hover:bg-slate-100'
-                        }`}
-                    >
-                        {t('reports')}
-                    </Link>
+                    <div className="md:hidden flex gap-2 pb-3 border-t border-slate-200 pt-3">
+                        <Link
+                            to={createPageUrl('Expenses')}
+                            className={`flex-1 px-4 py-2 rounded-lg text-center transition-colors ${
+                                currentPageName === 'Expenses'
+                                    ? 'bg-blue-100 text-blue-700 font-medium'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                        >
+                            {t('expenses')}
+                        </Link>
+                        <Link
+                            to={createPageUrl('Reports')}
+                            className={`flex-1 px-4 py-2 rounded-lg text-center transition-colors ${
+                                currentPageName === 'Reports'
+                                    ? 'bg-blue-100 text-blue-700 font-medium'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                        >
+                            {t('reports')}
+                        </Link>
+                    </div>
                 </div>
-            </nav>
             </nav>
 
             <main>{children}</main>
