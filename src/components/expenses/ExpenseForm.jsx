@@ -100,23 +100,23 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
     return (
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">
-                {expense ? 'Edit Expense' : 'Add New Expense'}
+                {expense ? 'Επεξεργασία Εξόδου' : 'Προσθήκη Νέου Εξόδου'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Vendor/Supplier
+                            Προμηθευτής
                         </label>
                         <Input
                             value={formData.vendor}
                             onChange={(e) => setFormData({...formData, vendor: e.target.value})}
-                            placeholder="Vendor name"
+                            placeholder="Όνομα προμηθευτή"
                         />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Amount (€) *
+                            Ποσό (€) *
                         </label>
                         <Input
                             required
@@ -132,7 +132,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Category *
+                            Κατηγορία *
                         </label>
                         <CategoryCombobox
                             value={formData.category}
@@ -142,7 +142,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Date *
+                            Ημερομηνία *
                         </label>
                         <Input
                             required
@@ -155,31 +155,31 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Description *
+                        Περιγραφή *
                     </label>
                     <Input
                         required
                         value={formData.description}
                         onChange={(e) => setFormData({...formData, description: e.target.value})}
-                        placeholder="e.g., Cement bags"
+                        placeholder="π.χ., Τσιμέντο"
                     />
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Notes
+                        Σημειώσεις
                     </label>
                     <Textarea
                         value={formData.notes}
                         onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                        placeholder="Additional details..."
+                        placeholder="Επιπλέον λεπτομέρειες..."
                         rows={3}
                     />
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Photos
+                        Φωτογραφίες
                     </label>
                     <div className="space-y-3">
                         {formData.photos?.length > 0 && (
@@ -214,12 +214,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                             {uploading ? (
                                 <>
                                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-                                    <span className="text-sm text-slate-600">Uploading...</span>
+                                    <span className="text-sm text-slate-600">Μεταφόρτωση...</span>
                                 </>
                             ) : (
                                 <>
                                     <ImageIcon className="w-5 h-5 text-slate-400" />
-                                    <span className="text-sm text-slate-600">Click to upload photos</span>
+                                    <span className="text-sm text-slate-600">Κάντε κλικ για ανέβασμα φωτογραφιών</span>
                                 </>
                             )}
                         </label>
@@ -228,10 +228,10 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
 
                 <div className="flex gap-3 pt-4">
                     <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-                        Cancel
+                        Ακύρωση
                     </Button>
                     <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                        {expense ? 'Update' : 'Add'} Expense
+                        {expense ? 'Ενημέρωση' : 'Προσθήκη'} Εξόδου
                     </Button>
                 </div>
             </form>

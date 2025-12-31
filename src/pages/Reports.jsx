@@ -159,17 +159,17 @@ export default function ReportsPage() {
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900">Reports & Analytics</h1>
-                        <p className="text-slate-600 mt-1">Visual breakdown of your construction expenses</p>
+                        <h1 className="text-3xl font-bold text-slate-900">Αναφορές & Αναλύσεις</h1>
+                        <p className="text-slate-600 mt-1">Οπτική ανάλυση των εξόδων κατασκευής σας</p>
                     </div>
                     <div className="flex gap-2">
                         <Button onClick={handleExportCSV} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
                             <FileText className="w-4 h-4 mr-2" />
-                            Export CSV
+                            Εξαγωγή CSV
                         </Button>
                         <Button onClick={handleExportPDF} className="bg-blue-600 hover:bg-blue-700">
                             <Download className="w-4 h-4 mr-2" />
-                            Export PDF
+                            Εξαγωγή PDF
                         </Button>
                     </div>
                 </div>
@@ -177,17 +177,17 @@ export default function ReportsPage() {
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <div className="flex items-center gap-2 mb-4">
                         <Filter className="w-5 h-5 text-blue-600" />
-                        <h2 className="text-lg font-semibold">Filters</h2>
+                        <h2 className="text-lg font-semibold">Φίλτρα</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Κατηγορία</label>
                             <Select value={filters.category} onValueChange={(value) => setFilters({...filters, category: value})}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="All Categories" />
+                                    <SelectValue placeholder="Όλες οι Κατηγορίες" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Categories</SelectItem>
+                                    <SelectItem value="all">Όλες οι Κατηγορίες</SelectItem>
                                     {uniqueCategories.sort().map(category => (
                                         <SelectItem key={category} value={category}>{category}</SelectItem>
                                     ))}
@@ -195,13 +195,13 @@ export default function ReportsPage() {
                             </Select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Vendor</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Προμηθευτής</label>
                             <Select value={filters.vendor} onValueChange={(value) => setFilters({...filters, vendor: value})}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="All Vendors" />
+                                    <SelectValue placeholder="Όλοι οι Προμηθευτές" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Vendors</SelectItem>
+                                    <SelectItem value="all">Όλοι οι Προμηθευτές</SelectItem>
                                     {uniqueVendors.map(vendor => (
                                         <SelectItem key={vendor} value={vendor}>{vendor}</SelectItem>
                                     ))}
@@ -209,7 +209,7 @@ export default function ReportsPage() {
                             </Select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Ημερομηνία Έναρξης</label>
                             <Input 
                                 type="date" 
                                 value={filters.startDate}
@@ -217,7 +217,7 @@ export default function ReportsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">End Date</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Ημερομηνία Λήξης</label>
                             <Input 
                                 type="date" 
                                 value={filters.endDate}
@@ -232,7 +232,7 @@ export default function ReportsPage() {
                                 size="sm"
                                 onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '' })}
                             >
-                                Clear Filters
+                                Καθαρισμός Φίλτρων
                             </Button>
                         </div>
                     )}
@@ -242,7 +242,7 @@ export default function ReportsPage() {
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <PieChart className="w-5 h-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold">Expenses by Category</h2>
+                            <h2 className="text-xl font-semibold">Έξοδα ανά Κατηγορία</h2>
                         </div>
                         {categoryData.length > 0 ? (
                             <ResponsiveContainer width="100%" height={300}>
@@ -265,14 +265,14 @@ export default function ReportsPage() {
                                 </RechartsPie>
                             </ResponsiveContainer>
                         ) : (
-                            <p className="text-center text-slate-500 py-12">No data available</p>
+                            <p className="text-center text-slate-500 py-12">Δεν υπάρχουν διαθέσιμα δεδομένα</p>
                         )}
-                    </div>
+                        </div>
 
-                    <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="bg-white rounded-lg shadow-sm p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <BarChart3 className="w-5 h-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold">Monthly Spending</h2>
+                            <h2 className="text-xl font-semibold">Μηνιαίες Δαπάνες</h2>
                         </div>
                         {monthlyData.length > 0 ? (
                             <ResponsiveContainer width="100%" height={300}>
@@ -285,13 +285,13 @@ export default function ReportsPage() {
                                 </BarChart>
                             </ResponsiveContainer>
                         ) : (
-                            <p className="text-center text-slate-500 py-12">No data available</p>
+                            <p className="text-center text-slate-500 py-12">Δεν υπάρχουν διαθέσιμα δεδομένα</p>
                         )}
-                    </div>
-                </div>
+                        </div>
+                        </div>
 
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-4">Category Breakdown</h2>
+                        <div className="bg-white rounded-lg shadow-sm p-6">
+                        <h2 className="text-xl font-semibold mb-4">Ανάλυση ανά Κατηγορία</h2>
                     <div className="space-y-3">
                         {categoryData.map((cat, index) => {
                             const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);

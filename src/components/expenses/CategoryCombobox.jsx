@@ -10,17 +10,17 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
     const [search, setSearch] = useState("");
 
     const suggestedCategories = [
-        "Materials",
-        "Labor", 
-        "Equipment",
-        "Permits",
-        "Professional Services",
-        "Utilities",
-        "Electrician",
-        "Plumber",
-        "Cabinetmaker",
-        "Concrete",
-        "Other"
+        "Υλικά",
+        "Εργασία", 
+        "Εξοπλισμός",
+        "Άδειες",
+        "Επαγγελματικές Υπηρεσίες",
+        "Υπηρεσίες Κοινής Ωφέλειας",
+        "Ηλεκτρολόγος",
+        "Υδραυλικός",
+        "Ξυλουργός",
+        "Σκυρόδεμα",
+        "Άλλο"
     ];
 
     const allCategories = [...new Set([...existingCategories, ...suggestedCategories])].sort();
@@ -49,21 +49,21 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                     aria-expanded={open}
                     className="w-full justify-between"
                 >
-                    {value || "Select or type category..."}
+                    {value || "Επιλέξτε ή πληκτρολογήστε κατηγορία..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-full p-0">
                 <Command>
                     <CommandInput 
-                        placeholder="Search or type new category..." 
+                        placeholder="Αναζήτηση ή πληκτρολόγηση νέας κατηγορίας..." 
                         value={search}
                         onValueChange={setSearch}
                         onKeyDown={handleKeyDown}
                     />
                     <CommandEmpty>
                         <div className="p-2 text-sm">
-                            Press <kbd className="px-1 py-0.5 bg-slate-100 rounded">Enter</kbd> to add "{search}"
+                            Πατήστε <kbd className="px-1 py-0.5 bg-slate-100 rounded">Enter</kbd> για να προσθέσετε "{search}"
                         </div>
                     </CommandEmpty>
                     <CommandGroup className="max-h-64 overflow-auto">

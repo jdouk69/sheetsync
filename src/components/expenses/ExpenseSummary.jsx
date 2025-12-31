@@ -29,7 +29,7 @@ export default function ExpenseSummary({ expenses }) {
                             <Euro className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-slate-600">Total Spent</p>
+                            <p className="text-sm text-slate-600">Συνολικό Ποσό</p>
                             <p className="text-2xl font-bold text-slate-900">
                                 €{totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </p>
@@ -45,7 +45,7 @@ export default function ExpenseSummary({ expenses }) {
                             <Package className="w-6 h-6 text-green-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-slate-600">Total Expenses</p>
+                            <p className="text-sm text-slate-600">Συνολικά Έξοδα</p>
                             <p className="text-2xl font-bold text-slate-900">{totalExpenses}</p>
                         </div>
                     </div>
@@ -59,9 +59,9 @@ export default function ExpenseSummary({ expenses }) {
                             <TrendingUp className="w-6 h-6 text-purple-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-slate-600">Top Category</p>
+                            <p className="text-sm text-slate-600">Κύρια Κατηγορία</p>
                             <p className="text-lg font-bold text-slate-900">
-                                {topCategory ? topCategory[0] : 'N/A'}
+                                {topCategory ? topCategory[0] : 'Μ/Δ'}
                             </p>
                         </div>
                     </div>
@@ -75,7 +75,7 @@ export default function ExpenseSummary({ expenses }) {
                             <Calendar className="w-6 h-6 text-orange-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-slate-600">This Month</p>
+                            <p className="text-sm text-slate-600">Αυτόν τον Μήνα</p>
                             <p className="text-2xl font-bold text-slate-900">
                                 €{monthlyTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </p>

@@ -126,8 +126,8 @@ export default function ExpensesPage() {
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900">Construction Expenses</h1>
-                        <p className="text-slate-600 mt-1">Track your Greece house construction costs</p>
+                        <h1 className="text-3xl font-bold text-slate-900">Έξοδα Κατασκευής</h1>
+                        <p className="text-slate-600 mt-1">Παρακολουθήστε τα έξοδα κατασκευής του σπιτιού σας στην Ελλάδα</p>
                     </div>
                     <div className="flex gap-2">
                         {selectedIds.length > 0 && (
@@ -136,7 +136,7 @@ export default function ExpensesPage() {
                                 variant="destructive"
                                 disabled={bulkDeleteMutation.isPending}
                             >
-                                Delete {selectedIds.length} Selected
+                                Διαγραφή {selectedIds.length} Επιλεγμένων
                             </Button>
                         )}
                         <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />
@@ -148,7 +148,7 @@ export default function ExpensesPage() {
                             className="bg-blue-600 hover:bg-blue-700"
                         >
                             <Plus className="w-4 h-4 mr-2" />
-                            Add Expense
+                            Προσθήκη Εξόδου
                         </Button>
                     </div>
                 </div>
@@ -164,10 +164,10 @@ export default function ExpensesPage() {
                                 onChange={toggleSelectAll}
                                 className="w-4 h-4 rounded border-slate-300"
                             />
-                            <span className="text-sm text-slate-600">Select All</span>
+                            <span className="text-sm text-slate-600">Επιλογή Όλων</span>
                         </label>
                         {selectedIds.length > 0 && (
-                            <span className="text-sm text-slate-600">{selectedIds.length} selected</span>
+                            <span className="text-sm text-slate-600">{selectedIds.length} επιλεγμένα</span>
                         )}
                     </div>
                     <ExpenseFilters 
@@ -193,7 +193,7 @@ export default function ExpensesPage() {
                 <div className="grid gap-4 pb-20">
                     {filteredExpenses.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                            <p className="text-slate-500">No expenses found. Add your first expense to get started.</p>
+                            <p className="text-slate-500">Δεν βρέθηκαν έξοδα. Προσθέστε το πρώτο σας έξοδο για να ξεκινήσετε.</p>
                         </div>
                     ) : (
                         filteredExpenses.map((expense) => (

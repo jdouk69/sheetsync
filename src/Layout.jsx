@@ -19,7 +19,7 @@ export default function Layout({ children, currentPageName }) {
                                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                                     <Home className="w-5 h-5 text-white" />
                                 </div>
-                                <span className="font-bold text-xl text-slate-900">Greece Construction</span>
+                                <span className="font-bold text-xl text-slate-900">Κατασκευή Ελλάδας</span>
                             </div>
                             
                             <div className="hidden md:flex gap-2">
@@ -31,7 +31,7 @@ export default function Layout({ children, currentPageName }) {
                                             : 'text-slate-600 hover:bg-slate-100'
                                     }`}
                                 >
-                                    Expenses
+                                    Έξοδα
                                 </Link>
                                 <Link
                                     to={createPageUrl('Reports')}
@@ -41,7 +41,7 @@ export default function Layout({ children, currentPageName }) {
                                             : 'text-slate-600 hover:bg-slate-100'
                                     }`}
                                 >
-                                    Reports
+                                    Αναφορές
                                 </Link>
                             </div>
                         </div>
@@ -52,7 +52,7 @@ export default function Layout({ children, currentPageName }) {
                                 className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
                             >
                                 <LogOut className="w-4 h-4" />
-                                <span className="hidden md:inline">Logout</span>
+                                <span className="hidden md:inline">Αποσύνδεση</span>
                             </button>
                         </div>
                     </div>
@@ -66,7 +66,7 @@ export default function Layout({ children, currentPageName }) {
                                     : 'text-slate-600 hover:bg-slate-100'
                             }`}
                         >
-                            Expenses
+                            Έξοδα
                         </Link>
                         <Link
                             to={createPageUrl('Reports')}
@@ -76,7 +76,7 @@ export default function Layout({ children, currentPageName }) {
                                     : 'text-slate-600 hover:bg-slate-100'
                             }`}
                         >
-                            Reports
+                            Αναφορές
                         </Link>
                     </div>
                 </div>

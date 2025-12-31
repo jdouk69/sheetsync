@@ -13,10 +13,10 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                     onValueChange={(value) => onFiltersChange({ ...filters, category: value })}
                 >
                     <SelectTrigger className="w-full md:w-48">
-                        <SelectValue placeholder="All Categories" />
+                        <SelectValue placeholder="Όλες οι Κατηγορίες" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
+                        <SelectItem value="all">Όλες οι Κατηγορίες</SelectItem>
                         {availableCategories.sort().map(category => (
                             <SelectItem key={category} value={category}>{category}</SelectItem>
                         ))}
@@ -26,7 +26,7 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
 
             <div className="flex gap-2 flex-1">
                 <div className="flex-1">
-                    <label className="block text-xs text-slate-600 mb-1">Start Date</label>
+                    <label className="block text-xs text-slate-600 mb-1">Ημερομηνία Έναρξης</label>
                     <Input
                         type="date"
                         value={filters.startDate || ''}
@@ -34,7 +34,7 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                     />
                 </div>
                 <div className="flex-1">
-                    <label className="block text-xs text-slate-600 mb-1">End Date</label>
+                    <label className="block text-xs text-slate-600 mb-1">Ημερομηνία Λήξης</label>
                     <Input
                         type="date"
                         value={filters.endDate || ''}
