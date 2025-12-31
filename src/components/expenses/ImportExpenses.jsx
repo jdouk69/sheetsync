@@ -143,7 +143,7 @@ export default function ImportExpenses({ onImportComplete }) {
                     Import CSV
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Import Expenses from CSV</DialogTitle>
                     <DialogDescription>
@@ -151,7 +151,7 @@ export default function ImportExpenses({ onImportComplete }) {
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4 py-4">
+                <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
                     <Button 
                         variant="outline" 
                         onClick={downloadTemplate}
@@ -191,7 +191,7 @@ export default function ImportExpenses({ onImportComplete }) {
                     </div>
 
                     {showMapping && csvHeaders.length > 0 && (
-                        <div className="border rounded-lg p-4 space-y-3">
+                        <div className="border rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto">
                             <h3 className="font-medium text-sm">Map CSV Columns to Fields</h3>
                             <p className="text-xs text-slate-600">Match your CSV columns to the expense fields. Required: description, amount, category, date</p>
                             {csvHeaders.map((header) => (
