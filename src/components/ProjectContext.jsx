@@ -16,9 +16,10 @@ export function ProjectProvider({ children }) {
             // Get all projects
             const allProjects = await base44.entities.Project.list('-created_date');
             
-            // Filter to show projects where user is creator OR in sharedWithUsers
+            // Filter to show projects where user is creator OR in sharedWith (or old sharedWithUsers)
             return allProjects.filter(project => 
                 project.created_by === user.email || 
+                (project.sharedWith && project.sharedWith.some(s => s.email === user.email)) ||
                 (project.sharedWithUsers && project.sharedWithUsers.includes(user.email))
             );
         },
