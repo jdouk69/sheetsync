@@ -43,23 +43,30 @@ export default function ProjectSharing({ project }) {
 
         const updatedSharedWith = [...sharedWith, { email, role }];
         
-        await updateProjectMutation.mutateAsync({
-            id: project.id,
-            data: { sharedWith: updatedSharedWith }
-        });
-
-        setEmail("");
-        setRole("editor");
+        try {
+            await updateProjectMutation.mutateAsync({
+                id: project.id,
+                data: { sharedWith: updatedSharedWith }
+            });
+            setEmail("");
+            setRole("editor");
+        } catch (err) {
+            setError(`Failed to add user: ${err.message}`);
+        }
     };
 
     const handleRemoveUser = async (userEmail) => {
         const sharedWith = project.sharedWith || [];
         const updatedSharedWith = sharedWith.filter(s => s.email !== userEmail);
         
-        await updateProjectMutation.mutateAsync({
-            id: project.id,
-            data: { sharedWith: updatedSharedWith }
-        });
+        try {
+            await updateProjectMutation.mutateAsync({
+                id: project.id,
+                data: { sharedWith: updatedSharedWith }
+            });
+        } catch (err) {
+            setError(`Failed to remove user: ${err.message}`);
+        }
     };
 
     const handleChangeRole = async (userEmail, newRole) => {
@@ -68,10 +75,14 @@ export default function ProjectSharing({ project }) {
             s.email === userEmail ? { ...s, role: newRole } : s
         );
         
-        await updateProjectMutation.mutateAsync({
-            id: project.id,
-            data: { sharedWith: updatedSharedWith }
-        });
+        try {
+            await updateProjectMutation.mutateAsync({
+                id: project.id,
+                data: { sharedWith: updatedSharedWith }
+            });
+        } catch (err) {
+            setError(`Failed to change role: ${err.message}`);
+        }
     };
 
     const sharedWith = project.sharedWith || [];
