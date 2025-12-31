@@ -51,6 +51,7 @@ function LayoutContent({ children, currentPageName }) {
                             </div>
                             </div>
 
+                            <div className="flex items-center gap-4">
                             <ProjectSelector />
 
                             <div className="flex items-center gap-2">
