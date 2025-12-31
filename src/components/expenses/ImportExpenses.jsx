@@ -84,23 +84,11 @@ export default function ImportExpenses({ onImportComplete }) {
             formData.append('file', file);
             formData.append('columnMapping', JSON.stringify(columnMapping));
 
-            const response = await fetch(`${base44.functions.getBaseUrl()}/importExpenses`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${await base44.auth.getToken()}`
-                },
-                body: formData
-            });
-
-            const data = await response.json();
+            const response = await base44.functions.invoke('importExpenses', formData);
             
-            if (!response.ok) {
-                throw new Error(data.error || 'Import failed');
-            }
-
-            setResult(data);
+            setResult(response.data);
             
-            if (data.success) {
+            if (response.data.success) {
                 setTimeout(() => {
                     setOpen(false);
                     setFile(null);
@@ -114,7 +102,7 @@ export default function ImportExpenses({ onImportComplete }) {
         } catch (error) {
             setResult({ 
                 success: false, 
-                error: error.message
+                error: error.response?.data?.error || error.message
             });
         } finally {
             setImporting(false);
