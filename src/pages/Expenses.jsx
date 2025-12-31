@@ -49,7 +49,9 @@ export default function ExpensesPage() {
 
     const bulkDeleteMutation = useMutation({
         mutationFn: async (ids) => {
-            await Promise.all(ids.map(id => base44.entities.Expense.delete(id)));
+            for (const id of ids) {
+                await base44.entities.Expense.delete(id);
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
