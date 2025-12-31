@@ -69,10 +69,10 @@ function LayoutContent({ children, currentPageName }) {
                             >
                                 <LogOut className="w-4 h-4" />
                                 <span className="hidden md:inline">{t('logout')}</span>
-                                </button>
-                                </div>
-                                </div>
+                            </button>
+                        </div>
                     </div>
+                </div>
 
                     <div className="md:hidden flex gap-2 pb-3">
                         <Link
