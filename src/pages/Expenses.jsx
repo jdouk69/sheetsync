@@ -9,9 +9,11 @@ import ExpenseFilters from "../components/expenses/ExpenseFilters";
 import ExpenseSummary from "../components/expenses/ExpenseSummary";
 import ImportExpenses from "../components/expenses/ImportExpenses";
 import { useLanguage } from "../components/LanguageContext";
+import { useProject } from "../components/ProjectContext";
 
 export default function ExpensesPage() {
     const { t } = useLanguage();
+    const { currentProjectId } = useProject();
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
@@ -21,8 +23,13 @@ export default function ExpensesPage() {
     const queryClient = useQueryClient();
 
     const { data: expenses = [], isLoading } = useQuery({
-        queryKey: ['expenses'],
-        queryFn: () => base44.entities.Expense.list('-date'),
+        queryKey: ['expenses', currentProjectId],
+        queryFn: async () => {
+            if (!currentProjectId) return [];
+            const allExpenses = await base44.entities.Expense.list('-date');
+            return allExpenses.filter(exp => exp.projectId === currentProjectId);
+        },
+        enabled: !!currentProjectId,
     });
 
     const createMutation = useMutation({
@@ -63,10 +70,11 @@ export default function ExpensesPage() {
     });
 
     const handleSubmit = (data) => {
+        const expenseData = { ...data, projectId: currentProjectId };
         if (editingExpense) {
-            updateMutation.mutate({ id: editingExpense.id, data });
+            updateMutation.mutate({ id: editingExpense.id, data: expenseData });
         } else {
-            createMutation.mutate(data);
+            createMutation.mutate(expenseData);
         }
     };
 
@@ -115,7 +123,7 @@ export default function ExpensesPage() {
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (isLoading) {
+    if (isLoading || !currentProjectId) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-slate-600">Loading...</div>

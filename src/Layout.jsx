@@ -4,6 +4,8 @@ import { createPageUrl } from "./utils";
 import { Home, FileText, LogOut, Languages } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { LanguageProvider, useLanguage } from "./components/LanguageContext";
+import { ProjectProvider } from "./components/ProjectContext";
+import ProjectSelector from "./components/ProjectSelector";
 
 function LayoutContent({ children, currentPageName }) {
     const { language, t, toggleLanguage } = useLanguage();
@@ -48,6 +50,8 @@ function LayoutContent({ children, currentPageName }) {
                                             </Link>
                             </div>
                             </div>
+
+                            <ProjectSelector />
 
                             <div className="flex items-center gap-2">
                             <button
@@ -99,9 +103,11 @@ function LayoutContent({ children, currentPageName }) {
             }
 
             export default function Layout({ children, currentPageName }) {
-            return (
-            <LanguageProvider>
-            <LayoutContent children={children} currentPageName={currentPageName} />
-            </LanguageProvider>
-            );
+                return (
+                    <LanguageProvider>
+                        <ProjectProvider>
+                            <LayoutContent children={children} currentPageName={currentPageName} />
+                        </ProjectProvider>
+                    </LanguageProvider>
+                );
             }
