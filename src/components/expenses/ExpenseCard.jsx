@@ -36,8 +36,9 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             checked={isSelected}
                             onChange={onToggleSelect}
                             className="mt-1 w-4 h-4 rounded border-slate-300"
+                            onClick={(e) => e.stopPropagation()}
                         />
-                        <div className="flex-1 flex flex-col md:flex-row gap-4">
+                        <div className="flex-1 flex flex-col md:flex-row gap-4 cursor-pointer" onClick={() => onEdit(expense)}>
                         <div className="flex-1">
                             <div className="flex items-start justify-between mb-2">
                                 <div>
