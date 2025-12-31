@@ -175,17 +175,18 @@ export default function ExpensesPage() {
                     />
                 </div>
 
-                {showForm && (
-                    <ExpenseForm
-                        expense={editingExpense}
-                        onSubmit={handleSubmit}
-                        onCancel={() => {
-                            setShowForm(false);
-                            setEditingExpense(null);
-                        }}
+                <div ref={formRef}>
+                    {showForm && (
+                        <ExpenseForm
+                            expense={editingExpense}
+                            onSubmit={handleSubmit}
+                            onCancel={() => {
+                                setShowForm(false);
+                                setEditingExpense(null);
+                            }}
                         />
-                        )}
-                        </div>
+                    )}
+                </div>
 
                 <div className="grid gap-4 pb-20">
                     {filteredExpenses.length === 0 ? (
