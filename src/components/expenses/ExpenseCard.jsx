@@ -94,7 +94,10 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => onEdit(expense)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit(expense);
+                                }}
                                 className="flex-1 md:flex-none"
                             >
                                 <Pencil className="w-4 h-4 md:mr-0" />
@@ -103,7 +106,10 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => onDelete(expense.id)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete(expense.id);
+                                }}
                                 className="flex-1 md:flex-none text-red-600 hover:text-red-700"
                             >
                                 <Trash2 className="w-4 h-4 md:mr-0" />
