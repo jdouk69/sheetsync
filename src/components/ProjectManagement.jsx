@@ -8,13 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Pencil, Trash2, FolderOpen } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderOpen, Users } from "lucide-react";
+import ProjectSharing from "./ProjectSharing";
 
 export default function ProjectManagement({ onClose }) {
     const { projects, currentProjectId, switchProject } = useProject();
     const { t } = useLanguage();
     const [editingProject, setEditingProject] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [sharingProject, setSharingProject] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -92,7 +94,25 @@ export default function ProjectManagement({ onClose }) {
 
     return (
         <div className="space-y-6 max-h-[70vh] overflow-y-auto px-1">
-            {showForm ? (
+            {sharingProject ? (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                            <span>Share "{sharingProject.name}"</span>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSharingProject(null)}
+                            >
+                                Close
+                            </Button>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ProjectSharing project={sharingProject} />
+                    </CardContent>
+                </Card>
+            ) : showForm ? (
                 <Card>
                     <CardHeader>
                         <CardTitle>
@@ -232,6 +252,14 @@ export default function ProjectManagement({ onClose }) {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setSharingProject(project)}
+                                                title="Share project"
+                                            >
+                                                <Users className="w-4 h-4" />
+                                            </Button>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
