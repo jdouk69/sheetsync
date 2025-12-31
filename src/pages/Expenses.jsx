@@ -10,10 +10,12 @@ import ExpenseSummary from "../components/expenses/ExpenseSummary";
 import ImportExpenses from "../components/expenses/ImportExpenses";
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
+import { useProjectPermissions } from "../components/useProjectPermissions";
 
 export default function ExpensesPage() {
     const { t } = useLanguage();
-    const { currentProjectId, projects, isLoading: projectsLoading } = useProject();
+    const { currentProjectId, currentProject, projects, isLoading: projectsLoading } = useProject();
+    const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
@@ -192,7 +194,7 @@ export default function ExpensesPage() {
                         <p className="text-slate-600 mt-1">{t('trackExpenses')}</p>
                     </div>
                     <div className="flex gap-2">
-                        {selectedIds.length > 0 && (
+                        {selectedIds.length > 0 && canDelete && (
                             <Button
                                 onClick={handleBulkDelete}
                                 variant="destructive"
@@ -201,40 +203,44 @@ export default function ExpensesPage() {
                                 {t('deleteSelected', { count: selectedIds.length })}
                             </Button>
                         )}
-                        <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />
-                        <Button
-                            onClick={() => {
-                                setEditingExpense(null);
-                                setShowForm(true);
-                                setTimeout(() => {
-                                    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }, 100);
-                            }}
-                            className="bg-blue-600 hover:bg-blue-700"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            {t('addExpense')}
-                        </Button>
+                        {canEdit && <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />}
+                        {canEdit && (
+                            <Button
+                                onClick={() => {
+                                    setEditingExpense(null);
+                                    setShowForm(true);
+                                    setTimeout(() => {
+                                        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }, 100);
+                                }}
+                                className="bg-blue-600 hover:bg-blue-700"
+                            >
+                                <Plus className="w-4 h-4 mr-2" />
+                                {t('addExpense')}
+                            </Button>
+                        )}
                     </div>
                 </div>
 
                 <ExpenseSummary expenses={filteredExpenses} />
 
                 <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-                    <div className="flex items-center gap-4 mb-4">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={filteredExpenses.length > 0 && selectedIds.length === filteredExpenses.length}
-                                onChange={toggleSelectAll}
-                                className="w-4 h-4 rounded border-slate-300"
-                            />
-                            <span className="text-sm text-slate-600">{t('selectAll')}</span>
-                        </label>
-                        {selectedIds.length > 0 && (
-                            <span className="text-sm text-slate-600">{selectedIds.length} {t('selected')}</span>
-                        )}
-                    </div>
+                    {canDelete && (
+                        <div className="flex items-center gap-4 mb-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={filteredExpenses.length > 0 && selectedIds.length === filteredExpenses.length}
+                                    onChange={toggleSelectAll}
+                                    className="w-4 h-4 rounded border-slate-300"
+                                />
+                                <span className="text-sm text-slate-600">{t('selectAll')}</span>
+                            </label>
+                            {selectedIds.length > 0 && (
+                                <span className="text-sm text-slate-600">{selectedIds.length} {t('selected')}</span>
+                            )}
+                        </div>
+                    )}
                     <ExpenseFilters 
                         filters={filters} 
                         onFiltersChange={setFilters}
@@ -243,7 +249,7 @@ export default function ExpensesPage() {
                 </div>
 
                 <div ref={formRef}>
-                    {showForm && (
+                    {showForm && canEdit && (
                         <ExpenseForm
                             expense={editingExpense}
                             onSubmit={handleSubmit}
@@ -267,8 +273,8 @@ export default function ExpensesPage() {
                                 expense={expense}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
-                                isSelected={selectedIds.includes(expense.id)}
-                                onToggleSelect={() => toggleSelection(expense.id)}
+                                isSelected={canDelete ? selectedIds.includes(expense.id) : false}
+                                onToggleSelect={canDelete ? () => toggleSelection(expense.id) : undefined}
                             />
                         ))
                     )}
