@@ -16,11 +16,11 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
 
     const existingCategories = [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
     const [formData, setFormData] = useState({
-        vendor: "",
         description: "",
         amount: "",
         category: "Materials",
         date: new Date().toISOString().split('T')[0],
+        vendor: "",
         photos: [],
         notes: ""
     });
@@ -39,21 +39,21 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
             }
             
             setFormData({
-                vendor: expense.vendor || "",
                 description: expense.description || "",
                 amount: expense.amount || "",
                 category: expense.category || "Materials",
                 date: dateValue,
+                vendor: expense.vendor || "",
                 photos: expense.photos || [],
                 notes: expense.notes || ""
             });
         } else {
             setFormData({
-                vendor: "",
                 description: "",
                 amount: "",
                 category: "Materials",
                 date: new Date().toISOString().split('T')[0],
+                vendor: "",
                 photos: [],
                 notes: ""
             });
@@ -106,17 +106,6 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Vendor/Supplier *
-                        </label>
-                        <Input
-                            required
-                            value={formData.vendor}
-                            onChange={(e) => setFormData({...formData, vendor: e.target.value})}
-                            placeholder="Vendor name"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
                             Description *
                         </label>
                         <Input
@@ -126,9 +115,6 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                             placeholder="e.g., Cement bags"
                         />
                     </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
                             Amount (€) *
@@ -142,6 +128,9 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                             placeholder="0.00"
                         />
                     </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
                             Category *
@@ -152,17 +141,27 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                             existingCategories={existingCategories}
                         />
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                            Date *
+                        </label>
+                        <Input
+                            required
+                            type="date"
+                            value={formData.date}
+                            onChange={(e) => setFormData({...formData, date: e.target.value})}
+                        />
+                    </div>
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Date *
+                        Vendor/Supplier
                     </label>
                     <Input
-                        required
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => setFormData({...formData, date: e.target.value})}
+                        value={formData.vendor}
+                        onChange={(e) => setFormData({...formData, vendor: e.target.value})}
+                        placeholder="Vendor name"
                     />
                 </div>
 
