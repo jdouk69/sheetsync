@@ -19,8 +19,24 @@ export default function ExpensesPage() {
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
     const [selectedIds, setSelectedIds] = useState([]);
     const formRef = useRef(null);
+    const [user, setUser] = useState(null);
+    const [authLoading, setAuthLoading] = useState(true);
     
     const queryClient = useQueryClient();
+
+    React.useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const currentUser = await base44.auth.me();
+                setUser(currentUser);
+            } catch (error) {
+                setUser(null);
+            } finally {
+                setAuthLoading(false);
+            }
+        };
+        checkAuth();
+    }, []);
 
     const { data: expenses = [], isLoading } = useQuery({
         queryKey: ['expenses', currentProjectId],
