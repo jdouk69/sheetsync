@@ -51,27 +51,28 @@ function LayoutContent({ children, currentPageName }) {
                                             </div>
                                             </div>
 
-                                            <div className="flex items-center gap-4">
-                                            <ProjectSelector />
-
                                             <div className="flex items-center gap-2">
-                            <button
-                                onClick={toggleLanguage}
-                                className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                                title={language === 'en' ? 'Switch to Greek' : 'Αλλαγή σε Αγγλικά'}
-                            >
-                                <Languages className="w-4 h-4" />
-                                <span className="text-sm font-medium">{language === 'en' ? 'EL' : 'EN'}</span>
-                            </button>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                <span className="hidden md:inline">{t('logout')}</span>
-                            </button>
-                        </div>
-                    </div>
+                                                <button
+                                                    onClick={toggleLanguage}
+                                                    className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                                    title={language === 'en' ? 'Switch to Greek' : 'Αλλαγή σε Αγγλικά'}
+                                                >
+                                                    <Languages className="w-4 h-4" />
+                                                    <span className="text-sm font-medium">{language === 'en' ? 'EL' : 'EN'}</span>
+                                                </button>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                                >
+                                                    <LogOut className="w-4 h-4" />
+                                                    <span className="hidden md:inline">{t('logout')}</span>
+                                                </button>
+                                            </div>
+                                            </div>
+
+                                            <div className="border-t border-slate-200 py-3">
+                                            <ProjectSelector />
+                                            </div>
                 </div>
 
                     <div className="md:hidden flex gap-2 pb-3">
