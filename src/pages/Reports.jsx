@@ -40,6 +40,10 @@ export default function ReportsPage() {
         return [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))];
     }, [allExpenses]);
 
+    const uniqueCategories = useMemo(() => {
+        return [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
+    }, [allExpenses]);
+
     const categoryData = expenses.reduce((acc, exp) => {
         const existing = acc.find(item => item.name === exp.category);
         if (existing) {
@@ -184,13 +188,9 @@ export default function ReportsPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">All Categories</SelectItem>
-                                    <SelectItem value="Materials">Materials</SelectItem>
-                                    <SelectItem value="Labor">Labor</SelectItem>
-                                    <SelectItem value="Equipment">Equipment</SelectItem>
-                                    <SelectItem value="Permits">Permits</SelectItem>
-                                    <SelectItem value="Professional Services">Professional Services</SelectItem>
-                                    <SelectItem value="Utilities">Utilities</SelectItem>
-                                    <SelectItem value="Other">Other</SelectItem>
+                                    {uniqueCategories.sort().map(category => (
+                                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

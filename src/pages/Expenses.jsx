@@ -64,6 +64,8 @@ export default function ExpensesPage() {
         }
     };
 
+    const availableCategories = [...new Set(expenses.map(exp => exp.category).filter(Boolean))];
+
     const filteredExpenses = expenses.filter(expense => {
         const categoryMatch = filters.category === "all" || expense.category === filters.category;
         const startDateMatch = !filters.startDate || new Date(expense.date) >= new Date(filters.startDate);
@@ -102,7 +104,11 @@ export default function ExpensesPage() {
                 <ExpenseSummary expenses={filteredExpenses} />
 
                 <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-                    <ExpenseFilters filters={filters} onFiltersChange={setFilters} />
+                    <ExpenseFilters 
+                        filters={filters} 
+                        onFiltersChange={setFilters}
+                        availableCategories={availableCategories}
+                    />
                 </div>
 
                 {showForm && (
