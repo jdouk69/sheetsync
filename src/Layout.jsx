@@ -99,9 +99,9 @@ function LayoutContent({ children, currentPageName }) {
             </nav>
 
             <main>{children}</main>
-            </div>
-            );
-            }
+        </div>
+    );
+}
 
             export default function Layout({ children, currentPageName }) {
                 return (
