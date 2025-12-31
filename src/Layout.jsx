@@ -48,13 +48,13 @@ function LayoutContent({ children, currentPageName }) {
                                             >
                                             {t('reports')}
                                             </Link>
-                            </div>
-                            </div>
+                                            </div>
+                                            </div>
 
-                            <div className="flex items-center gap-4">
-                            <ProjectSelector />
+                                            <div className="flex items-center gap-4">
+                                            <ProjectSelector />
 
-                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2">
                             <button
                                 onClick={toggleLanguage}
                                 className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
