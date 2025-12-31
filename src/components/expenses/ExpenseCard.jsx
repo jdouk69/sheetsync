@@ -39,6 +39,12 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                         <div className="flex-1">
                             <div className="flex items-start justify-between mb-2">
                                 <div>
+                                    {expense.vendor && (
+                                        <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                                            <Building2 className="w-4 h-4" />
+                                            {expense.vendor}
+                                        </div>
+                                    )}
                                     <h3 className="font-semibold text-lg text-slate-900">
                                         {expense.description}
                                     </h3>
@@ -58,13 +64,6 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                     </div>
                                 </div>
                             </div>
-
-                            {expense.vendor && (
-                                <div className="flex items-center gap-2 text-sm text-slate-600 mt-2">
-                                    <Building2 className="w-4 h-4" />
-                                    {expense.vendor}
-                                </div>
-                            )}
 
                             {expense.notes && (
                                 <p className="text-sm text-slate-600 mt-2">{expense.notes}</p>
