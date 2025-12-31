@@ -33,7 +33,7 @@ export default function ProjectSelector() {
                         <span className="hidden md:inline">{t('addProject')}</span>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto my-auto">
                     <DialogHeader>
                         <DialogTitle>{t('projectManagement')}</DialogTitle>
                     </DialogHeader>
@@ -64,7 +64,7 @@ export default function ProjectSelector() {
                         <Settings className="w-4 h-4" />
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto my-auto">
                     <DialogHeader>
                         <DialogTitle>{t('projectManagement')}</DialogTitle>
                     </DialogHeader>
