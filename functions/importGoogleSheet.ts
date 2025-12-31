@@ -14,9 +14,36 @@ Deno.serve(async (req) => {
         // Get access token from the connector
         const accessToken = await base44.asServiceRole.connectors.getAccessToken("googlesheets");
         
+        // First, get spreadsheet metadata to check available sheets
+        const metadataResponse = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            }
+        );
+        
+        if (!metadataResponse.ok) {
+            const error = await metadataResponse.text();
+            return Response.json({ error: `Failed to fetch spreadsheet metadata: ${error}` }, { status: 400 });
+        }
+        
+        const metadata = await metadataResponse.json();
+        const availableSheets = metadata.sheets?.map(s => s.properties.title) || [];
+        
+        // Try to find the sheet by name or use the first one
+        let targetSheet = sheetName || availableSheets[0];
+        if (sheetName && !availableSheets.includes(sheetName)) {
+            return Response.json({ 
+                error: `Sheet "${sheetName}" not found. Available sheets: ${availableSheets.join(', ')}`,
+                availableSheets 
+            }, { status: 400 });
+        }
+        
         // Fetch sheet data from Google Sheets API
         const sheetsResponse = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}`,
+            `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(targetSheet)}`,
             {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
