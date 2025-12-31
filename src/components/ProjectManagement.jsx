@@ -93,7 +93,7 @@ export default function ProjectManagement({ onClose }) {
     };
 
     return (
-        <div className="space-y-4 px-1 pb-6">
+        <div className="space-y-4 px-1 pb-8">
             {sharingProject ? (
                 <Card>
                     <CardHeader>
