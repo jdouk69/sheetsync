@@ -74,8 +74,8 @@ export default function ExpensesPage() {
         setEditingExpense(expense);
         setShowForm(true);
         setTimeout(() => {
-            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
     };
 
     const handleDelete = (id) => {
