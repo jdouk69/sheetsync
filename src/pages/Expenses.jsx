@@ -13,6 +13,7 @@ export default function ExpensesPage() {
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
+    const [selectedIds, setSelectedIds] = useState([]);
     
     const queryClient = useQueryClient();
 
@@ -46,6 +47,16 @@ export default function ExpensesPage() {
         },
     });
 
+    const bulkDeleteMutation = useMutation({
+        mutationFn: async (ids) => {
+            await Promise.all(ids.map(id => base44.entities.Expense.delete(id)));
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            setSelectedIds([]);
+        },
+    });
+
     const handleSubmit = (data) => {
         if (editingExpense) {
             updateMutation.mutate({ id: editingExpense.id, data });
@@ -62,6 +73,26 @@ export default function ExpensesPage() {
     const handleDelete = (id) => {
         if (confirm('Are you sure you want to delete this expense?')) {
             deleteMutation.mutate(id);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (confirm(`Are you sure you want to delete ${selectedIds.length} expenses?`)) {
+            bulkDeleteMutation.mutate(selectedIds);
+        }
+    };
+
+    const toggleSelection = (id) => {
+        setSelectedIds(prev => 
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === filteredExpenses.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(filteredExpenses.map(exp => exp.id));
         }
     };
 
@@ -91,6 +122,15 @@ export default function ExpensesPage() {
                         <p className="text-slate-600 mt-1">Track your Greece house construction costs</p>
                     </div>
                     <div className="flex gap-2">
+                        {selectedIds.length > 0 && (
+                            <Button
+                                onClick={handleBulkDelete}
+                                variant="destructive"
+                                disabled={bulkDeleteMutation.isPending}
+                            >
+                                Delete {selectedIds.length} Selected
+                            </Button>
+                        )}
                         <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />
                         <Button
                             onClick={() => {
@@ -108,6 +148,20 @@ export default function ExpensesPage() {
                 <ExpenseSummary expenses={filteredExpenses} />
 
                 <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div className="flex items-center gap-4 mb-4">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={filteredExpenses.length > 0 && selectedIds.length === filteredExpenses.length}
+                                onChange={toggleSelectAll}
+                                className="w-4 h-4 rounded border-slate-300"
+                            />
+                            <span className="text-sm text-slate-600">Select All</span>
+                        </label>
+                        {selectedIds.length > 0 && (
+                            <span className="text-sm text-slate-600">{selectedIds.length} selected</span>
+                        )}
+                    </div>
                     <ExpenseFilters 
                         filters={filters} 
                         onFiltersChange={setFilters}
@@ -138,6 +192,8 @@ export default function ExpensesPage() {
                                 expense={expense}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
+                                isSelected={selectedIds.includes(expense.id)}
+                                onToggleSelect={() => toggleSelection(expense.id)}
                             />
                         ))
                     )}

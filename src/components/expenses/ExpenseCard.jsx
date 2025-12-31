@@ -20,7 +20,7 @@ const categoryColors = {
     "Other": "bg-slate-100 text-slate-800"
 };
 
-export default function ExpenseCard({ expense, onEdit, onDelete }) {
+export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onToggleSelect }) {
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
 
