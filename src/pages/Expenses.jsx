@@ -8,8 +8,10 @@ import ExpenseCard from "../components/expenses/ExpenseCard";
 import ExpenseFilters from "../components/expenses/ExpenseFilters";
 import ExpenseSummary from "../components/expenses/ExpenseSummary";
 import ImportExpenses from "../components/expenses/ImportExpenses";
+import { useLanguage } from "../components/LanguageContext";
 
 export default function ExpensesPage() {
+    const { t } = useLanguage();
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
@@ -126,8 +128,8 @@ export default function ExpensesPage() {
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900">Έξοδα Κατασκευής</h1>
-                        <p className="text-slate-600 mt-1">Παρακολουθήστε τα έξοδα κατασκευής του σπιτιού σας στην Ελλάδα</p>
+                        <h1 className="text-3xl font-bold text-slate-900">{t('constructionExpenses')}</h1>
+                        <p className="text-slate-600 mt-1">{t('trackExpenses')}</p>
                     </div>
                     <div className="flex gap-2">
                         {selectedIds.length > 0 && (
@@ -136,7 +138,7 @@ export default function ExpensesPage() {
                                 variant="destructive"
                                 disabled={bulkDeleteMutation.isPending}
                             >
-                                Διαγραφή {selectedIds.length} Επιλεγμένων
+                                {t('deleteSelected', { count: selectedIds.length })}
                             </Button>
                         )}
                         <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />
@@ -148,7 +150,7 @@ export default function ExpensesPage() {
                             className="bg-blue-600 hover:bg-blue-700"
                         >
                             <Plus className="w-4 h-4 mr-2" />
-                            Προσθήκη Εξόδου
+                            {t('addExpense')}
                         </Button>
                     </div>
                 </div>
@@ -164,10 +166,10 @@ export default function ExpensesPage() {
                                 onChange={toggleSelectAll}
                                 className="w-4 h-4 rounded border-slate-300"
                             />
-                            <span className="text-sm text-slate-600">Επιλογή Όλων</span>
+                            <span className="text-sm text-slate-600">{t('selectAll')}</span>
                         </label>
                         {selectedIds.length > 0 && (
-                            <span className="text-sm text-slate-600">{selectedIds.length} επιλεγμένα</span>
+                            <span className="text-sm text-slate-600">{selectedIds.length} {t('selected')}</span>
                         )}
                     </div>
                     <ExpenseFilters 
@@ -193,7 +195,7 @@ export default function ExpensesPage() {
                 <div className="grid gap-4 pb-20">
                     {filteredExpenses.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                            <p className="text-slate-500">Δεν βρέθηκαν έξοδα. Προσθέστε το πρώτο σας έξοδο για να ξεκινήσετε.</p>
+                            <p className="text-slate-500">{t('noExpensesFound')}</p>
                         </div>
                     ) : (
                         filteredExpenses.map((expense) => (
