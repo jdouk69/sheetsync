@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Upload, Image as ImageIcon } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import CategoryCombobox from "./CategoryCombobox";
 
 export default function ExpenseForm({ expense, onSubmit, onCancel }) {
+    const { data: allExpenses = [] } = useQuery({
+        queryKey: ['expenses'],
+        queryFn: () => base44.entities.Expense.list(),
+    });
+
+    const existingCategories = [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
     const [formData, setFormData] = useState(expense || {
         description: "",
         amount: "",
@@ -93,23 +100,11 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                         <label className="block text-sm font-medium text-slate-700 mb-1">
                             Category *
                         </label>
-                        <Select
+                        <CategoryCombobox
                             value={formData.category}
-                            onValueChange={(value) => setFormData({...formData, category: value})}
-                        >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Materials">Materials</SelectItem>
-                                <SelectItem value="Labor">Labor</SelectItem>
-                                <SelectItem value="Equipment">Equipment</SelectItem>
-                                <SelectItem value="Permits">Permits</SelectItem>
-                                <SelectItem value="Professional Services">Professional Services</SelectItem>
-                                <SelectItem value="Utilities">Utilities</SelectItem>
-                                <SelectItem value="Other">Other</SelectItem>
-                            </SelectContent>
-                        </Select>
+                            onChange={(value) => setFormData({...formData, category: value})}
+                            existingCategories={existingCategories}
+                        />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">

@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 
-export default function ExpenseFilters({ filters, onFiltersChange }) {
+export default function ExpenseFilters({ filters, onFiltersChange, availableCategories = [] }) {
     return (
         <div className="flex flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2 flex-1">
@@ -17,13 +17,9 @@ export default function ExpenseFilters({ filters, onFiltersChange }) {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="Materials">Materials</SelectItem>
-                        <SelectItem value="Labor">Labor</SelectItem>
-                        <SelectItem value="Equipment">Equipment</SelectItem>
-                        <SelectItem value="Permits">Permits</SelectItem>
-                        <SelectItem value="Professional Services">Professional Services</SelectItem>
-                        <SelectItem value="Utilities">Utilities</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        {availableCategories.sort().map(category => (
+                            <SelectItem key={category} value={category}>{category}</SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
             </div>
