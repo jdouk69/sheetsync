@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,15 +14,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
     });
 
     const existingCategories = [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
-    const [formData, setFormData] = useState(expense ? {
-        description: expense.description || "",
-        amount: expense.amount || "",
-        category: expense.category || "Materials",
-        date: expense.date || new Date().toISOString().split('T')[0],
-        vendor: expense.vendor || "",
-        photos: expense.photos || [],
-        notes: expense.notes || ""
-    } : {
+    const [formData, setFormData] = useState({
         description: "",
         amount: "",
         category: "Materials",
@@ -32,6 +24,30 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
         notes: ""
     });
     const [uploading, setUploading] = useState(false);
+
+    useEffect(() => {
+        if (expense) {
+            setFormData({
+                description: expense.description || "",
+                amount: expense.amount || "",
+                category: expense.category || "Materials",
+                date: expense.date || new Date().toISOString().split('T')[0],
+                vendor: expense.vendor || "",
+                photos: expense.photos || [],
+                notes: expense.notes || ""
+            });
+        } else {
+            setFormData({
+                description: "",
+                amount: "",
+                category: "Materials",
+                date: new Date().toISOString().split('T')[0],
+                vendor: "",
+                photos: [],
+                notes: ""
+            });
+        }
+    }, [expense]);
 
     const handleFileUpload = async (e) => {
         const files = Array.from(e.target.files);
