@@ -159,11 +159,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                         {t('description')} *
                     </label>
-                    <Input
+                    <Textarea
                         required
                         value={formData.description}
                         onChange={(e) => setFormData({...formData, description: e.target.value})}
                         placeholder={t('descriptionPlaceholder')}
+                        rows={3}
                     />
                 </div>
 
