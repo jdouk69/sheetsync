@@ -14,7 +14,15 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
     });
 
     const existingCategories = [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
-    const [formData, setFormData] = useState(expense || {
+    const [formData, setFormData] = useState(expense ? {
+        description: expense.description || "",
+        amount: expense.amount || "",
+        category: expense.category || "Materials",
+        date: expense.date || new Date().toISOString().split('T')[0],
+        vendor: expense.vendor || "",
+        photos: expense.photos || [],
+        notes: expense.notes || ""
+    } : {
         description: "",
         amount: "",
         category: "Materials",
