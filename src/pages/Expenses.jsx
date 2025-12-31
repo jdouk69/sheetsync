@@ -79,11 +79,13 @@ export default function ExpensesPage() {
     };
 
     const handleEdit = (expense) => {
-        setEditingExpense(expense);
         setShowForm(true);
-        setTimeout(() => {
-            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+        setEditingExpense(expense);
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        });
     };
 
     const handleDelete = (id) => {
