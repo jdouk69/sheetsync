@@ -80,11 +80,13 @@ export default function ImportExpenses({ onImportComplete }) {
         setResult(null);
 
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('columnMapping', JSON.stringify(columnMapping));
-
-            const response = await base44.functions.invoke('importExpenses', formData);
+            // Read the file as text and send it along with mapping
+            const text = await file.text();
+            
+            const response = await base44.functions.invoke('importExpenses', {
+                fileContent: text,
+                columnMapping: columnMapping
+            });
             
             setResult(response.data);
             

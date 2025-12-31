@@ -9,15 +9,14 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const formData = await req.formData();
-        const file = formData.get('file');
-        const columnMappingStr = formData.get('columnMapping');
+        const body = await req.json();
+        const { fileContent, columnMapping } = body;
 
-        if (!file) {
+        if (!fileContent) {
             return Response.json({ error: 'No file provided' }, { status: 400 });
         }
 
-        const text = await file.text();
+        const text = fileContent;
         const lines = text.split('\n').filter(line => line.trim());
 
         if (lines.length < 2) {
@@ -26,9 +25,6 @@ Deno.serve(async (req) => {
 
         // Parse header row
         const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-        
-        // Get column mapping
-        const columnMapping = columnMappingStr ? JSON.parse(columnMappingStr) : {};
         
         // Create reverse mapping (header -> field)
         const headerToField = {};
