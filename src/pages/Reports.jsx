@@ -14,7 +14,7 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899'
 
 export default function ReportsPage() {
     const { t } = useLanguage();
-    const { currentProjectId } = useProject();
+    const { currentProjectId, projects, isLoading: projectsLoading } = useProject();
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
@@ -162,6 +162,29 @@ export default function ReportsPage() {
         link.click();
         document.body.removeChild(link);
     };
+
+    if (projectsLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-slate-600">Loading...</div>
+            </div>
+        );
+    }
+
+    if (projects.length === 0 || !currentProjectId) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
+                <div className="max-w-6xl mx-auto">
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold text-slate-900 mb-2">No Project Selected</h2>
+                            <p className="text-slate-600">Please create a project first to view reports.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">

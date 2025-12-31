@@ -13,7 +13,7 @@ import { useProject } from "../components/ProjectContext";
 
 export default function ExpensesPage() {
     const { t } = useLanguage();
-    const { currentProjectId } = useProject();
+    const { currentProjectId, projects, isLoading: projectsLoading } = useProject();
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
@@ -123,10 +123,25 @@ export default function ExpensesPage() {
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (isLoading || !currentProjectId) {
+    if (projectsLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-slate-600">Loading...</div>
+            </div>
+        );
+    }
+
+    if (projects.length === 0 || !currentProjectId) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
+                <div className="max-w-6xl mx-auto">
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold text-slate-900 mb-2">No Project Selected</h2>
+                            <p className="text-slate-600">Please create a project first to start tracking expenses.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
