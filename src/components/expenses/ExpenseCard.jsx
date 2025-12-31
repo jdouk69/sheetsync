@@ -26,9 +26,16 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
     return (
         <>
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className={`transition-shadow ${isSelected ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}>
                 <CardContent className="p-4">
-                    <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex gap-3">
+                        <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={onToggleSelect}
+                            className="mt-1 w-4 h-4 rounded border-slate-300"
+                        />
+                        <div className="flex-1 flex flex-col md:flex-row gap-4">
                         <div className="flex-1">
                             <div className="flex items-start justify-between mb-2">
                                 <div>
@@ -97,6 +104,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 <Trash2 className="w-4 h-4 md:mr-0" />
                                 <span className="md:hidden ml-2">Delete</span>
                             </Button>
+                        </div>
                         </div>
                     </div>
                 </CardContent>
