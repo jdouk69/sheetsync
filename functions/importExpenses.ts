@@ -87,11 +87,22 @@ Deno.serve(async (req) => {
                     continue;
                 }
 
+                // Normalize date format to YYYY-MM-DD
+                let dateValue = values[dateIdx] || new Date().toISOString().split('T')[0];
+                try {
+                    const parsedDate = new Date(dateValue);
+                    if (!isNaN(parsedDate.getTime())) {
+                        dateValue = parsedDate.toISOString().split('T')[0];
+                    }
+                } catch (e) {
+                    // Keep original if parsing fails
+                }
+
                 const expense = {
                     description: values[descriptionIdx] || '',
                     amount: Math.abs(amount),
                     category: values[categoryIdx] || '',
-                    date: values[dateIdx] || new Date().toISOString().split('T')[0],
+                    date: dateValue,
                 };
 
                 if (vendorIdx !== undefined && values[vendorIdx]) {
