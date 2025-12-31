@@ -10,18 +10,48 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ImportExpenses({ onImportComplete }) {
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState(null);
     const [importing, setImporting] = useState(false);
     const [result, setResult] = useState(null);
+    const [csvHeaders, setCsvHeaders] = useState([]);
+    const [columnMapping, setColumnMapping] = useState({});
+    const [showMapping, setShowMapping] = useState(false);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile && selectedFile.type === 'text/csv') {
             setFile(selectedFile);
             setResult(null);
+            
+            // Read CSV headers
+            const text = await selectedFile.text();
+            const firstLine = text.split('\n')[0];
+            const headers = firstLine.split(',').map(h => h.trim().replace(/"/g, ''));
+            setCsvHeaders(headers);
+            
+            // Auto-map columns (case-insensitive matching)
+            const autoMapping = {};
+            const expenseFields = ['description', 'amount', 'category', 'date', 'vendor', 'notes'];
+            
+            headers.forEach(header => {
+                const lowerHeader = header.toLowerCase();
+                
+                // Direct matches
+                if (expenseFields.includes(lowerHeader)) {
+                    autoMapping[header] = lowerHeader;
+                }
+                // Smart matches
+                else if (lowerHeader === 'note') {
+                    autoMapping[header] = 'notes';
+                }
+            });
+            
+            setColumnMapping(autoMapping);
+            setShowMapping(true);
         } else {
             alert('Please select a valid CSV file');
         }
@@ -33,12 +63,26 @@ export default function ImportExpenses({ onImportComplete }) {
             return;
         }
 
+        // Check required fields are mapped
+        const mappedFields = Object.values(columnMapping);
+        const requiredFields = ['description', 'amount', 'category', 'date'];
+        const missingFields = requiredFields.filter(field => !mappedFields.includes(field));
+        
+        if (missingFields.length > 0) {
+            setResult({ 
+                success: false, 
+                error: `Please map these required fields: ${missingFields.join(', ')}` 
+            });
+            return;
+        }
+
         setImporting(true);
         setResult(null);
 
         try {
             const formData = new FormData();
             formData.append('file', file);
+            formData.append('columnMapping', JSON.stringify(columnMapping));
 
             const response = await fetch(`${base44.functions.getBaseUrl()}/importExpenses`, {
                 method: 'POST',
@@ -61,6 +105,9 @@ export default function ImportExpenses({ onImportComplete }) {
                     setOpen(false);
                     setFile(null);
                     setResult(null);
+                    setCsvHeaders([]);
+                    setColumnMapping({});
+                    setShowMapping(false);
                     onImportComplete();
                 }, 2000);
             }
@@ -142,6 +189,44 @@ export default function ImportExpenses({ onImportComplete }) {
                             </div>
                         )}
                     </div>
+
+                    {showMapping && csvHeaders.length > 0 && (
+                        <div className="border rounded-lg p-4 space-y-3">
+                            <h3 className="font-medium text-sm">Map CSV Columns to Fields</h3>
+                            <p className="text-xs text-slate-600">Match your CSV columns to the expense fields. Required: description, amount, category, date</p>
+                            {csvHeaders.map((header) => (
+                                <div key={header} className="flex items-center gap-3">
+                                    <div className="flex-1">
+                                        <span className="text-sm font-medium">{header}</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <Select
+                                            value={columnMapping[header] || 'skip'}
+                                            onValueChange={(value) => {
+                                                setColumnMapping(prev => ({
+                                                    ...prev,
+                                                    [header]: value === 'skip' ? undefined : value
+                                                }));
+                                            }}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select field" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="skip">Skip column</SelectItem>
+                                                <SelectItem value="description">Description *</SelectItem>
+                                                <SelectItem value="amount">Amount *</SelectItem>
+                                                <SelectItem value="category">Category *</SelectItem>
+                                                <SelectItem value="date">Date *</SelectItem>
+                                                <SelectItem value="vendor">Vendor</SelectItem>
+                                                <SelectItem value="notes">Notes</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     {result && (
                         <div className={`p-4 rounded-lg ${result.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>

@@ -11,6 +11,7 @@ Deno.serve(async (req) => {
 
         const formData = await req.formData();
         const file = formData.get('file');
+        const columnMappingStr = formData.get('columnMapping');
 
         if (!file) {
             return Response.json({ error: 'No file provided' }, { status: 400 });
@@ -24,19 +25,34 @@ Deno.serve(async (req) => {
         }
 
         // Parse header row
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
         
-        // Find column indices
-        const descriptionIdx = headers.indexOf('description');
-        const amountIdx = headers.indexOf('amount');
-        const categoryIdx = headers.indexOf('category');
-        const dateIdx = headers.indexOf('date');
-        const vendorIdx = headers.indexOf('vendor');
-        const notesIdx = headers.indexOf('notes');
+        // Get column mapping
+        const columnMapping = columnMappingStr ? JSON.parse(columnMappingStr) : {};
+        
+        // Create reverse mapping (header -> field)
+        const headerToField = {};
+        headers.forEach((header, idx) => {
+            if (columnMapping[header]) {
+                headerToField[idx] = columnMapping[header];
+            }
+        });
+        
+        // Find column indices based on mapping
+        const getFieldIndex = (fieldName) => {
+            return Object.entries(headerToField).find(([idx, field]) => field === fieldName)?.[0];
+        };
+        
+        const descriptionIdx = getFieldIndex('description');
+        const amountIdx = getFieldIndex('amount');
+        const categoryIdx = getFieldIndex('category');
+        const dateIdx = getFieldIndex('date');
+        const vendorIdx = getFieldIndex('vendor');
+        const notesIdx = getFieldIndex('notes');
 
-        if (descriptionIdx === -1 || amountIdx === -1 || categoryIdx === -1 || dateIdx === -1) {
+        if (descriptionIdx === undefined || amountIdx === undefined || categoryIdx === undefined || dateIdx === undefined) {
             return Response.json({ 
-                error: 'Missing required columns. CSV must have: description, amount, category, date' 
+                error: 'Missing required field mappings. Please map: description, amount, category, date' 
             }, { status: 400 });
         }
 
@@ -75,16 +91,16 @@ Deno.serve(async (req) => {
 
                 const expense = {
                     description: values[descriptionIdx] || '',
-                    amount: amount,
+                    amount: Math.abs(amount),
                     category: values[categoryIdx] || '',
                     date: values[dateIdx] || new Date().toISOString().split('T')[0],
                 };
 
-                if (vendorIdx !== -1 && values[vendorIdx]) {
+                if (vendorIdx !== undefined && values[vendorIdx]) {
                     expense.vendor = values[vendorIdx];
                 }
 
-                if (notesIdx !== -1 && values[notesIdx]) {
+                if (notesIdx !== undefined && values[notesIdx]) {
                     expense.notes = values[notesIdx];
                 }
 
