@@ -103,12 +103,12 @@ function LayoutContent({ children, currentPageName }) {
     );
 }
 
-            export default function Layout({ children, currentPageName }) {
-                return (
-                    <LanguageProvider>
-                        <ProjectProvider>
-                            <LayoutContent children={children} currentPageName={currentPageName} />
-                        </ProjectProvider>
-                    </LanguageProvider>
-                );
-            }
+export default function Layout({ children, currentPageName }) {
+    return (
+        <LanguageProvider>
+            <ProjectProvider>
+                <LayoutContent children={children} currentPageName={currentPageName} />
+            </ProjectProvider>
+        </LanguageProvider>
+    );
+}
