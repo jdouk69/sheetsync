@@ -1,18 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Download, PieChart, BarChart3 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Download, PieChart, BarChart3, FileText, Filter } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899', '#64748b'];
 
 export default function ReportsPage() {
-    const { data: expenses = [] } = useQuery({
+    const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses'],
         queryFn: () => base44.entities.Expense.list('-date'),
     });
+
+    const [filters, setFilters] = useState({
+        category: 'all',
+        vendor: 'all',
+        startDate: '',
+        endDate: ''
+    });
+
+    const expenses = useMemo(() => {
+        return allExpenses.filter(exp => {
+            const categoryMatch = filters.category === 'all' || exp.category === filters.category;
+            const vendorMatch = filters.vendor === 'all' || exp.vendor === filters.vendor;
+            
+            const expDate = new Date(exp.date);
+            const startMatch = !filters.startDate || expDate >= new Date(filters.startDate);
+            const endMatch = !filters.endDate || expDate <= new Date(filters.endDate);
+            
+            return categoryMatch && vendorMatch && startMatch && endMatch;
+        });
+    }, [allExpenses, filters]);
+
+    const uniqueVendors = useMemo(() => {
+        return [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))];
+    }, [allExpenses]);
 
     const categoryData = expenses.reduce((acc, exp) => {
         const existing = acc.find(item => item.name === exp.category);
@@ -97,6 +123,33 @@ export default function ReportsPage() {
         pdf.save('construction-expenses-report.pdf');
     };
 
+    const handleExportCSV = () => {
+        const headers = ['Date', 'Description', 'Amount (€)', 'Category', 'Vendor', 'Notes'];
+        const rows = expenses.map(exp => [
+            format(new Date(exp.date), 'yyyy-MM-dd'),
+            exp.description,
+            exp.amount.toFixed(2),
+            exp.category,
+            exp.vendor || '',
+            exp.notes || ''
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `construction-expenses-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
             <div className="max-w-6xl mx-auto">
@@ -105,10 +158,84 @@ export default function ReportsPage() {
                         <h1 className="text-3xl font-bold text-slate-900">Reports & Analytics</h1>
                         <p className="text-slate-600 mt-1">Visual breakdown of your construction expenses</p>
                     </div>
-                    <Button onClick={handleExportPDF} className="bg-blue-600 hover:bg-blue-700">
-                        <Download className="w-4 h-4 mr-2" />
-                        Export PDF Report
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button onClick={handleExportCSV} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                            <FileText className="w-4 h-4 mr-2" />
+                            Export CSV
+                        </Button>
+                        <Button onClick={handleExportPDF} className="bg-blue-600 hover:bg-blue-700">
+                            <Download className="w-4 h-4 mr-2" />
+                            Export PDF
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Filter className="w-5 h-5 text-blue-600" />
+                        <h2 className="text-lg font-semibold">Filters</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                            <Select value={filters.category} onValueChange={(value) => setFilters({...filters, category: value})}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Categories" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Categories</SelectItem>
+                                    <SelectItem value="Materials">Materials</SelectItem>
+                                    <SelectItem value="Labor">Labor</SelectItem>
+                                    <SelectItem value="Equipment">Equipment</SelectItem>
+                                    <SelectItem value="Permits">Permits</SelectItem>
+                                    <SelectItem value="Professional Services">Professional Services</SelectItem>
+                                    <SelectItem value="Utilities">Utilities</SelectItem>
+                                    <SelectItem value="Other">Other</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Vendor</label>
+                            <Select value={filters.vendor} onValueChange={(value) => setFilters({...filters, vendor: value})}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Vendors" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Vendors</SelectItem>
+                                    {uniqueVendors.map(vendor => (
+                                        <SelectItem key={vendor} value={vendor}>{vendor}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
+                            <Input 
+                                type="date" 
+                                value={filters.startDate}
+                                onChange={(e) => setFilters({...filters, startDate: e.target.value})}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">End Date</label>
+                            <Input 
+                                type="date" 
+                                value={filters.endDate}
+                                onChange={(e) => setFilters({...filters, endDate: e.target.value})}
+                            />
+                        </div>
+                    </div>
+                    {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate) && (
+                        <div className="mt-4">
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '' })}
+                            >
+                                Clear Filters
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
