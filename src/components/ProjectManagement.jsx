@@ -91,7 +91,7 @@ export default function ProjectManagement({ onClose }) {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto px-1">
             {showForm ? (
                 <Card>
                     <CardHeader>
