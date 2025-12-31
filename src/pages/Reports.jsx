@@ -37,42 +37,64 @@ export default function ReportsPage() {
 
     const handleExportPDF = async () => {
         const jsPDF = (await import('jspdf')).default;
-        const doc = new jsPDF();
+        const html2canvas = (await import('html2canvas')).default;
         
-        doc.setFontSize(20);
-        doc.text('Construction Expense Report', 20, 20);
+        const reportContent = document.createElement('div');
+        reportContent.style.width = '800px';
+        reportContent.style.padding = '40px';
+        reportContent.style.backgroundColor = 'white';
+        reportContent.style.fontFamily = 'Arial, sans-serif';
         
-        doc.setFontSize(10);
-        doc.text(`Generated: ${format(new Date(), 'PPP')}`, 20, 30);
-        doc.text(`Total Expenses: ${expenses.length}`, 20, 35);
-        doc.text(`Total Amount: €${expenses.reduce((sum, exp) => sum + exp.amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 20, 40);
+        reportContent.innerHTML = `
+            <h1 style="font-size: 24px; margin-bottom: 20px;">Construction Expense Report</h1>
+            <p style="margin: 5px 0;">Generated: ${format(new Date(), 'PPP')}</p>
+            <p style="margin: 5px 0;">Total Expenses: ${expenses.length}</p>
+            <p style="margin: 5px 0; font-weight: bold;">Total Amount: €${expenses.reduce((sum, exp) => sum + exp.amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+            
+            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 15px;">Expenses by Category</h2>
+            ${categoryData.map(cat => `
+                <p style="margin: 5px 0; padding-left: 10px;">
+                    ${cat.name}: €${cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </p>
+            `).join('')}
+            
+            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 15px;">Expense Details</h2>
+            ${expenses.map(exp => `
+                <p style="margin: 3px 0; font-size: 12px; padding-left: 10px;">
+                    ${format(new Date(exp.date), 'MM/dd/yyyy')} - ${exp.description} - €${exp.amount.toFixed(2)} - ${exp.category}
+                </p>
+            `).join('')}
+        `;
         
-        doc.setFontSize(14);
-        doc.text('Expenses by Category', 20, 55);
+        document.body.appendChild(reportContent);
         
-        let y = 65;
-        categoryData.forEach((cat) => {
-            doc.setFontSize(10);
-            doc.text(`${cat.name}: €${cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 25, y);
-            y += 6;
+        const canvas = await html2canvas(reportContent, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true
         });
         
-        doc.addPage();
-        doc.setFontSize(14);
-        doc.text('Expense Details', 20, 20);
+        document.body.removeChild(reportContent);
         
-        y = 30;
-        doc.setFontSize(8);
-        expenses.forEach((exp) => {
-            if (y > 270) {
-                doc.addPage();
-                y = 20;
-            }
-            doc.text(`${format(new Date(exp.date), 'MM/dd/yyyy')} - ${exp.description} - €${exp.amount.toFixed(2)} - ${exp.category}`, 20, y);
-            y += 6;
-        });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+        const pageHeight = 297;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
         
-        doc.save('construction-expenses-report.pdf');
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+        
+        pdf.save('construction-expenses-report.pdf');
     };
 
     return (
