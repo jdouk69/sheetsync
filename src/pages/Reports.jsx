@@ -8,14 +8,21 @@ import { Download, PieChart, BarChart3, FileText, Filter } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { useLanguage } from "../components/LanguageContext";
+import { useProject } from "../components/ProjectContext";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899', '#64748b'];
 
 export default function ReportsPage() {
     const { t } = useLanguage();
+    const { currentProjectId } = useProject();
     const { data: allExpenses = [] } = useQuery({
-        queryKey: ['expenses'],
-        queryFn: () => base44.entities.Expense.list('-date'),
+        queryKey: ['expenses', currentProjectId],
+        queryFn: async () => {
+            if (!currentProjectId) return [];
+            const expenses = await base44.entities.Expense.list('-date');
+            return expenses.filter(exp => exp.projectId === currentProjectId);
+        },
+        enabled: !!currentProjectId,
     });
 
     const [filters, setFilters] = useState({
