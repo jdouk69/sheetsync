@@ -26,19 +26,19 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
 
             <div className="flex gap-2 flex-1">
                 <div className="flex-1">
+                    <label className="block text-xs text-slate-600 mb-1">Start Date</label>
                     <Input
                         type="date"
                         value={filters.startDate || ''}
                         onChange={(e) => onFiltersChange({ ...filters, startDate: e.target.value })}
-                        placeholder="Start Date"
                     />
                 </div>
                 <div className="flex-1">
+                    <label className="block text-xs text-slate-600 mb-1">End Date</label>
                     <Input
                         type="date"
                         value={filters.endDate || ''}
                         onChange={(e) => onFiltersChange({ ...filters, endDate: e.target.value })}
-                        placeholder="End Date"
                     />
                 </div>
             </div>
