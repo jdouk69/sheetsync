@@ -92,13 +92,18 @@ export default function ProjectManagement({ onClose }) {
         }
     };
 
+    // Get the fresh project data from the projects array
+    const currentSharingProject = sharingProject 
+        ? projects.find(p => p.id === sharingProject.id) 
+        : null;
+
     return (
         <div className="space-y-4 pb-8">
-            {sharingProject ? (
+            {currentSharingProject ? (
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
-                            <span>Share "{sharingProject.name}"</span>
+                            <span>Share "{currentSharingProject.name}"</span>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -109,7 +114,7 @@ export default function ProjectManagement({ onClose }) {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <ProjectSharing project={sharingProject} />
+                        <ProjectSharing project={currentSharingProject} />
                     </CardContent>
                 </Card>
             ) : showForm ? (
