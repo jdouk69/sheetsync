@@ -122,7 +122,7 @@ export default function ExpensesPage() {
                     />
                 )}
 
-                <div className="grid gap-4">
+                <div className="grid gap-4 pb-20">
                     {filteredExpenses.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                             <p className="text-slate-500">No expenses found. Add your first expense to get started.</p>
