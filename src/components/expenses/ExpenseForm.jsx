@@ -106,13 +106,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Description *
+                            Vendor/Supplier
                         </label>
                         <Input
-                            required
-                            value={formData.description}
-                            onChange={(e) => setFormData({...formData, description: e.target.value})}
-                            placeholder="e.g., Cement bags"
+                            value={formData.vendor}
+                            onChange={(e) => setFormData({...formData, vendor: e.target.value})}
+                            placeholder="Vendor name"
                         />
                     </div>
                     <div>
@@ -156,12 +155,13 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Vendor/Supplier
+                        Description *
                     </label>
                     <Input
-                        value={formData.vendor}
-                        onChange={(e) => setFormData({...formData, vendor: e.target.value})}
-                        placeholder="Vendor name"
+                        required
+                        value={formData.description}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        placeholder="e.g., Cement bags"
                     />
                 </div>
 
