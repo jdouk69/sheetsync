@@ -12,6 +12,7 @@ export default function ProjectSharing({ project }) {
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("editor");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const queryClient = useQueryClient();
 
     const updateProjectMutation = useMutation({
@@ -23,6 +24,7 @@ export default function ProjectSharing({ project }) {
 
     const handleAddUser = async () => {
         setError("");
+        setSuccess("");
         
         if (!email || !email.includes("@")) {
             setError("Please enter a valid email address");
@@ -48,8 +50,10 @@ export default function ProjectSharing({ project }) {
                 id: project.id,
                 data: { sharedWith: updatedSharedWith }
             });
+            setSuccess(`✓ User added successfully as ${role}`);
             setEmail("");
             setRole("editor");
+            setTimeout(() => setSuccess(""), 3000);
         } catch (err) {
             setError(`Failed to add user: ${err.message}`);
         }
@@ -129,13 +133,17 @@ export default function ProjectSharing({ project }) {
                         disabled={updateProjectMutation.isPending}
                         className="bg-blue-600 hover:bg-blue-700"
                     >
-                        Add
+                        {updateProjectMutation.isPending ? "Adding..." : "Add"}
                     </Button>
                 </div>
             </div>
             
             {error && (
                 <p className="text-sm text-red-600">{error}</p>
+            )}
+            
+            {success && (
+                <p className="text-sm text-green-600">{success}</p>
             )}
 
             {sharedWith.length > 0 && (
