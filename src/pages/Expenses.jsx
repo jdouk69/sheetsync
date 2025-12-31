@@ -104,12 +104,14 @@ export default function ExpensesPage() {
 
     const availableCategories = [...new Set(expenses.map(exp => exp.category).filter(Boolean))];
 
-    const filteredExpenses = expenses.filter(expense => {
-        const categoryMatch = filters.category === "all" || expense.category === filters.category;
-        const startDateMatch = !filters.startDate || new Date(expense.date) >= new Date(filters.startDate);
-        const endDateMatch = !filters.endDate || new Date(expense.date) <= new Date(filters.endDate);
-        return categoryMatch && startDateMatch && endDateMatch;
-    });
+    const filteredExpenses = expenses
+        .filter(expense => {
+            const categoryMatch = filters.category === "all" || expense.category === filters.category;
+            const startDateMatch = !filters.startDate || new Date(expense.date) >= new Date(filters.startDate);
+            const endDateMatch = !filters.endDate || new Date(expense.date) <= new Date(filters.endDate);
+            return categoryMatch && startDateMatch && endDateMatch;
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     if (isLoading) {
         return (
