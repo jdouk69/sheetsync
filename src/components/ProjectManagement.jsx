@@ -93,7 +93,7 @@ export default function ProjectManagement({ onClose }) {
     };
 
     return (
-        <div className="space-y-6 max-h-[80vh] overflow-y-auto px-1">
+        <div className="space-y-4 px-1">
             {sharingProject ? (
                 <Card>
                     <CardHeader>
@@ -120,7 +120,7 @@ export default function ProjectManagement({ onClose }) {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-3">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
                                     {t('projectName')} *
@@ -141,7 +141,7 @@ export default function ProjectManagement({ onClose }) {
                                     value={formData.description}
                                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                                     placeholder={t('projectDescriptionPlaceholder')}
-                                    rows={3}
+                                    rows={2}
                                 />
                             </div>
 

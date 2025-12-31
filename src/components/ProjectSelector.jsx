@@ -33,11 +33,13 @@ export default function ProjectSelector() {
                         <span className="hidden md:inline">{t('addProject')}</span>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto my-auto">
-                    <DialogHeader>
+                <DialogContent className="max-w-4xl max-h-[70vh] overflow-hidden flex flex-col">
+                    <DialogHeader className="pb-3">
                         <DialogTitle>{t('projectManagement')}</DialogTitle>
                     </DialogHeader>
-                    <ProjectManagement onClose={() => setShowManagement(false)} />
+                    <div className="overflow-y-auto flex-1">
+                        <ProjectManagement onClose={() => setShowManagement(false)} />
+                    </div>
                 </DialogContent>
             </Dialog>
         );
@@ -64,11 +66,13 @@ export default function ProjectSelector() {
                         <Settings className="w-4 h-4" />
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto my-auto">
-                    <DialogHeader>
+                <DialogContent className="max-w-4xl max-h-[70vh] overflow-hidden flex flex-col">
+                    <DialogHeader className="pb-3">
                         <DialogTitle>{t('projectManagement')}</DialogTitle>
                     </DialogHeader>
-                    <ProjectManagement onClose={() => setShowManagement(false)} />
+                    <div className="overflow-y-auto flex-1">
+                        <ProjectManagement onClose={() => setShowManagement(false)} />
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>
