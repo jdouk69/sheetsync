@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Pencil, Trash2, FolderOpen, Users } from "lucide-react";
 import ProjectSharing from "./ProjectSharing";
+import InviteUser from "./InviteUser";
 
 export default function ProjectManagement({ onClose }) {
     const { projects, currentProjectId, switchProject } = useProject();
@@ -99,6 +100,8 @@ export default function ProjectManagement({ onClose }) {
 
     return (
         <div className="space-y-4 pb-8">
+            <InviteUser />
+
             {currentSharingProject ? (
                 <Card>
                     <CardHeader>
