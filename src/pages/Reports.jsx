@@ -15,6 +15,23 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899'
 export default function ReportsPage() {
     const { t } = useLanguage();
     const { currentProjectId, projects, isLoading: projectsLoading } = useProject();
+    const [user, setUser] = useState(null);
+    const [authLoading, setAuthLoading] = useState(true);
+
+    React.useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const currentUser = await base44.auth.me();
+                setUser(currentUser);
+            } catch (error) {
+                setUser(null);
+            } finally {
+                setAuthLoading(false);
+            }
+        };
+        checkAuth();
+    }, []);
+
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
