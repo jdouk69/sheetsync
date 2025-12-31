@@ -77,7 +77,10 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => setShowPhotos(true)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowPhotos(true);
+                                        }}
                                         className="text-xs"
                                     >
                                         <ImageIcon className="w-3 h-3 mr-1" />
