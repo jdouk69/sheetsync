@@ -4,23 +4,25 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "../LanguageContext";
 
 export default function CategoryCombobox({ value, onChange, existingCategories }) {
+    const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
     const suggestedCategories = [
-        "Υλικά",
-        "Εργασία", 
-        "Εξοπλισμός",
-        "Άδειες",
-        "Επαγγελματικές Υπηρεσίες",
-        "Υπηρεσίες Κοινής Ωφέλειας",
-        "Ηλεκτρολόγος",
-        "Υδραυλικός",
-        "Ξυλουργός",
-        "Σκυρόδεμα",
-        "Άλλο"
+        t('materials'),
+        t('labor'),
+        t('equipment'),
+        t('permits'),
+        t('professionalServices'),
+        t('utilities'),
+        t('electrician'),
+        t('plumber'),
+        t('cabinetmaker'),
+        t('concrete'),
+        t('other')
     ];
 
     const allCategories = [...new Set([...existingCategories, ...suggestedCategories])].sort();
@@ -49,21 +51,21 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                     aria-expanded={open}
                     className="w-full justify-between"
                 >
-                    {value || "Επιλέξτε ή πληκτρολογήστε κατηγορία..."}
+                    {value || t('selectCategory')}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
                 <Command>
                     <CommandInput 
-                        placeholder="Αναζήτηση ή πληκτρολόγηση νέας κατηγορίας..." 
+                        placeholder={t('searchCategory')}
                         value={search}
                         onValueChange={setSearch}
                         onKeyDown={handleKeyDown}
                     />
                     <CommandEmpty>
                         <div className="p-2 text-sm">
-                            Πατήστε <kbd className="px-1 py-0.5 bg-slate-100 rounded">Enter</kbd> για να προσθέσετε "{search}"
+                            {t('pressEnter', { key: 'Enter', value: search })}
                         </div>
                     </CommandEmpty>
                     <CommandGroup className="max-h-64 overflow-auto">

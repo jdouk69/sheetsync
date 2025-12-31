@@ -2,8 +2,10 @@ import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
+import { useLanguage } from "../LanguageContext";
 
 export default function ExpenseFilters({ filters, onFiltersChange, availableCategories = [] }) {
+    const { t } = useLanguage();
     return (
         <div className="flex flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2 flex-1">
@@ -13,20 +15,20 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                     onValueChange={(value) => onFiltersChange({ ...filters, category: value })}
                 >
                     <SelectTrigger className="w-full md:w-48">
-                        <SelectValue placeholder="Όλες οι Κατηγορίες" />
+                        <SelectValue placeholder={t('allCategories')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">Όλες οι Κατηγορίες</SelectItem>
+                        <SelectItem value="all">{t('allCategories')}</SelectItem>
                         {availableCategories.sort().map(category => (
                             <SelectItem key={category} value={category}>{category}</SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-            </div>
+                </div>
 
-            <div className="flex gap-2 flex-1">
+                <div className="flex gap-2 flex-1">
                 <div className="flex-1">
-                    <label className="block text-xs text-slate-600 mb-1">Ημερομηνία Έναρξης</label>
+                    <label className="block text-xs text-slate-600 mb-1">{t('startDate')}</label>
                     <Input
                         type="date"
                         value={filters.startDate || ''}
@@ -34,14 +36,14 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                     />
                 </div>
                 <div className="flex-1">
-                    <label className="block text-xs text-slate-600 mb-1">Ημερομηνία Λήξης</label>
+                    <label className="block text-xs text-slate-600 mb-1">{t('endDate')}</label>
                     <Input
                         type="date"
                         value={filters.endDate || ''}
                         onChange={(e) => onFiltersChange({ ...filters, endDate: e.target.value })}
                     />
                 </div>
-            </div>
+                </div>
         </div>
     );
 }

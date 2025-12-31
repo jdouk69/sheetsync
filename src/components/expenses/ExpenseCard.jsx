@@ -9,6 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { useLanguage } from "../LanguageContext";
 
 const categoryColors = {
     "Materials": "bg-blue-100 text-blue-800",
@@ -21,6 +22,7 @@ const categoryColors = {
 };
 
 export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onToggleSelect }) {
+    const { t } = useLanguage();
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
 
@@ -78,7 +80,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         className="text-xs"
                                     >
                                         <ImageIcon className="w-3 h-3 mr-1" />
-                                        Προβολή Φωτογραφιών ({expense.photos.length})
+                                        {t('viewPhotos')} ({expense.photos.length})
                                     </Button>
                                 </div>
                             )}
@@ -92,7 +94,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 className="flex-1 md:flex-none"
                             >
                                 <Pencil className="w-4 h-4 md:mr-0" />
-                                <span className="md:hidden ml-2">Επεξεργασία</span>
+                                <span className="md:hidden ml-2">{t('edit')}</span>
                             </Button>
                             <Button
                                 variant="outline"
@@ -101,7 +103,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 className="flex-1 md:flex-none text-red-600 hover:text-red-700"
                             >
                                 <Trash2 className="w-4 h-4 md:mr-0" />
-                                <span className="md:hidden ml-2">Διαγραφή</span>
+                                <span className="md:hidden ml-2">{t('delete')}</span>
                             </Button>
                         </div>
                         </div>
@@ -112,7 +114,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
             <Dialog open={showPhotos} onOpenChange={setShowPhotos}>
                 <DialogContent className="max-w-4xl">
                     <DialogHeader>
-                        <DialogTitle>Φωτογραφίες Εξόδου</DialogTitle>
+                        <DialogTitle>{t('expensePhotos')}</DialogTitle>
                     </DialogHeader>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-auto">
                         {expense.photos?.map((photo, index) => (

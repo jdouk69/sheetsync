@@ -11,8 +11,10 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useLanguage } from "../LanguageContext";
 
 export default function ImportExpenses({ onImportComplete }) {
+    const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState(null);
     const [importing, setImporting] = useState(false);
@@ -130,14 +132,14 @@ export default function ImportExpenses({ onImportComplete }) {
             <DialogTrigger asChild>
                 <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
                     <Upload className="w-4 h-4 mr-2" />
-                    Εισαγωγή CSV
+                    {t('importCsv')}
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Εισαγωγή Εξόδων από CSV</DialogTitle>
+                    <DialogTitle>{t('importExpensesTitle')}</DialogTitle>
                     <DialogDescription>
-                        Ανεβάστε ένα αρχείο CSV με τα δεδομένα εξόδων σας. Απαιτούμενες στήλες: περιγραφή, ποσό, κατηγορία, ημερομηνία
+                        {t('importDescription')}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -148,7 +150,7 @@ export default function ImportExpenses({ onImportComplete }) {
                         className="w-full"
                     >
                         <Download className="w-4 h-4 mr-2" />
-                        Λήψη Προτύπου CSV
+                        {t('downloadTemplate')}
                     </Button>
 
                     <div className="border-2 border-dashed border-slate-300 rounded-lg p-6">
@@ -161,7 +163,7 @@ export default function ImportExpenses({ onImportComplete }) {
                                     className="hidden"
                                 />
                                 <FileText className="w-12 h-12 text-slate-400 mb-2" />
-                                <span className="text-sm text-slate-600">Κάντε κλικ για επιλογή αρχείου CSV</span>
+                                <span className="text-sm text-slate-600">{t('clickToSelect')}</span>
                             </label>
                         ) : (
                             <div className="flex items-center justify-between">
@@ -182,8 +184,8 @@ export default function ImportExpenses({ onImportComplete }) {
 
                     {showMapping && csvHeaders.length > 0 && (
                         <div className="border rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto">
-                            <h3 className="font-medium text-sm">Αντιστοίχιση Στηλών CSV σε Πεδία</h3>
-                            <p className="text-xs text-slate-600">Αντιστοιχίστε τις στήλες του CSV με τα πεδία εξόδων. Απαιτούμενα: περιγραφή, ποσό, κατηγορία, ημερομηνία</p>
+                            <h3 className="font-medium text-sm">{t('mapColumns')}</h3>
+                            <p className="text-xs text-slate-600">{t('mapDescription')}</p>
                             {csvHeaders.map((header) => (
                                 <div key={header} className="flex items-center gap-3">
                                     <div className="flex-1">
@@ -200,16 +202,16 @@ export default function ImportExpenses({ onImportComplete }) {
                                             }}
                                         >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Επιλογή πεδίου" />
+                                                <SelectValue placeholder={t('selectField')} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="skip">Παράλειψη στήλης</SelectItem>
-                                                <SelectItem value="description">Περιγραφή *</SelectItem>
-                                                <SelectItem value="amount">Ποσό *</SelectItem>
-                                                <SelectItem value="category">Κατηγορία *</SelectItem>
-                                                <SelectItem value="date">Ημερομηνία *</SelectItem>
-                                                <SelectItem value="vendor">Προμηθευτής</SelectItem>
-                                                <SelectItem value="notes">Σημειώσεις</SelectItem>
+                                                <SelectItem value="skip">{t('skipColumn')}</SelectItem>
+                                                <SelectItem value="description">{t('description')} *</SelectItem>
+                                                <SelectItem value="amount">{t('amount')} *</SelectItem>
+                                                <SelectItem value="category">{t('category')} *</SelectItem>
+                                                <SelectItem value="date">{t('date')} *</SelectItem>
+                                                <SelectItem value="vendor">{t('vendor')}</SelectItem>
+                                                <SelectItem value="notes">{t('notes')}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -222,15 +224,15 @@ export default function ImportExpenses({ onImportComplete }) {
                         <div className={`p-4 rounded-lg ${result.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
                             {result.success ? (
                                 <div className="text-green-800">
-                                    <p className="font-medium">✓ Επιτυχής εισαγωγή!</p>
-                                    <p className="text-sm">Εισήχθησαν {result.imported} έξοδα</p>
+                                    <p className="font-medium">{t('importSuccess')}</p>
+                                    <p className="text-sm">{t('imported', { count: result.imported })}</p>
                                     {result.errors && (
-                                        <p className="text-sm mt-1">Σημείωση: {result.errors.length} σειρές είχαν σφάλματα</p>
+                                        <p className="text-sm mt-1">{t('errorsNote', { count: result.errors.length })}</p>
                                     )}
                                 </div>
                             ) : (
                                 <div className="text-red-800">
-                                    <p className="font-medium">✗ Αποτυχία εισαγωγής</p>
+                                    <p className="font-medium">{t('importFailed')}</p>
                                     <p className="text-sm">{result.error}</p>
                                     {result.details && (
                                         <ul className="text-xs mt-2 list-disc list-inside">
@@ -252,12 +254,12 @@ export default function ImportExpenses({ onImportComplete }) {
                         {importing ? (
                             <>
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                Εισαγωγή...
+                                {t('importing')}
                             </>
                         ) : (
                             <>
                                 <Upload className="w-4 h-4 mr-2" />
-                                Εισαγωγή Εξόδων
+                                {t('importExpenses')}
                             </>
                         )}
                     </Button>
