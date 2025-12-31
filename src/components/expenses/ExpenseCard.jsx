@@ -49,7 +49,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         {expense.description}
                                     </h3>
                                     <div className="flex flex-wrap gap-2 mt-2">
-                                        <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[expense.category]}`}>
+                                        <span className={`text-xs px-2 py-1 rounded-full font-semibold ${categoryColors[expense.category]}`}>
                                             {expense.category}
                                         </span>
                                         <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700 flex items-center gap-1">
