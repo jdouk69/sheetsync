@@ -70,6 +70,7 @@ export default function ExpensesPage() {
     const handleEdit = (expense) => {
         setEditingExpense(expense);
         setShowForm(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleDelete = (id) => {
