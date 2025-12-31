@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ export default function ExpensesPage() {
     const [editingExpense, setEditingExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
     const [selectedIds, setSelectedIds] = useState([]);
+    const formRef = useRef(null);
     
     const queryClient = useQueryClient();
 
@@ -70,7 +71,9 @@ export default function ExpensesPage() {
     const handleEdit = (expense) => {
         setEditingExpense(expense);
         setShowForm(true);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     };
 
     const handleDelete = (id) => {
@@ -180,8 +183,9 @@ export default function ExpensesPage() {
                             setShowForm(false);
                             setEditingExpense(null);
                         }}
-                    />
-                )}
+                        />
+                        )}
+                        </div>
 
                 <div className="grid gap-4 pb-20">
                     {filteredExpenses.length === 0 ? (
