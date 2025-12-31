@@ -241,7 +241,7 @@ export default function ProjectManagement({ onClose }) {
                                             {project.description && (
                                                 <p className="text-sm text-slate-600 mb-2">{project.description}</p>
                                             )}
-                                            <div className="flex flex-wrap gap-2">
+                                            <div className="flex flex-wrap gap-2 mb-3">
                                                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                                                     project.status === 'active' ? 'bg-green-100 text-green-800' :
                                                     project.status === 'completed' ? 'bg-slate-100 text-slate-800' :
@@ -255,8 +255,25 @@ export default function ProjectManagement({ onClose }) {
                                                     </span>
                                                 )}
                                             </div>
+                                            {project.sharedWith && project.sharedWith.length > 0 && (
+                                                <div className="mt-3 pt-3 border-t border-slate-200">
+                                                    <p className="text-xs font-medium text-slate-500 mb-2">Shared with:</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {project.sharedWith.map((share) => (
+                                                            <div 
+                                                                key={share.email}
+                                                                className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700"
+                                                            >
+                                                                <span>{share.email}</span>
+                                                                <span className="text-blue-500">•</span>
+                                                                <span className="font-medium capitalize">{share.role}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col gap-2">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
