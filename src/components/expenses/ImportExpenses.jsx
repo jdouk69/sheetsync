@@ -28,7 +28,10 @@ export default function ImportExpenses({ onImportComplete }) {
     };
 
     const handleImport = async () => {
-        if (!file) return;
+        if (!file) {
+            setResult({ success: false, error: 'No file selected' });
+            return;
+        }
 
         setImporting(true);
         setResult(null);
@@ -37,11 +40,23 @@ export default function ImportExpenses({ onImportComplete }) {
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await base44.functions.invoke('importExpenses', formData);
+            const response = await fetch(`${base44.functions.getBaseUrl()}/importExpenses`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${await base44.auth.getToken()}`
+                },
+                body: formData
+            });
+
+            const data = await response.json();
             
-            setResult(response.data);
+            if (!response.ok) {
+                throw new Error(data.error || 'Import failed');
+            }
+
+            setResult(data);
             
-            if (response.data.success) {
+            if (data.success) {
                 setTimeout(() => {
                     setOpen(false);
                     setFile(null);
@@ -52,7 +67,7 @@ export default function ImportExpenses({ onImportComplete }) {
         } catch (error) {
             setResult({ 
                 success: false, 
-                error: error.response?.data?.error || error.message 
+                error: error.message
             });
         } finally {
             setImporting(false);
