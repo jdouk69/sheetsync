@@ -7,6 +7,7 @@ import ExpenseForm from "../components/expenses/ExpenseForm";
 import ExpenseCard from "../components/expenses/ExpenseCard";
 import ExpenseFilters from "../components/expenses/ExpenseFilters";
 import ExpenseSummary from "../components/expenses/ExpenseSummary";
+import ImportExpenses from "../components/expenses/ImportExpenses";
 
 export default function ExpensesPage() {
     const [showForm, setShowForm] = useState(false);
@@ -89,16 +90,19 @@ export default function ExpensesPage() {
                         <h1 className="text-3xl font-bold text-slate-900">Construction Expenses</h1>
                         <p className="text-slate-600 mt-1">Track your Greece house construction costs</p>
                     </div>
-                    <Button
-                        onClick={() => {
-                            setEditingExpense(null);
-                            setShowForm(true);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700"
-                    >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Expense
-                    </Button>
+                    <div className="flex gap-2">
+                        <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />
+                        <Button
+                            onClick={() => {
+                                setEditingExpense(null);
+                                setShowForm(true);
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700"
+                        >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Expense
+                        </Button>
+                    </div>
                 </div>
 
                 <ExpenseSummary expenses={filteredExpenses} />
