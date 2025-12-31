@@ -41,11 +41,13 @@ export default function ExpensesPage() {
     const { data: expenses = [], isLoading } = useQuery({
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
-            if (!currentProjectId) return [];
-            const allExpenses = await base44.entities.Expense.list('-date');
-            return allExpenses.filter(exp => exp.projectId === currentProjectId);
+            if (!currentProjectId || !user) return [];
+            return base44.entities.Expense.filter({ 
+                projectId: currentProjectId,
+                created_by: user.email 
+            }, '-date');
         },
-        enabled: !!currentProjectId,
+        enabled: !!currentProjectId && !!user,
     });
 
     const createMutation = useMutation({

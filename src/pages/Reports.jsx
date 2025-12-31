@@ -35,11 +35,13 @@ export default function ReportsPage() {
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
-            if (!currentProjectId) return [];
-            const expenses = await base44.entities.Expense.list('-date');
-            return expenses.filter(exp => exp.projectId === currentProjectId);
+            if (!currentProjectId || !user) return [];
+            return base44.entities.Expense.filter({ 
+                projectId: currentProjectId,
+                created_by: user.email 
+            }, '-date');
         },
-        enabled: !!currentProjectId,
+        enabled: !!currentProjectId && !!user,
     });
 
     const [filters, setFilters] = useState({

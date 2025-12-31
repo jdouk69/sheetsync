@@ -9,7 +9,11 @@ export function ProjectProvider({ children }) {
 
     const { data: projects = [], isLoading } = useQuery({
         queryKey: ['projects'],
-        queryFn: () => base44.entities.Project.list('-created_date'),
+        queryFn: async () => {
+            const user = await base44.auth.me();
+            if (!user) return [];
+            return base44.entities.Project.filter({ created_by: user.email }, '-created_date');
+        },
     });
 
     // Set the first project as current when projects load
