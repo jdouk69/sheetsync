@@ -171,6 +171,9 @@ export default function ExpensesPage() {
                             onClick={() => {
                                 setEditingExpense(null);
                                 setShowForm(true);
+                                setTimeout(() => {
+                                    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }, 100);
                             }}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
