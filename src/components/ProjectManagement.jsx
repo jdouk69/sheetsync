@@ -1,0 +1,260 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useProject } from "./ProjectContext";
+import { useLanguage } from "./LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, Pencil, Trash2, FolderOpen } from "lucide-react";
+
+export default function ProjectManagement({ onClose }) {
+    const { projects, currentProjectId, switchProject } = useProject();
+    const { t } = useLanguage();
+    const [editingProject, setEditingProject] = useState(null);
+    const [showForm, setShowForm] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        description: "",
+        status: "active",
+        startDate: "",
+        endDate: ""
+    });
+
+    const queryClient = useQueryClient();
+
+    const createMutation = useMutation({
+        mutationFn: (data) => base44.entities.Project.create(data),
+        onSuccess: (newProject) => {
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
+            switchProject(newProject.id);
+            setShowForm(false);
+            resetForm();
+        },
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: ({ id, data }) => base44.entities.Project.update(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
+            setShowForm(false);
+            setEditingProject(null);
+            resetForm();
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (id) => base44.entities.Project.delete(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+        },
+    });
+
+    const resetForm = () => {
+        setFormData({
+            name: "",
+            description: "",
+            status: "active",
+            startDate: "",
+            endDate: ""
+        });
+    };
+
+    const handleEdit = (project) => {
+        setEditingProject(project);
+        setFormData({
+            name: project.name || "",
+            description: project.description || "",
+            status: project.status || "active",
+            startDate: project.startDate || "",
+            endDate: project.endDate || ""
+        });
+        setShowForm(true);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (editingProject) {
+            updateMutation.mutate({ id: editingProject.id, data: formData });
+        } else {
+            createMutation.mutate(formData);
+        }
+    };
+
+    const handleDelete = (id) => {
+        if (confirm(t('confirmDeleteProject'))) {
+            deleteMutation.mutate(id);
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            {showForm ? (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
+                            {editingProject ? t('editProject') : t('addNewProject')}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    {t('projectName')} *
+                                </label>
+                                <Input
+                                    required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    placeholder={t('projectNamePlaceholder')}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    {t('description')}
+                                </label>
+                                <Textarea
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                    placeholder={t('projectDescriptionPlaceholder')}
+                                    rows={3}
+                                />
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        {t('status')}
+                                    </label>
+                                    <Select
+                                        value={formData.status}
+                                        onValueChange={(value) => setFormData({...formData, status: value})}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="active">{t('active')}</SelectItem>
+                                            <SelectItem value="completed">{t('completed')}</SelectItem>
+                                            <SelectItem value="on_hold">{t('onHold')}</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        {t('startDate')}
+                                    </label>
+                                    <Input
+                                        type="date"
+                                        value={formData.startDate}
+                                        onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        {t('endDate')}
+                                    </label>
+                                    <Input
+                                        type="date"
+                                        value={formData.endDate}
+                                        onChange={(e) => setFormData({...formData, endDate: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                        setShowForm(false);
+                                        setEditingProject(null);
+                                        resetForm();
+                                    }}
+                                    className="flex-1"
+                                >
+                                    {t('cancel')}
+                                </Button>
+                                <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
+                                    {editingProject ? t('update') : t('create')}
+                                </Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            ) : (
+                <>
+                    <Button
+                        onClick={() => setShowForm(true)}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t('addNewProject')}
+                    </Button>
+
+                    <div className="grid gap-4">
+                        {projects.map((project) => (
+                            <Card key={project.id} className={currentProjectId === project.id ? 'ring-2 ring-blue-500' : ''}>
+                                <CardContent className="p-4">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <FolderOpen className="w-5 h-5 text-blue-600" />
+                                                <h3 className="text-lg font-semibold">{project.name}</h3>
+                                                {currentProjectId === project.id && (
+                                                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+                                                        {t('current')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {project.description && (
+                                                <p className="text-sm text-slate-600 mb-2">{project.description}</p>
+                                            )}
+                                            <div className="flex flex-wrap gap-2">
+                                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                                    project.status === 'active' ? 'bg-green-100 text-green-800' :
+                                                    project.status === 'completed' ? 'bg-slate-100 text-slate-800' :
+                                                    'bg-yellow-100 text-yellow-800'
+                                                }`}>
+                                                    {t(project.status)}
+                                                </span>
+                                                {project.startDate && (
+                                                    <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700">
+                                                        {new Date(project.startDate).toLocaleDateString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleEdit(project)}
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleDelete(project.id)}
+                                                className="text-red-600 hover:text-red-700"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
