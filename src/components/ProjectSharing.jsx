@@ -3,12 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, UserPlus, Mail } from "lucide-react";
+import { X, UserPlus, Mail, Shield, Edit, Eye } from "lucide-react";
 import { useLanguage } from "./LanguageContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ProjectSharing({ project }) {
     const { t } = useLanguage();
     const [email, setEmail] = useState("");
+    const [role, setRole] = useState("editor");
     const [error, setError] = useState("");
     const queryClient = useQueryClient();
 
@@ -27,9 +29,9 @@ export default function ProjectSharing({ project }) {
             return;
         }
 
-        const sharedUsers = project.sharedWithUsers || [];
+        const sharedWith = project.sharedWith || [];
         
-        if (sharedUsers.includes(email)) {
+        if (sharedWith.find(s => s.email === email)) {
             setError("This user already has access");
             return;
         }
@@ -39,27 +41,49 @@ export default function ProjectSharing({ project }) {
             return;
         }
 
-        const updatedSharedUsers = [...sharedUsers, email];
+        const updatedSharedWith = [...sharedWith, { email, role }];
         
         await updateProjectMutation.mutateAsync({
             id: project.id,
-            data: { sharedWithUsers: updatedSharedUsers }
+            data: { sharedWith: updatedSharedWith }
         });
 
         setEmail("");
+        setRole("editor");
     };
 
     const handleRemoveUser = async (userEmail) => {
-        const sharedUsers = project.sharedWithUsers || [];
-        const updatedSharedUsers = sharedUsers.filter(e => e !== userEmail);
+        const sharedWith = project.sharedWith || [];
+        const updatedSharedWith = sharedWith.filter(s => s.email !== userEmail);
         
         await updateProjectMutation.mutateAsync({
             id: project.id,
-            data: { sharedWithUsers: updatedSharedUsers }
+            data: { sharedWith: updatedSharedWith }
         });
     };
 
-    const sharedUsers = project.sharedWithUsers || [];
+    const handleChangeRole = async (userEmail, newRole) => {
+        const sharedWith = project.sharedWith || [];
+        const updatedSharedWith = sharedWith.map(s => 
+            s.email === userEmail ? { ...s, role: newRole } : s
+        );
+        
+        await updateProjectMutation.mutateAsync({
+            id: project.id,
+            data: { sharedWith: updatedSharedWith }
+        });
+    };
+
+    const sharedWith = project.sharedWith || [];
+    
+    const getRoleIcon = (role) => {
+        switch(role) {
+            case 'admin': return <Shield className="w-4 h-4 text-red-600" />;
+            case 'editor': return <Edit className="w-4 h-4 text-blue-600" />;
+            case 'viewer': return <Eye className="w-4 h-4 text-slate-600" />;
+            default: return null;
+        }
+    };
 
     return (
         <div className="space-y-4">
@@ -68,58 +92,93 @@ export default function ProjectSharing({ project }) {
                 <h3 className="font-semibold text-lg">Share Project</h3>
             </div>
             
-            <div className="flex gap-2">
-                <div className="flex-1">
-                    <Input
-                        type="email"
-                        placeholder="Enter user email to share"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddUser()}
-                    />
+            <div className="space-y-2">
+                <div className="flex gap-2">
+                    <div className="flex-1">
+                        <Input
+                            type="email"
+                            placeholder="Enter user email to share"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleAddUser()}
+                        />
+                    </div>
+                    <Select value={role} onValueChange={setRole}>
+                        <SelectTrigger className="w-32">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="editor">Editor</SelectItem>
+                            <SelectItem value="viewer">Viewer</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button 
+                        onClick={handleAddUser}
+                        disabled={updateProjectMutation.isPending}
+                        className="bg-blue-600 hover:bg-blue-700"
+                    >
+                        Add
+                    </Button>
                 </div>
-                <Button 
-                    onClick={handleAddUser}
-                    disabled={updateProjectMutation.isPending}
-                    className="bg-blue-600 hover:bg-blue-700"
-                >
-                    Add
-                </Button>
             </div>
             
             {error && (
                 <p className="text-sm text-red-600">{error}</p>
             )}
 
-            {sharedUsers.length > 0 && (
+            {sharedWith.length > 0 && (
                 <div className="space-y-2">
                     <p className="text-sm font-medium text-slate-700">Shared with:</p>
-                    {sharedUsers.map((userEmail) => (
+                    {sharedWith.map((share) => (
                         <div
-                            key={userEmail}
+                            key={share.email}
                             className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2"
                         >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3 flex-1">
                                 <Mail className="w-4 h-4 text-slate-500" />
-                                <span className="text-sm text-slate-700">{userEmail}</span>
+                                <span className="text-sm text-slate-700">{share.email}</span>
+                                <div className="flex items-center gap-1">
+                                    {getRoleIcon(share.role)}
+                                </div>
                             </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleRemoveUser(userEmail)}
-                                disabled={updateProjectMutation.isPending}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                                <X className="w-4 h-4" />
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                <Select 
+                                    value={share.role} 
+                                    onValueChange={(newRole) => handleChangeRole(share.email, newRole)}
+                                    disabled={updateProjectMutation.isPending}
+                                >
+                                    <SelectTrigger className="w-28 h-8 text-xs">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="admin">Admin</SelectItem>
+                                        <SelectItem value="editor">Editor</SelectItem>
+                                        <SelectItem value="viewer">Viewer</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleRemoveUser(share.email)}
+                                    disabled={updateProjectMutation.isPending}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
+                                >
+                                    <X className="w-4 h-4" />
+                                </Button>
+                            </div>
                         </div>
                     ))}
                 </div>
             )}
 
             <div className="text-xs text-slate-500 bg-slate-50 rounded p-3">
-                <p className="font-medium mb-1">Note:</p>
-                <p>Users you share this project with will be able to view and add expenses to it. Make sure they have an account in the app first.</p>
+                <p className="font-medium mb-2">Roles & Permissions:</p>
+                <ul className="space-y-1">
+                    <li><strong>Admin:</strong> Can view, add, edit, and delete all expenses and project details</li>
+                    <li><strong>Editor:</strong> Can view, add, and edit expenses (cannot delete)</li>
+                    <li><strong>Viewer:</strong> Can only view expenses (read-only access)</li>
+                </ul>
             </div>
         </div>
     );
