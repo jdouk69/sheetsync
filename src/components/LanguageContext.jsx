@@ -244,7 +244,7 @@ const translations = {
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
-    const [language, setLanguage] = useState('el'); // Default to Greek
+    const [language, setLanguage] = useState('en'); // Default to English
 
     const t = (key, params = {}) => {
         let text = translations[language][key] || key;
