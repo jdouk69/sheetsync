@@ -146,50 +146,72 @@ export default function ProjectSharing({ project }) {
                 <p className="text-sm text-green-600">{success}</p>
             )}
 
-            {sharedWith.length > 0 && (
-                <div className="space-y-2">
-                    <p className="text-sm font-medium text-slate-700">Shared with:</p>
-                    {sharedWith.map((share) => (
-                        <div
-                            key={share.email}
-                            className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2"
-                        >
-                            <div className="flex items-center gap-3 flex-1">
-                                <Mail className="w-4 h-4 text-slate-500" />
-                                <span className="text-sm text-slate-700">{share.email}</span>
-                                <div className="flex items-center gap-1">
-                                    {getRoleIcon(share.role)}
+            <div className="space-y-2">
+                <p className="text-sm font-medium text-slate-700 mb-3">Project Access:</p>
+                
+                {/* Project Owner */}
+                <div className="flex items-center justify-between bg-blue-50 rounded-lg px-4 py-3 border border-blue-200">
+                    <div className="flex items-center gap-3 flex-1">
+                        <Mail className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-slate-900">{project.created_by}</span>
+                        <div className="flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-blue-600" />
+                            <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-1 rounded">Owner</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Shared Users */}
+                {sharedWith.length > 0 && (
+                    <div className="space-y-2 pt-2">
+                        {sharedWith.map((share) => (
+                            <div
+                                key={share.email}
+                                className="flex items-center justify-between bg-slate-50 rounded-lg px-4 py-3 border border-slate-200"
+                            >
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <Mail className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                                    <span className="text-sm text-slate-700 truncate">{share.email}</span>
+                                    <div className="flex items-center gap-1 flex-shrink-0">
+                                        {getRoleIcon(share.role)}
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                                    <Select 
+                                        value={share.role} 
+                                        onValueChange={(newRole) => handleChangeRole(share.email, newRole)}
+                                        disabled={updateProjectMutation.isPending}
+                                    >
+                                        <SelectTrigger className="w-28 h-9 text-xs">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="admin">Admin</SelectItem>
+                                            <SelectItem value="editor">Editor</SelectItem>
+                                            <SelectItem value="viewer">Viewer</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleRemoveUser(share.email)}
+                                        disabled={updateProjectMutation.isPending}
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-9 w-9 p-0"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </Button>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Select 
-                                    value={share.role} 
-                                    onValueChange={(newRole) => handleChangeRole(share.email, newRole)}
-                                    disabled={updateProjectMutation.isPending}
-                                >
-                                    <SelectTrigger className="w-28 h-8 text-xs">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="admin">Admin</SelectItem>
-                                        <SelectItem value="editor">Editor</SelectItem>
-                                        <SelectItem value="viewer">Viewer</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleRemoveUser(share.email)}
-                                    disabled={updateProjectMutation.isPending}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
-                                >
-                                    <X className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
+                
+                {sharedWith.length === 0 && (
+                    <p className="text-sm text-slate-500 text-center py-4 bg-slate-50 rounded-lg border border-slate-200">
+                        No users added yet. Add someone above to share this project.
+                    </p>
+                )}
+            </div>
 
             <div className="text-xs text-slate-500 bg-slate-50 rounded p-3">
                 <p className="font-medium mb-2">Roles & Permissions:</p>
