@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, PieChart, BarChart3, FileText, Filter, Search } from "lucide-react";
+import { Download, PieChart, BarChart3, FileText, Filter, Search, Calendar } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { useLanguage } from "../components/LanguageContext";
@@ -408,19 +408,27 @@ export default function ReportsPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">{t('startDate')}</label>
-                            <Input 
-                                type="date" 
-                                value={filters.startDate}
-                                onChange={(e) => setFilters({...filters, startDate: e.target.value})}
-                            />
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                <Input 
+                                    type="date" 
+                                    value={filters.startDate}
+                                    onChange={(e) => setFilters({...filters, startDate: e.target.value})}
+                                    className="pl-10"
+                                />
+                            </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">{t('endDate')}</label>
-                            <Input 
-                                type="date" 
-                                value={filters.endDate}
-                                onChange={(e) => setFilters({...filters, endDate: e.target.value})}
-                            />
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                <Input 
+                                    type="date" 
+                                    value={filters.endDate}
+                                    onChange={(e) => setFilters({...filters, endDate: e.target.value})}
+                                    className="pl-10"
+                                />
+                            </div>
                         </div>
                     </div>
                     {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate || filters.search) && (
