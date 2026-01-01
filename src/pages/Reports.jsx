@@ -261,40 +261,17 @@ export default function ReportsPage() {
                             <td class="amount-cell">€${exp.amount.toFixed(2)}</td>
                         </tr>
                     `).join('')}
-                </tbody>
-            </table>
-        `;
-        
-        document.body.appendChild(reportContent);
-        
-        const canvas = await html2canvas(reportContent, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true
-        });
-        
-        document.body.removeChild(reportContent);
-        
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210;
-        const pageHeight = 297;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-        
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-        
-        while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-        }
-        
-        pdf.save('construction-expenses-report.pdf');
-    };
+                    </tbody>
+                    </table>
+                    </div>
+                    </body>
+                    </html>
+                    `;
+
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(htmlContent);
+                    newWindow.document.close();
+                    };
 
     const handleExportCSV = () => {
         const headers = ['Date', 'Description', 'Amount (€)', 'Category', 'Vendor', 'Notes'];
