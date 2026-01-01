@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon } from "lucide-react";
+import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, UserCircle } from "lucide-react";
 import { format } from "date-fns";
 import {
     Dialog,
@@ -12,6 +12,8 @@ import {
 import { useLanguage } from "../LanguageContext";
 import { useProject } from "../ProjectContext";
 import { useProjectPermissions } from "../useProjectPermissions";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 const categoryColors = {
     "Materials": "bg-blue-100 text-blue-800",
@@ -29,6 +31,17 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+    const { data: creatorUser } = useQuery({
+        queryKey: ['user', expense.created_by],
+        queryFn: async () => {
+            if (!expense.created_by) return null;
+            const users = await base44.entities.User.filter({ email: expense.created_by });
+            return users.length > 0 ? users[0] : null;
+        },
+        enabled: !!expense.created_by,
+        staleTime: Infinity,
+    });
 
     return (
         <>
@@ -66,6 +79,12 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             {format(new Date(expense.date), 'MMM d, yyyy')}
                                         </span>
                                     </div>
+                                    {creatorUser && (
+                                        <div className="flex items-center gap-1 text-xs text-slate-500 mt-2">
+                                            <UserCircle className="w-3 h-3" />
+                                            <span>Added by {creatorUser.full_name || creatorUser.email}</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="text-right">
                                     <div className="text-2xl font-bold text-slate-900">
