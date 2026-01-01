@@ -64,6 +64,7 @@ export default function ReportsPage() {
             const searchMatch = !filters.search || 
                 exp.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
                 exp.vendor?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                exp.category?.toLowerCase().includes(filters.search.toLowerCase()) ||
                 exp.notes?.toLowerCase().includes(filters.search.toLowerCase());
             
             return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch;
