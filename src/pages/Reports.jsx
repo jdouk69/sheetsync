@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -6,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, PieChart, BarChart3, FileText, Filter, Search, Calendar } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { format } from "date-fns";
+import { format, endOfDay } from "date-fns";
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 
@@ -59,7 +60,7 @@ export default function ReportsPage() {
             
             const expDate = new Date(exp.date);
             const startMatch = !filters.startDate || expDate >= new Date(filters.startDate);
-            const endMatch = !filters.endDate || expDate <= new Date(filters.endDate);
+            const endMatch = !filters.endDate || expDate <= endOfDay(new Date(filters.endDate));
             
             const searchMatch = !filters.search || 
                 exp.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
