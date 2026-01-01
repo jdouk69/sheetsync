@@ -101,107 +101,118 @@ export default function ReportsPage() {
     }, []).sort((a, b) => new Date(a.name) - new Date(b.name));
 
     const handleExportPDF = async () => {
-        const jsPDF = (await import('jspdf')).default;
-        const html2canvas = (await import('html2canvas')).default;
-        
-        const reportContent = document.createElement('div');
-        reportContent.style.width = '800px';
-        reportContent.style.padding = '40px';
-        reportContent.style.backgroundColor = 'white';
-        reportContent.style.fontFamily = 'Arial, sans-serif';
-        
         const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
         
-        reportContent.innerHTML = `
-            <style>
-                .report-header { 
-                    border-bottom: 3px solid #3b82f6; 
-                    padding-bottom: 20px; 
-                    margin-bottom: 30px; 
-                }
-                .report-title { 
-                    font-size: 28px; 
-                    font-weight: bold; 
-                    color: #1e293b; 
-                    margin: 0 0 10px 0; 
-                }
-                .report-meta { 
-                    color: #64748b; 
-                    font-size: 14px; 
-                    margin: 5px 0; 
-                }
-                .summary-box { 
-                    background: #f8fafc; 
-                    border: 1px solid #e2e8f0; 
-                    border-radius: 8px; 
-                    padding: 20px; 
-                    margin: 20px 0; 
-                }
-                .summary-row { 
-                    display: flex; 
-                    justify-content: space-between; 
-                    margin: 8px 0; 
-                    font-size: 16px; 
-                }
-                .summary-label { 
-                    color: #475569; 
-                }
-                .summary-value { 
-                    font-weight: bold; 
-                    color: #1e293b; 
-                }
-                .section-title { 
-                    font-size: 20px; 
-                    font-weight: bold; 
-                    color: #1e293b; 
-                    margin: 30px 0 15px 0; 
-                    padding-bottom: 8px; 
-                    border-bottom: 2px solid #e2e8f0; 
-                }
-                .category-item { 
-                    display: flex; 
-                    justify-content: space-between; 
-                    padding: 12px; 
-                    background: #ffffff; 
-                    border: 1px solid #e2e8f0; 
-                    margin: 8px 0; 
-                    border-radius: 6px; 
-                }
-                .category-name { 
-                    font-weight: 500; 
-                    color: #334155; 
-                }
-                .category-amount { 
-                    color: #3b82f6; 
-                    font-weight: bold; 
-                }
-                table { 
-                    width: 100%; 
-                    border-collapse: collapse; 
-                    margin-top: 15px; 
-                    font-size: 12px; 
-                }
-                th { 
-                    background: #3b82f6; 
-                    color: white; 
-                    padding: 12px 8px; 
-                    text-align: left; 
-                    font-weight: 600; 
-                }
-                td { 
-                    padding: 10px 8px; 
-                    border-bottom: 1px solid #e2e8f0; 
-                }
-                tr:nth-child(even) { 
-                    background: #f8fafc; 
-                }
-                .amount-cell { 
-                    text-align: right; 
-                    font-weight: 500; 
-                    color: #1e293b; 
-                }
-            </style>
-            
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Construction Expense Report</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        max-width: 900px;
+                        margin: 0 auto;
+                        padding: 40px;
+                        background: #f8fafc;
+                    }
+                    .container {
+                        background: white;
+                        border-radius: 8px;
+                        padding: 40px;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    }
+                    .report-header { 
+                        border-bottom: 3px solid #3b82f6; 
+                        padding-bottom: 20px; 
+                        margin-bottom: 30px; 
+                    }
+                    .report-title { 
+                        font-size: 28px; 
+                        font-weight: bold; 
+                        color: #1e293b; 
+                        margin: 0 0 10px 0; 
+                    }
+                    .report-meta { 
+                        color: #64748b; 
+                        font-size: 14px; 
+                        margin: 5px 0; 
+                    }
+                    .summary-box { 
+                        background: #f8fafc; 
+                        border: 1px solid #e2e8f0; 
+                        border-radius: 8px; 
+                        padding: 20px; 
+                        margin: 20px 0; 
+                    }
+                    .summary-row { 
+                        display: flex; 
+                        justify-content: space-between; 
+                        margin: 8px 0; 
+                        font-size: 16px; 
+                    }
+                    .summary-label { 
+                        color: #475569; 
+                    }
+                    .summary-value { 
+                        font-weight: bold; 
+                        color: #1e293b; 
+                    }
+                    .section-title { 
+                        font-size: 20px; 
+                        font-weight: bold; 
+                        color: #1e293b; 
+                        margin: 30px 0 15px 0; 
+                        padding-bottom: 8px; 
+                        border-bottom: 2px solid #e2e8f0; 
+                    }
+                    .category-item { 
+                        display: flex; 
+                        justify-content: space-between; 
+                        padding: 12px; 
+                        background: #ffffff; 
+                        border: 1px solid #e2e8f0; 
+                        margin: 8px 0; 
+                        border-radius: 6px; 
+                    }
+                    .category-name { 
+                        font-weight: 500; 
+                        color: #334155; 
+                    }
+                    .category-amount { 
+                        color: #3b82f6; 
+                        font-weight: bold; 
+                    }
+                    table { 
+                        width: 100%; 
+                        border-collapse: collapse; 
+                        margin-top: 15px; 
+                        font-size: 12px; 
+                    }
+                    th { 
+                        background: #3b82f6; 
+                        color: white; 
+                        padding: 12px 8px; 
+                        text-align: left; 
+                        font-weight: 600; 
+                    }
+                    td { 
+                        padding: 10px 8px; 
+                        border-bottom: 1px solid #e2e8f0; 
+                    }
+                    tr:nth-child(even) { 
+                        background: #f8fafc; 
+                    }
+                    .amount-cell { 
+                        text-align: right; 
+                        font-weight: 500; 
+                        color: #1e293b; 
+                    }
+                </style>
+            </head>
+            <body>
+            <div class="container">
             <div class="report-header">
                 <h1 class="report-title">Construction Expense Report</h1>
                 <p class="report-meta">Generated: ${format(new Date(), 'PPP')}</p>
