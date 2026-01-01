@@ -32,16 +32,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-    const { data: creatorUser } = useQuery({
-        queryKey: ['user', expense.created_by],
-        queryFn: async () => {
-            if (!expense.created_by) return null;
-            const users = await base44.entities.User.filter({ email: expense.created_by });
-            return users.length > 0 ? users[0] : null;
-        },
-        enabled: !!expense.created_by,
-        staleTime: Infinity,
-    });
+    // Show creator email directly from expense.created_by field
+    const creatorEmail = expense.created_by;
 
     return (
         <>
@@ -84,10 +76,10 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                     <div className="text-2xl font-bold text-slate-900">
                                         €{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </div>
-                                    {creatorUser && (
+                                    {creatorEmail && (
                                         <div className="flex items-center gap-1 text-xs text-slate-500 mt-1 justify-end">
                                             <UserCircle className="w-3 h-3 flex-shrink-0" />
-                                            <span className="truncate">{creatorUser.full_name || creatorUser.email}</span>
+                                            <span className="truncate max-w-[150px]">{creatorEmail}</span>
                                         </div>
                                     )}
                                 </div>
