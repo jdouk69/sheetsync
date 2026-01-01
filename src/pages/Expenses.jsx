@@ -52,6 +52,12 @@ export default function ExpensesPage() {
         enabled: !!currentProjectId && !!user,
     });
 
+    const { data: users = [] } = useQuery({
+        queryKey: ['users'],
+        queryFn: () => base44.entities.User.list(),
+        enabled: !!user,
+    });
+
     const createMutation = useMutation({
         mutationFn: (data) => base44.entities.Expense.create(data),
         onSuccess: () => {
@@ -62,7 +68,7 @@ export default function ExpensesPage() {
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }) => base44.entities.Expense.update(id, data),
+        mutationFn: ({ id, data }) => base44.entities.Expense.update(id, { ...data, updated_by: user?.email }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
@@ -99,6 +105,16 @@ export default function ExpensesPage() {
     };
 
     const handleEdit = (expense) => {
+        // Check if user can edit this specific expense
+        const isCreator = expense.created_by === user?.email;
+        const isProjectOwner = currentProject?.created_by === user?.email;
+        const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === user?.email && s.role === 'admin');
+        
+        if (!isCreator && !isProjectOwner && !isProjectAdmin) {
+            alert('You can only edit expenses that you created.');
+            return;
+        }
+        
         setShowForm(true);
         setEditingExpense(expense);
         requestAnimationFrame(() => {
@@ -108,9 +124,19 @@ export default function ExpensesPage() {
         });
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = (expense) => {
+        // Check if user can delete this specific expense
+        const isCreator = expense.created_by === user?.email;
+        const isProjectOwner = currentProject?.created_by === user?.email;
+        const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === user?.email && s.role === 'admin');
+        
+        if (!isCreator && !isProjectOwner && !isProjectAdmin) {
+            alert('You can only delete expenses that you created.');
+            return;
+        }
+        
         if (confirm('Are you sure you want to delete this expense?')) {
-            deleteMutation.mutate(id);
+            deleteMutation.mutate(expense.id);
         }
     };
 
@@ -275,6 +301,8 @@ export default function ExpensesPage() {
                                 onDelete={handleDelete}
                                 isSelected={canDelete ? selectedIds.includes(expense.id) : false}
                                 onToggleSelect={canDelete ? () => toggleSelection(expense.id) : undefined}
+                                currentUser={user}
+                                users={users}
                             />
                         ))
                     )}

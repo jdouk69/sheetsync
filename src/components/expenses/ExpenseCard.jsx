@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon } from "lucide-react";
+import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, User } from "lucide-react";
 import { format } from "date-fns";
 import {
     Dialog,
@@ -23,12 +23,23 @@ const categoryColors = {
     "Other": "bg-slate-100 text-slate-800"
 };
 
-export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onToggleSelect }) {
+export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onToggleSelect, currentUser, users }) {
     const { t } = useLanguage();
     const { currentProject } = useProject();
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+    // Check if current user can edit/delete this specific expense
+    const isCreator = expense.created_by === currentUser?.email;
+    const isProjectOwner = currentProject?.created_by === currentUser?.email;
+    const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === currentUser?.email && s.role === 'admin');
+    const canEditThis = isCreator || isProjectOwner || isProjectAdmin;
+    const canDeleteThis = isCreator || isProjectOwner || isProjectAdmin;
+
+    // Get user names
+    const creatorUser = users.find(u => u.email === expense.created_by);
+    const editorUser = expense.updated_by ? users.find(u => u.email === expense.updated_by) : null;
 
     return (
         <>
@@ -78,6 +89,21 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 <p className="text-sm text-slate-600 mt-2">{expense.notes}</p>
                             )}
 
+                            <div className="flex flex-wrap gap-2 mt-3 text-xs text-slate-500">
+                                {creatorUser && (
+                                    <div className="flex items-center gap-1">
+                                        <User className="w-3 h-3" />
+                                        <span>Created by: {creatorUser.full_name || creatorUser.email}</span>
+                                    </div>
+                                )}
+                                {editorUser && expense.updated_by !== expense.created_by && (
+                                    <div className="flex items-center gap-1">
+                                        <User className="w-3 h-3" />
+                                        <span>Edited by: {editorUser.full_name || editorUser.email}</span>
+                                    </div>
+                                )}
+                            </div>
+
                             {expense.photos?.length > 0 && (
                                 <div className="mt-3">
                                     <Button
@@ -98,7 +124,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
                         {(canEdit || canDelete) && (
                             <div className="flex md:flex-col gap-2">
-                                {canEdit && (
+                                {canEdit && canEditThis && (
                                     <Button
                                         variant="outline"
                                         size="sm"
@@ -112,13 +138,13 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         <span className="md:hidden ml-2">{t('edit')}</span>
                                     </Button>
                                 )}
-                                {canDelete && (
+                                {canDelete && canDeleteThis && (
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            onDelete(expense.id);
+                                            onDelete(expense);
                                         }}
                                         className="flex-1 md:flex-none text-red-600 hover:text-red-700"
                                     >
