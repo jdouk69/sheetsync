@@ -57,9 +57,9 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 onClick={(e) => e.stopPropagation()}
                             />
                         )}
-                        <div className="flex-1 flex flex-col md:flex-row gap-4 cursor-pointer" onClick={() => onEdit(expense)}>
-                        <div className="flex-1">
-                            <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1 flex flex-col md:flex-row gap-4 cursor-pointer min-w-0" onClick={() => onEdit(expense)}>
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between mb-2 gap-4">
                                 <div>
                                     {expense.vendor && (
                                         <div className="flex items-center gap-2 text-lg text-slate-700 font-semibold mb-1">
@@ -79,17 +79,17 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             {format(new Date(expense.date), 'MMM d, yyyy')}
                                         </span>
                                     </div>
-                                    {creatorUser && (
-                                        <div className="flex items-center gap-1 text-xs text-slate-500 mt-2">
-                                            <UserCircle className="w-3 h-3" />
-                                            <span>Added by {creatorUser.full_name || creatorUser.email}</span>
-                                        </div>
-                                    )}
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right min-w-0">
                                     <div className="text-2xl font-bold text-slate-900">
                                         €{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </div>
+                                    {creatorUser && (
+                                        <div className="flex items-center gap-1 text-xs text-slate-500 mt-1 justify-end">
+                                            <UserCircle className="w-3 h-3 flex-shrink-0" />
+                                            <span className="truncate">{creatorUser.full_name || creatorUser.email}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
