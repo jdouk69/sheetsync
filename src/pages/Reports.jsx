@@ -110,25 +110,148 @@ export default function ReportsPage() {
         reportContent.style.backgroundColor = 'white';
         reportContent.style.fontFamily = 'Arial, sans-serif';
         
+        const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        
         reportContent.innerHTML = `
-            <h1 style="font-size: 24px; margin-bottom: 20px;">Construction Expense Report</h1>
-            <p style="margin: 5px 0;">Generated: ${format(new Date(), 'PPP')}</p>
-            <p style="margin: 5px 0;">Total Expenses: ${expenses.length}</p>
-            <p style="margin: 5px 0; font-weight: bold;">Total Amount: €${expenses.reduce((sum, exp) => sum + exp.amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+            <style>
+                .report-header { 
+                    border-bottom: 3px solid #3b82f6; 
+                    padding-bottom: 20px; 
+                    margin-bottom: 30px; 
+                }
+                .report-title { 
+                    font-size: 28px; 
+                    font-weight: bold; 
+                    color: #1e293b; 
+                    margin: 0 0 10px 0; 
+                }
+                .report-meta { 
+                    color: #64748b; 
+                    font-size: 14px; 
+                    margin: 5px 0; 
+                }
+                .summary-box { 
+                    background: #f8fafc; 
+                    border: 1px solid #e2e8f0; 
+                    border-radius: 8px; 
+                    padding: 20px; 
+                    margin: 20px 0; 
+                }
+                .summary-row { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    margin: 8px 0; 
+                    font-size: 16px; 
+                }
+                .summary-label { 
+                    color: #475569; 
+                }
+                .summary-value { 
+                    font-weight: bold; 
+                    color: #1e293b; 
+                }
+                .section-title { 
+                    font-size: 20px; 
+                    font-weight: bold; 
+                    color: #1e293b; 
+                    margin: 30px 0 15px 0; 
+                    padding-bottom: 8px; 
+                    border-bottom: 2px solid #e2e8f0; 
+                }
+                .category-item { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    padding: 12px; 
+                    background: #ffffff; 
+                    border: 1px solid #e2e8f0; 
+                    margin: 8px 0; 
+                    border-radius: 6px; 
+                }
+                .category-name { 
+                    font-weight: 500; 
+                    color: #334155; 
+                }
+                .category-amount { 
+                    color: #3b82f6; 
+                    font-weight: bold; 
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-top: 15px; 
+                    font-size: 12px; 
+                }
+                th { 
+                    background: #3b82f6; 
+                    color: white; 
+                    padding: 12px 8px; 
+                    text-align: left; 
+                    font-weight: 600; 
+                }
+                td { 
+                    padding: 10px 8px; 
+                    border-bottom: 1px solid #e2e8f0; 
+                }
+                tr:nth-child(even) { 
+                    background: #f8fafc; 
+                }
+                .amount-cell { 
+                    text-align: right; 
+                    font-weight: 500; 
+                    color: #1e293b; 
+                }
+            </style>
             
-            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 15px;">Expenses by Category</h2>
-            ${categoryData.map(cat => `
-                <p style="margin: 5px 0; padding-left: 10px;">
-                    ${cat.name}: €${cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </p>
-            `).join('')}
+            <div class="report-header">
+                <h1 class="report-title">Construction Expense Report</h1>
+                <p class="report-meta">Generated: ${format(new Date(), 'PPP')}</p>
+            </div>
             
-            <h2 style="font-size: 18px; margin-top: 30px; margin-bottom: 15px;">Expense Details</h2>
-            ${expenses.map(exp => `
-                <p style="margin: 3px 0; font-size: 12px; padding-left: 10px;">
-                    ${format(new Date(exp.date), 'MM/dd/yyyy')} - ${exp.description} - €${exp.amount.toFixed(2)} - ${exp.category}
-                </p>
-            `).join('')}
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span class="summary-label">Total Expenses:</span>
+                    <span class="summary-value">${expenses.length}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total Amount:</span>
+                    <span class="summary-value">€${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Expenses by Category</h2>
+            ${categoryData.map(cat => {
+                const percentage = ((cat.value / total) * 100).toFixed(1);
+                return `
+                    <div class="category-item">
+                        <span class="category-name">${cat.name}</span>
+                        <span class="category-amount">€${cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${percentage}%)</span>
+                    </div>
+                `;
+            }).join('')}
+            
+            <h2 class="section-title">Expense Details</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Vendor</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${expenses.map(exp => `
+                        <tr>
+                            <td>${format(new Date(exp.date), 'MM/dd/yyyy')}</td>
+                            <td>${exp.description}</td>
+                            <td>${exp.category}</td>
+                            <td>${exp.vendor || '-'}</td>
+                            <td class="amount-cell">€${exp.amount.toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         `;
         
         document.body.appendChild(reportContent);
