@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -8,13 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Download, PieChart, BarChart3, FileText, Filter, Search, Calendar } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, endOfDay } from "date-fns";
+import { el as elLocale } from 'date-fns/locale';
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899', '#64748b'];
 
 export default function ReportsPage() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const { currentProjectId, projects, isLoading: projectsLoading } = useProject();
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
@@ -37,7 +37,6 @@ export default function ReportsPage() {
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
             if (!currentProjectId || !user) return [];
-            // Get all expenses for this project (regardless of who created them)
             return base44.entities.Expense.filter({ 
                 projectId: currentProjectId
             }, '-date');
@@ -91,7 +90,7 @@ export default function ReportsPage() {
     }, []);
 
     const monthlyData = expenses.reduce((acc, exp) => {
-        const monthYear = format(new Date(exp.date), 'MMM yyyy');
+        const monthYear = format(new Date(exp.date), 'MMM yyyy', { locale: language === 'el' ? elLocale : undefined });
         const existing = acc.find(item => item.name === monthYear);
         if (existing) {
             existing.amount += exp.amount;
@@ -103,13 +102,15 @@ export default function ReportsPage() {
 
     const handleExportPDF = async () => {
         const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const locale = language === 'el' ? 'el-GR' : 'en-US';
+        const dateLocale = language === 'el' ? elLocale : undefined;
         
         const htmlContent = `
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Construction Expense Report</title>
+                <title>${t('constructionExpenseReport')}</title>
                 <style>
                     body {
                         font-family: Arial, sans-serif;
@@ -215,51 +216,51 @@ export default function ReportsPage() {
             <body>
             <div class="container">
             <div class="report-header">
-                <h1 class="report-title">Construction Expense Report</h1>
-                <p class="report-meta">Generated: ${format(new Date(), 'PPP')}</p>
+                <h1 class="report-title">${t('constructionExpenseReport')}</h1>
+                <p class="report-meta">${t('generated')}: ${format(new Date(), 'PPP', { locale: dateLocale })}</p>
             </div>
             
             <div class="summary-box">
                 <div class="summary-row">
-                    <span class="summary-label">Total Expenses:</span>
+                    <span class="summary-label">${t('totalExpenses')}:</span>
                     <span class="summary-value">${expenses.length}</span>
                 </div>
                 <div class="summary-row">
-                    <span class="summary-label">Total Amount:</span>
-                    <span class="summary-value">€${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    <span class="summary-label">${t('totalAmount')}:</span>
+                    <span class="summary-value">€${total.toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
                 </div>
             </div>
             
-            <h2 class="section-title">Expenses by Category</h2>
+            <h2 class="section-title">${t('expensesByCategory')}</h2>
             ${categoryData.map(cat => {
                 const percentage = ((cat.value / total) * 100).toFixed(1);
                 return `
                     <div class="category-item">
                         <span class="category-name">${cat.name}</span>
-                        <span class="category-amount">€${cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${percentage}%)</span>
+                        <span class="category-amount">€${cat.value.toLocaleString(locale, { minimumFractionDigits: 2 })} (${percentage}%)</span>
                     </div>
                 `;
             }).join('')}
             
-            <h2 class="section-title">Expense Details</h2>
+            <h2 class="section-title">${t('expenseDetails')}</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th>Vendor</th>
-                        <th>Amount</th>
+                        <th>${t('date')}</th>
+                        <th>${t('description')}</th>
+                        <th>${t('category')}</th>
+                        <th>${t('vendor')}</th>
+                        <th>${t('amount')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${expenses.map(exp => `
                         <tr>
-                            <td>${format(new Date(exp.date), 'MM/dd/yyyy')}</td>
+                            <td>${format(new Date(exp.date), 'dd/MM/yyyy', { locale: dateLocale })}</td>
                             <td>${exp.description}</td>
                             <td>${exp.category}</td>
                             <td>${exp.vendor || '-'}</td>
-                            <td class="amount-cell">€${exp.amount.toFixed(2)}</td>
+                            <td class="amount-cell">€${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
                         </tr>
                     `).join('')}
                     </tbody>
@@ -275,7 +276,7 @@ export default function ReportsPage() {
                     };
 
     const handleExportCSV = () => {
-        const headers = ['Date', 'Description', 'Amount (€)', 'Category', 'Vendor', 'Notes'];
+        const headers = [t('date'), t('description'), t('amount') + ' (€)', t('category'), t('vendor'), t('notes')];
         const rows = expenses.map(exp => [
             format(new Date(exp.date), 'yyyy-MM-dd'),
             exp.description,

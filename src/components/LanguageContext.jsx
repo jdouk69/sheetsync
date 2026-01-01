@@ -118,7 +118,11 @@ const translations = {
         expensesByCategory: "Expenses by Category",
         monthlySpending: "Monthly Spending",
         categoryBreakdown: "Category Breakdown",
-        noDataAvailable: "No data available"
+        noDataAvailable: "No data available",
+        constructionExpenseReport: "Construction Expense Report",
+        generated: "Generated",
+        totalAmount: "Total Amount",
+        expenseDetails: "Expense Details"
     },
     el: {
         // Layout
@@ -237,7 +241,11 @@ const translations = {
         expensesByCategory: "Έξοδα ανά Κατηγορία",
         monthlySpending: "Μηνιαίες Δαπάνες",
         categoryBreakdown: "Ανάλυση ανά Κατηγορία",
-        noDataAvailable: "Δεν υπάρχουν διαθέσιμα δεδομένα"
+        noDataAvailable: "Δεν υπάρχουν διαθέσιμα δεδομένα",
+        constructionExpenseReport: "Αναφορά Εξόδων Κατασκευής",
+        generated: "Δημιουργήθηκε",
+        totalAmount: "Συνολικό Ποσό",
+        expenseDetails: "Λεπτομέρειες Εξόδων"
     }
 };
 
