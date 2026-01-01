@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, PieChart, BarChart3, FileText, Filter } from "lucide-react";
+import { Download, PieChart, BarChart3, FileText, Filter, Search } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { useLanguage } from "../components/LanguageContext";
@@ -48,7 +48,8 @@ export default function ReportsPage() {
         category: 'all',
         vendor: 'all',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        search: ''
     });
 
     const expenses = useMemo(() => {
@@ -60,7 +61,12 @@ export default function ReportsPage() {
             const startMatch = !filters.startDate || expDate >= new Date(filters.startDate);
             const endMatch = !filters.endDate || expDate <= new Date(filters.endDate);
             
-            return categoryMatch && vendorMatch && startMatch && endMatch;
+            const searchMatch = !filters.search || 
+                exp.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                exp.vendor?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                exp.notes?.toLowerCase().includes(filters.search.toLowerCase());
+            
+            return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch;
         });
     }, [allExpenses, filters]);
 
@@ -247,6 +253,18 @@ export default function ReportsPage() {
                         <Filter className="w-5 h-5 text-blue-600" />
                         <h2 className="text-lg font-semibold">{t('filters')}</h2>
                     </div>
+                    <div className="mb-4">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Input
+                                type="text"
+                                placeholder="Search expenses..."
+                                value={filters.search}
+                                onChange={(e) => setFilters({...filters, search: e.target.value})}
+                                className="pl-10"
+                            />
+                        </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">{t('category')}</label>
@@ -293,12 +311,12 @@ export default function ReportsPage() {
                             />
                         </div>
                     </div>
-                    {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate) && (
+                    {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate || filters.search) && (
                         <div className="mt-4">
                             <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '' })}
+                                onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '', search: '' })}
                             >
                                 {t('clearFilters')}
                             </Button>
