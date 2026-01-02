@@ -555,6 +555,66 @@ export default function ReportsPage() {
                         })}
                     </div>
                 </div>
+
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <XCircle className="w-5 h-5 text-red-600" />
+                        <h2 className="text-xl font-semibold">{t('unpaidExpenses')}</h2>
+                    </div>
+                    {expenses.filter(exp => !exp.isPaid).length > 0 ? (
+                        <div className="space-y-2">
+                            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-red-900">{t('totalUnpaidAmount')}:</span>
+                                    <span className="text-xl font-bold text-red-700">
+                                        €{expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                                <div className="text-xs text-red-700 mt-1">
+                                    {expenses.filter(exp => !exp.isPaid).length} {t('unpaidItems')}
+                                </div>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b-2 border-slate-200">
+                                            <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('date')}</th>
+                                            <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('description')}</th>
+                                            <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('vendor')}</th>
+                                            <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('category')}</th>
+                                            <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('amount')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {expenses.filter(exp => !exp.isPaid).map(exp => (
+                                            <tr key={exp.id} className="border-b border-slate-100 hover:bg-slate-50">
+                                                <td className="py-3 px-2 text-slate-600">
+                                                    {format(new Date(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}
+                                                </td>
+                                                <td className="py-3 px-2 font-medium text-slate-900">{exp.description}</td>
+                                                <td className="py-3 px-2 text-slate-600">{exp.vendor || '-'}</td>
+                                                <td className="py-3 px-2">
+                                                    <span className="text-xs px-2 py-1 bg-slate-100 text-slate-700 rounded-full">
+                                                        {exp.category}
+                                                    </span>
+                                                </td>
+                                                <td className="py-3 px-2 text-right font-semibold text-slate-900">
+                                                    €{exp.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <CheckCircle className="w-16 h-16 text-green-500 mb-3" />
+                            <p className="text-slate-600 font-medium">{t('allExpensesPaid')}</p>
+                            <p className="text-sm text-slate-500 mt-1">{t('noUnpaidExpenses')}</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

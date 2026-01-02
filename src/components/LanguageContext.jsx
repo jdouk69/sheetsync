@@ -131,7 +131,12 @@ const translations = {
         constructionExpenseReport: "Construction Expense Report",
         generated: "Generated",
         totalAmount: "Total Amount",
-        expenseDetails: "Expense Details"
+        expenseDetails: "Expense Details",
+        unpaidExpenses: "Unpaid Expenses",
+        totalUnpaidAmount: "Total Unpaid Amount",
+        unpaidItems: "unpaid items",
+        allExpensesPaid: "All Expenses Paid!",
+        noUnpaidExpenses: "You have no unpaid expenses"
     },
     el: {
         // Layout
@@ -263,7 +268,12 @@ const translations = {
         constructionExpenseReport: "Αναφορά Εξόδων Κατασκευής",
         generated: "Δημιουργήθηκε",
         totalAmount: "Συνολικό Ποσό",
-        expenseDetails: "Λεπτομέρειες Εξόδων"
+        expenseDetails: "Λεπτομέρειες Εξόδων",
+        unpaidExpenses: "Ανεξόφλητα Έξοδα",
+        totalUnpaidAmount: "Συνολικό Ανεξόφλητο Ποσό",
+        unpaidItems: "ανεξόφλητα στοιχεία",
+        allExpensesPaid: "Όλα τα Έξοδα Πληρώθηκαν!",
+        noUnpaidExpenses: "Δεν έχετε ανεξόφλητα έξοδα"
     }
 };
 
