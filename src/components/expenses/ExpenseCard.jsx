@@ -100,15 +100,15 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 <p className="text-sm text-slate-600 mt-2">{expense.notes}</p>
                             )}
 
-                            <div className="flex flex-wrap gap-2 mt-3 text-xs text-slate-500">
+                            <div className="flex flex-wrap gap-2 mt-3 text-xs">
                                 {creatorUser && (
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-1 text-red-600">
                                         <User className="w-3 h-3" />
                                         <span>{t('createdBy')}: {creatorUser.full_name || creatorUser.email}</span>
                                     </div>
                                 )}
                                 {editorUser && expense.updated_by !== expense.created_by && (
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-1 text-slate-500">
                                         <User className="w-3 h-3" />
                                         <span>{t('editedBy')}: {editorUser.full_name || editorUser.email}</span>
                                     </div>
