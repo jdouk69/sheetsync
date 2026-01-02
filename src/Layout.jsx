@@ -9,6 +9,11 @@ import ProjectSelector from "./components/ProjectSelector";
 
 function LayoutContent({ children, currentPageName }) {
     const { language, t, toggleLanguage } = useLanguage();
+    const { data: user } = useQuery({
+        queryKey: ['currentUser'],
+        queryFn: () => base44.auth.me(),
+        staleTime: 5 * 60 * 1000,
+    });
     
     const handleLogout = () => {
         base44.auth.logout();
@@ -52,22 +57,28 @@ function LayoutContent({ children, currentPageName }) {
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                            <button
-                                onClick={toggleLanguage}
-                                className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                                title={language === 'en' ? 'Switch to Greek' : 'Αλλαγή σε Αγγλικά'}
-                            >
-                                <Languages className="w-4 h-4" />
-                                <span className="text-sm font-medium">{language === 'en' ? 'EL' : 'EN'}</span>
-                            </button>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                <span className="hidden md:inline">{t('logout')}</span>
-                            </button>
-                        </div>
+                                    {user && (
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
+                                    <User className="w-4 h-4 text-slate-600" />
+                                    <span className="text-sm font-medium text-slate-900">{user.full_name || user.email}</span>
+                                    </div>
+                                    )}
+                                    <button
+                                    onClick={toggleLanguage}
+                                    className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                    title={language === 'en' ? 'Switch to Greek' : 'Αλλαγή σε Αγγλικά'}
+                                    >
+                                    <Languages className="w-4 h-4" />
+                                    <span className="text-sm font-medium">{language === 'en' ? 'EL' : 'EN'}</span>
+                                    </button>
+                                    <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                    >
+                                    <LogOut className="w-4 h-4" />
+                                    <span className="hidden md:inline">{t('logout')}</span>
+                                    </button>
+                                    </div>
                     </div>
 
                     <div className="border-t border-slate-200 py-3">
