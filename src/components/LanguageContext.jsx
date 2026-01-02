@@ -57,7 +57,9 @@ const translations = {
         add: "Add",
         expense: "Expense",
         markAsPaid: "Mark as paid",
-        
+        paidStatus: "Paid Status",
+        all: "All",
+
         // Expense Card
         viewPhotos: "View Photos",
         expensePhotos: "Expense Photos",
@@ -187,7 +189,9 @@ const translations = {
         add: "Προσθήκη",
         expense: "Εξόδου",
         markAsPaid: "Επισημάνετε ως πληρωμένο",
-        
+        paidStatus: "Κατάσταση Πληρωμής",
+        all: "Όλα",
+
         // Expense Card
         viewPhotos: "Προβολή Φωτογραφιών",
         expensePhotos: "Φωτογραφίες Εξόδου",

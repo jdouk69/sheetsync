@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, PieChart, BarChart3, FileText, Filter, Search, Calendar } from "lucide-react";
+import { Download, PieChart, BarChart3, FileText, Filter, Search, Calendar, CheckCircle, XCircle } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, endOfDay } from "date-fns";
 import { el as elLocale } from 'date-fns/locale';
@@ -49,7 +49,8 @@ export default function ReportsPage() {
         vendor: 'all',
         startDate: '',
         endDate: '',
-        search: ''
+        search: '',
+        isPaid: 'all'
     });
 
     const expenses = useMemo(() => {
@@ -67,7 +68,11 @@ export default function ReportsPage() {
                 exp.category?.toLowerCase().includes(filters.search.toLowerCase()) ||
                 exp.notes?.toLowerCase().includes(filters.search.toLowerCase());
             
-            return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch;
+            const paidMatch = filters.isPaid === 'all' || 
+                (filters.isPaid === 'paid' && exp.isPaid) || 
+                (filters.isPaid === 'unpaid' && !exp.isPaid);
+            
+            return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch && paidMatch;
         });
     }, [allExpenses, filters]);
 
@@ -229,6 +234,14 @@ export default function ReportsPage() {
                     <span class="summary-label">${t('totalAmount')}:</span>
                     <span class="summary-value">€${total.toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
                 </div>
+                <div class="summary-row">
+                    <span class="summary-label">${t('paid')}:</span>
+                    <span class="summary-value">€${expenses.filter(exp => exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">${t('unpaid')}:</span>
+                    <span class="summary-value">€${expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
+                </div>
             </div>
             
             <h2 class="section-title">${t('expensesByCategory')}</h2>
@@ -251,6 +264,7 @@ export default function ReportsPage() {
                         <th>${t('category')}</th>
                         <th>${t('vendor')}</th>
                         <th>${t('amount')}</th>
+                        <th>${t('paid')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -261,6 +275,7 @@ export default function ReportsPage() {
                             <td>${exp.category}</td>
                             <td>${exp.vendor || '-'}</td>
                             <td class="amount-cell">€${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
+                            <td>${exp.isPaid ? '✓' : '✗'}</td>
                         </tr>
                     `).join('')}
                     </tbody>
@@ -276,14 +291,15 @@ export default function ReportsPage() {
                     };
 
     const handleExportCSV = () => {
-        const headers = [t('date'), t('description'), t('amount') + ' (€)', t('category'), t('vendor'), t('notes')];
+        const headers = [t('date'), t('description'), t('amount') + ' (€)', t('category'), t('vendor'), t('notes'), t('paid')];
         const rows = expenses.map(exp => [
             format(new Date(exp.date), 'yyyy-MM-dd'),
             exp.description,
             exp.amount.toFixed(2),
             exp.category,
             exp.vendor || '',
-            exp.notes || ''
+            exp.notes || '',
+            exp.isPaid ? 'Yes' : 'No'
         ]);
 
         const csvContent = [
@@ -379,7 +395,7 @@ export default function ReportsPage() {
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">{t('category')}</label>
                             <Select value={filters.category} onValueChange={(value) => setFilters({...filters, category: value})}>
@@ -432,13 +448,26 @@ export default function ReportsPage() {
                                 />
                             </div>
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('paidStatus')}</label>
+                            <Select value={filters.isPaid} onValueChange={(value) => setFilters({...filters, isPaid: value})}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">{t('all')}</SelectItem>
+                                    <SelectItem value="paid">{t('paid')}</SelectItem>
+                                    <SelectItem value="unpaid">{t('unpaid')}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
-                    {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate || filters.search) && (
+                    {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate || filters.search || filters.isPaid !== 'all') && (
                         <div className="mt-4">
                             <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '', search: '' })}
+                                onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '', search: '', isPaid: 'all' })}
                             >
                                 {t('clearFilters')}
                             </Button>
