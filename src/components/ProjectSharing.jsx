@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function ProjectSharing({ project }) {
     const { t } = useLanguage();
-    const { canEdit, isOwner } = useProjectPermissions(project);
+    const { canEdit, canDelete, isOwner } = useProjectPermissions(project);
+    const canManageSharing = canDelete; // Only owners and admins can manage sharing
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("editor");
     const [error, setError] = useState("");
@@ -62,6 +63,10 @@ export default function ProjectSharing({ project }) {
     };
 
     const handleRemoveUser = async (userEmail) => {
+        if (!confirm(`Are you sure you want to remove ${userEmail} from this project?`)) {
+            return;
+        }
+
         const sharedWith = project.sharedWith || [];
         const updatedSharedWith = sharedWith.filter(s => s.email !== userEmail);
         
@@ -117,11 +122,11 @@ export default function ProjectSharing({ project }) {
                             placeholder="Enter user email to share"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && canEdit && handleAddUser()}
-                            disabled={!canEdit}
+                            onKeyPress={(e) => e.key === 'Enter' && canManageSharing && handleAddUser()}
+                            disabled={!canManageSharing}
                         />
                     </div>
-                    <Select value={role} onValueChange={setRole} disabled={!canEdit}>
+                    <Select value={role} onValueChange={setRole} disabled={!canManageSharing}>
                         <SelectTrigger className="w-32">
                             <SelectValue />
                         </SelectTrigger>
@@ -133,7 +138,7 @@ export default function ProjectSharing({ project }) {
                     </Select>
                     <Button 
                         onClick={handleAddUser}
-                        disabled={updateProjectMutation.isPending || !canEdit}
+                        disabled={updateProjectMutation.isPending || !canManageSharing}
                         className="bg-blue-600 hover:bg-blue-700"
                     >
                         {updateProjectMutation.isPending ? "Adding..." : "Add"}
@@ -180,7 +185,7 @@ export default function ProjectSharing({ project }) {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                                    {canEdit && (
+                                    {canManageSharing && (
                                         <Select 
                                             value={share.role} 
                                             onValueChange={(newRole) => handleChangeRole(share.email, newRole)}
@@ -196,12 +201,12 @@ export default function ProjectSharing({ project }) {
                                             </SelectContent>
                                         </Select>
                                     )}
-                                    {!canEdit && (
+                                    {!canManageSharing && (
                                         <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded w-28 text-center">
                                             {share.role}
                                         </span>
                                     )}
-                                    {canEdit && share.email !== project.created_by && (
+                                    {canManageSharing && share.email !== project.created_by && (
                                         <Button
                                             variant="ghost"
                                             size="sm"
