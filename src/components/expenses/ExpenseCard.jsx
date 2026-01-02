@@ -76,10 +76,15 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             <Calendar className="w-3 h-3" />
                                             {format(new Date(expense.date), 'MMM d, yyyy')}
                                         </span>
-                                        {expense.isPaid && (
+                                        {expense.isPaid ? (
                                             <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1 font-semibold">
                                                 <CheckCircle2 className="w-3 h-3" />
                                                 Paid
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 flex items-center gap-1 font-semibold">
+                                                <CheckCircle2 className="w-3 h-3" />
+                                                Unpaid
                                             </span>
                                         )}
                                         </div>
