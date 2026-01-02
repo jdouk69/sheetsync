@@ -8,7 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Pencil, Trash2, FolderOpen, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderOpen, Users, UserPlus } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import ProjectSharing from "./ProjectSharing";
 import InviteUser from "./InviteUser";
 
@@ -18,6 +25,7 @@ export default function ProjectManagement({ onClose }) {
     const [editingProject, setEditingProject] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [sharingProject, setSharingProject] = useState(null);
+    const [showInviteUser, setShowInviteUser] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -100,7 +108,30 @@ export default function ProjectManagement({ onClose }) {
 
     return (
         <div className="space-y-4 pb-8">
-            <InviteUser />
+            <div className="flex justify-between items-center mb-4">
+                <Button
+                    onClick={() => setShowForm(true)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                >
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('addNewProject')}
+                </Button>
+                
+                <Dialog open={showInviteUser} onOpenChange={setShowInviteUser}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-2">
+                            <UserPlus className="w-4 h-4" />
+                            <span>Invite User</span>
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[95vw] sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Invite User to App</DialogTitle>
+                        </DialogHeader>
+                        <InviteUser />
+                    </DialogContent>
+                </Dialog>
+            </div>
 
             {currentSharingProject ? (
                 <Card>
@@ -217,16 +248,7 @@ export default function ProjectManagement({ onClose }) {
                     </CardContent>
                 </Card>
             ) : (
-                <>
-                    <Button
-                        onClick={() => setShowForm(true)}
-                        className="w-full bg-blue-600 hover:bg-blue-700"
-                    >
-                        <Plus className="w-4 h-4 mr-2" />
-                        {t('addNewProject')}
-                    </Button>
-
-                    <div className="grid gap-4">
+                <div className="grid gap-4">
                         {projects.map((project) => (
                             <Card key={project.id} className={currentProjectId === project.id ? 'ring-2 ring-blue-500' : ''}>
                                 <CardContent className="p-4">
@@ -305,8 +327,7 @@ export default function ProjectManagement({ onClose }) {
                                 </CardContent>
                             </Card>
                         ))}
-                    </div>
-                </>
+                </div>
             )}
         </div>
     );
