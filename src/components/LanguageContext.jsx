@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const translations = {
     en: {
         // Layout
-        appName: "Expense Sync",
+        appName: "Greece Construction",
         expenses: "Expenses",
         reports: "Reports",
         logout: "Logout",
@@ -135,7 +135,7 @@ const translations = {
     },
     el: {
         // Layout
-        appName: "Expense Sync",
+        appName: "Κατασκευή Ελλάδας",
         expenses: "Έξοδα",
         reports: "Αναφορές",
         logout: "Αποσύνδεση",

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
-import { FileText, LogOut, Languages, User } from "lucide-react";
+import { Home, FileText, LogOut, Languages, User } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { LanguageProvider, useLanguage } from "./components/LanguageContext";
 import { ProjectProvider } from "./components/ProjectContext";
@@ -28,7 +28,7 @@ function LayoutContent({ children, currentPageName }) {
                         <div className="flex items-center gap-8">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                    <FileText className="w-5 h-5 text-white" />
+                                    <Home className="w-5 h-5 text-white" />
                                 </div>
                                 <span className="font-bold text-xl text-slate-900">{t('appName')}</span>
                             </div>
