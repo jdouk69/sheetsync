@@ -62,6 +62,10 @@ const translations = {
         expensePhotos: "Expense Photos",
         edit: "Edit",
         delete: "Delete",
+        paid: "Paid",
+        unpaid: "Unpaid",
+        createdBy: "Created by",
+        editedBy: "Edited by",
         
         // Category Combobox
         selectCategory: "Select or type category...",
@@ -187,6 +191,10 @@ const translations = {
         expensePhotos: "Φωτογραφίες Εξόδου",
         edit: "Επεξεργασία",
         delete: "Διαγραφή",
+        paid: "Πληρωμένο",
+        unpaid: "Μη Πληρωμένο",
+        createdBy: "Δημιουργήθηκε από",
+        editedBy: "Επεξεργάστηκε από",
         
         // Category Combobox
         selectCategory: "Επιλέξτε ή πληκτρολογήστε κατηγορία...",

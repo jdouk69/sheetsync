@@ -79,12 +79,12 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         {expense.isPaid ? (
                                             <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1 font-semibold">
                                                 <CheckCircle2 className="w-3 h-3" />
-                                                Paid
+                                                {t('paid')}
                                             </span>
                                         ) : (
                                             <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 flex items-center gap-1 font-semibold">
                                                 <CheckCircle2 className="w-3 h-3" />
-                                                Unpaid
+                                                {t('unpaid')}
                                             </span>
                                         )}
                                         </div>
@@ -104,13 +104,13 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 {creatorUser && (
                                     <div className="flex items-center gap-1">
                                         <User className="w-3 h-3" />
-                                        <span>Created by: {creatorUser.full_name || creatorUser.email}</span>
+                                        <span>{t('createdBy')}: {creatorUser.full_name || creatorUser.email}</span>
                                     </div>
                                 )}
                                 {editorUser && expense.updated_by !== expense.created_by && (
                                     <div className="flex items-center gap-1">
                                         <User className="w-3 h-3" />
-                                        <span>Edited by: {editorUser.full_name || editorUser.email}</span>
+                                        <span>{t('editedBy')}: {editorUser.full_name || editorUser.email}</span>
                                     </div>
                                 )}
                             </div>
