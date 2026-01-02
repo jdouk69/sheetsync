@@ -55,17 +55,17 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 onClick={(e) => e.stopPropagation()}
                             />
                         )}
-                        <div className="flex-1 flex flex-col md:flex-row gap-4 cursor-pointer" onClick={() => onEdit(expense)}>
-                        <div className="flex-1">
-                            <div className="flex items-start justify-between mb-2">
-                                <div>
+                        <div className="flex-1 flex flex-col md:flex-row gap-4 cursor-pointer min-w-0" onClick={() => onEdit(expense)}>
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-3 mb-2">
+                                <div className="flex-1 min-w-0">
                                     {expense.vendor && (
                                         <div className="flex items-center gap-2 text-lg text-slate-700 font-semibold mb-1">
-                                            <Building2 className="w-4 h-4" />
-                                            {expense.vendor}
+                                            <Building2 className="w-4 h-4 shrink-0" />
+                                            <span className="truncate">{expense.vendor}</span>
                                         </div>
                                     )}
-                                    <h3 className="text-sm text-slate-900">
+                                    <h3 className="text-sm text-slate-900 break-words">
                                         {expense.description}
                                     </h3>
                                     <div className="flex flex-wrap gap-2 mt-2">
@@ -89,8 +89,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         )}
                                         </div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-2xl font-bold text-slate-900">
+                                <div className="text-right shrink-0">
+                                    <div className="text-2xl font-bold text-slate-900 whitespace-nowrap">
                                         €{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </div>
                                 </div>
