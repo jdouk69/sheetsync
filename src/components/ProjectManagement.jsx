@@ -18,10 +18,12 @@ import {
 } from "@/components/ui/dialog";
 import ProjectSharing from "./ProjectSharing";
 import InviteUser from "./InviteUser";
+import { useProjectPermissions } from "./useProjectPermissions";
 
 export default function ProjectManagement({ onClose }) {
-    const { projects, currentProjectId, switchProject } = useProject();
+    const { projects, currentProjectId, switchProject, currentProject } = useProject();
     const { t } = useLanguage();
+    const currentProjectPermissions = useProjectPermissions(currentProject);
     const [editingProject, setEditingProject] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [sharingProject, setSharingProject] = useState(null);
@@ -109,13 +111,15 @@ export default function ProjectManagement({ onClose }) {
     return (
         <div className="space-y-4 pb-8">
             <div className="flex justify-between items-center mb-4">
-                <Button
-                    onClick={() => setShowForm(true)}
-                    className="bg-blue-600 hover:bg-blue-700"
-                >
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t('addNewProject')}
-                </Button>
+                {currentProjectPermissions.canEdit && (
+                    <Button
+                        onClick={() => setShowForm(true)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t('addNewProject')}
+                    </Button>
+                )}
                 
                 <Dialog open={showInviteUser} onOpenChange={setShowInviteUser}>
                     <DialogTrigger asChild>
@@ -298,31 +302,42 @@ export default function ProjectManagement({ onClose }) {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex flex-col gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => setSharingProject(project)}
-                                                title="Share project"
-                                            >
-                                                <Users className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleEdit(project)}
-                                            >
-                                                <Pencil className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleDelete(project.id)}
-                                                className="text-red-600 hover:text-red-700"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </div>
+                                        {(() => {
+                                            const perms = useProjectPermissions(project);
+                                            return (
+                                                <div className="flex flex-col gap-2">
+                                                    {perms.canEdit && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => setSharingProject(project)}
+                                                            title="Share project"
+                                                        >
+                                                            <Users className="w-4 h-4" />
+                                                        </Button>
+                                                    )}
+                                                    {perms.canEdit && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => handleEdit(project)}
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </Button>
+                                                    )}
+                                                    {perms.canDelete && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => handleDelete(project.id)}
+                                                            className="text-red-600 hover:text-red-700"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                 </CardContent>
                             </Card>
