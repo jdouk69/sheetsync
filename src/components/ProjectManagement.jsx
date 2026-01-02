@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useProject } from "./ProjectContext";
 import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,17 @@ export default function ProjectManagement({ onClose }) {
     const { projects, currentProjectId, switchProject, currentProject } = useProject();
     const { t } = useLanguage();
     const currentProjectPermissions = useProjectPermissions(currentProject);
+    
+    const { data: user } = useQuery({
+        queryKey: ['currentUser'],
+        queryFn: () => base44.auth.me(),
+        staleTime: 5 * 60 * 1000,
+    });
+    
+    // Check if user is admin or has created any project
+    const isAdmin = user?.role === 'admin';
+    const hasCreatedProject = projects.some(p => p.created_by === user?.email);
+    const canInviteUsers = isAdmin || hasCreatedProject;
     const [editingProject, setEditingProject] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [sharingProject, setSharingProject] = useState(null);
@@ -122,20 +133,22 @@ export default function ProjectManagement({ onClose }) {
                     </Button>
                 )}
                 
-                <Dialog open={showInviteUser} onOpenChange={setShowInviteUser}>
-                    <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="gap-2">
-                            <UserPlus className="w-4 h-4" />
-                            <span>{t('inviteUser')}</span>
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-[95vw] sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>{t('inviteUserToApp')}</DialogTitle>
-                        </DialogHeader>
-                        <InviteUser />
-                    </DialogContent>
-                </Dialog>
+                {canInviteUsers && (
+                    <Dialog open={showInviteUser} onOpenChange={setShowInviteUser}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <UserPlus className="w-4 h-4" />
+                                <span>{t('inviteUser')}</span>
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-[95vw] sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle>{t('inviteUserToApp')}</DialogTitle>
+                            </DialogHeader>
+                            <InviteUser />
+                        </DialogContent>
+                    </Dialog>
+                )}
             </div>
 
             {currentSharingProject ? (
