@@ -13,7 +13,7 @@ export default function ProjectSharing({ project }) {
     const { canEdit, canDelete, isOwner } = useProjectPermissions(project);
     const canManageSharing = canDelete; // Only owners and admins can manage sharing
     const [email, setEmail] = useState("");
-    const [role, setRole] = useState("editor");
+    const [role, setRole] = useState("viewer");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const queryClient = useQueryClient();
@@ -55,7 +55,7 @@ export default function ProjectSharing({ project }) {
             });
             setSuccess(`✓ User added successfully as ${role}`);
             setEmail("");
-            setRole("editor");
+            setRole("viewer");
             setTimeout(() => setSuccess(""), 3000);
         } catch (err) {
             setError(`Failed to add user: ${err.message}`);
