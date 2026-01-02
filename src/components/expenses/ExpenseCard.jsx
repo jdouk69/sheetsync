@@ -37,9 +37,9 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const canEditThis = isCreator || isProjectOwner || isProjectAdmin;
     const canDeleteThis = isCreator || isProjectOwner || isProjectAdmin;
 
-    // Get user names
-    const creatorUser = users.find(u => u.email === expense.created_by);
-    const editorUser = expense.updated_by ? users.find(u => u.email === expense.updated_by) : null;
+    // Get user names - prefer stored names, fallback to lookup
+    const creatorName = expense.createdByName || users.find(u => u.email === expense.created_by)?.full_name || users.find(u => u.email === expense.created_by)?.email;
+    const editorName = expense.updatedByName || (expense.updated_by && users.find(u => u.email === expense.updated_by)?.full_name) || (expense.updated_by && users.find(u => u.email === expense.updated_by)?.email);
 
     return (
         <>
@@ -101,16 +101,16 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             )}
 
                             <div className="flex flex-wrap gap-2 mt-3 text-xs">
-                                {creatorUser && (
+                                {creatorName && (
                                     <div className="flex items-center gap-1 text-red-600">
                                         <User className="w-3 h-3" />
-                                        <span>{t('createdBy')}: {creatorUser.full_name || creatorUser.email}</span>
+                                        <span>{t('createdBy')}: {creatorName}</span>
                                     </div>
                                 )}
-                                {editorUser && expense.updated_by !== expense.created_by && (
+                                {editorName && expense.updated_by !== expense.created_by && (
                                     <div className="flex items-center gap-1 text-slate-500">
                                         <User className="w-3 h-3" />
-                                        <span>{t('editedBy')}: {editorUser.full_name || editorUser.email}</span>
+                                        <span>{t('editedBy')}: {editorName}</span>
                                     </div>
                                 )}
                             </div>

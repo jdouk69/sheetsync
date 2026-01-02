@@ -96,7 +96,12 @@ export default function ExpensesPage() {
     });
 
     const handleSubmit = (data) => {
-        const expenseData = { ...data, projectId: currentProjectId };
+        const expenseData = { 
+            ...data, 
+            projectId: currentProjectId,
+            createdByName: user?.full_name || user?.email,
+            updatedByName: user?.full_name || user?.email
+        };
         if (editingExpense) {
             updateMutation.mutate({ id: editingExpense.id, data: expenseData });
         } else {
