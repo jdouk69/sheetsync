@@ -33,8 +33,8 @@ export default function ProjectSelector() {
                         <span className="hidden md:inline">{t('addProject')}</span>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-4 sm:p-6 mt-8">
-                    <DialogHeader className="shrink-0 pb-4 pt-2">
+                <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-4 sm:p-6 pt-10">
+                    <DialogHeader className="shrink-0 pb-4">
                         <DialogTitle>{t('projectManagement')}</DialogTitle>
                     </DialogHeader>
                     <div className="overflow-y-auto overflow-x-hidden flex-1 -mx-4 px-4 sm:-mx-6 sm:px-6" style={{WebkitOverflowScrolling: 'touch'}}>
@@ -66,8 +66,8 @@ export default function ProjectSelector() {
                         <Settings className="w-4 h-4" />
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-4 sm:p-6 mt-8">
-                    <DialogHeader className="shrink-0 pb-4 pt-2">
+                <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-4 sm:p-6 pt-10">
+                    <DialogHeader className="shrink-0 pb-4">
                         <DialogTitle>{t('projectManagement')}</DialogTitle>
                     </DialogHeader>
                     <div className="overflow-y-auto overflow-x-hidden flex-1 -mx-4 px-4 sm:-mx-6 sm:px-6" style={{WebkitOverflowScrolling: 'touch'}}>
