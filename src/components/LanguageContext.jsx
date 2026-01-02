@@ -56,6 +56,7 @@ const translations = {
         update: "Update",
         add: "Add",
         expense: "Expense",
+        markAsPaid: "Mark as paid",
         
         // Expense Card
         viewPhotos: "View Photos",
@@ -185,6 +186,7 @@ const translations = {
         update: "Ενημέρωση",
         add: "Προσθήκη",
         expense: "Εξόδου",
+        markAsPaid: "Επισημάνετε ως πληρωμένο",
         
         // Expense Card
         viewPhotos: "Προβολή Φωτογραφιών",

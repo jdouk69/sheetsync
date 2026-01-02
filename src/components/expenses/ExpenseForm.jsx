@@ -295,7 +295,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                             htmlFor="isPaid"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                            Mark as paid
+                            {t('markAsPaid')}
                         </label>
                     </div>
                 )}
