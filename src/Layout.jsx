@@ -58,12 +58,6 @@ function LayoutContent({ children, currentPageName }) {
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                                    {user && (
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
-                                    <User className="w-4 h-4 text-slate-600" />
-                                    <span className="text-sm font-medium text-slate-900">{user.full_name || user.email}</span>
-                                    </div>
-                                    )}
                                     <button
                                     onClick={toggleLanguage}
                                     className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
