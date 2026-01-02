@@ -77,13 +77,13 @@ function LayoutContent({ children, currentPageName }) {
                     </div>
 
                     <div className="border-t border-slate-200 py-3">
-                        <ProjectSelector />
                         {user && (
-                            <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg mt-3">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg mb-3">
                                 <User className="w-4 h-4 text-slate-600" />
                                 <span className="text-sm font-medium text-slate-900">{user.full_name || user.email}</span>
                             </div>
                         )}
+                        <ProjectSelector />
                     </div>
 
                     <div className="md:hidden flex gap-2 pb-3 border-t border-slate-200 pt-3">
