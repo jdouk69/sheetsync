@@ -105,13 +105,13 @@ export default function ExpensesPage() {
     };
 
     const handleEdit = (expense) => {
-        // Check if user can edit this specific expense
+        // Only expense creator, project owner, or project admin can edit
         const isCreator = expense.created_by === user?.email;
         const isProjectOwner = currentProject?.created_by === user?.email;
         const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === user?.email && s.role === 'admin');
         
         if (!isCreator && !isProjectOwner && !isProjectAdmin) {
-            alert('You can only edit expenses that you created.');
+            alert('You do not have permission to edit this expense. Only the creator, project owner, or project admins can edit.');
             return;
         }
         
@@ -125,13 +125,13 @@ export default function ExpensesPage() {
     };
 
     const handleDelete = (expense) => {
-        // Check if user can delete this specific expense
+        // Only expense creator, project owner, or project admin can delete
         const isCreator = expense.created_by === user?.email;
         const isProjectOwner = currentProject?.created_by === user?.email;
         const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === user?.email && s.role === 'admin');
         
         if (!isCreator && !isProjectOwner && !isProjectAdmin) {
-            alert('You can only delete expenses that you created.');
+            alert('You do not have permission to delete this expense. Only the creator, project owner, or project admins can delete.');
             return;
         }
         
