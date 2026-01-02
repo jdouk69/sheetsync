@@ -9,9 +9,12 @@ import CategoryCombobox from "./CategoryCombobox";
 import { format } from "date-fns";
 import { useLanguage } from "../LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useProject } from "../ProjectContext";
+import { Sparkles } from "lucide-react";
 
 export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }) {
     const { t } = useLanguage();
+    const { currentProjectId } = useProject();
     const isAdmin = currentUser?.role === 'admin';
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses'],
@@ -30,6 +33,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
         isPaid: false
     });
     const [uploading, setUploading] = useState(false);
+    const [suggestingCategory, setSuggestingCategory] = useState(false);
+    const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
 
     useEffect(() => {
         if (expense) {
@@ -96,6 +101,34 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
         }));
     };
 
+    const handleSuggestCategory = async () => {
+        if (!formData.description && !formData.vendor) {
+            return;
+        }
+
+        setSuggestingCategory(true);
+        try {
+            const response = await base44.functions.invoke('suggestCategory', {
+                description: formData.description,
+                vendor: formData.vendor,
+                projectId: currentProjectId
+            });
+
+            if (response.data.suggestedCategory) {
+                setFormData(prev => ({
+                    ...prev,
+                    category: response.data.suggestedCategory
+                }));
+                setCategoryJustSuggested(true);
+                setTimeout(() => setCategoryJustSuggested(false), 2000);
+            }
+        } catch (error) {
+            console.error('Failed to suggest category:', error);
+        } finally {
+            setSuggestingCategory(false);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit({
@@ -141,11 +174,28 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                         <label className="block text-sm font-medium text-slate-700 mb-1">
                             {t('category')} *
                         </label>
-                        <CategoryCombobox
-                            value={formData.category}
-                            onChange={(value) => setFormData({...formData, category: value})}
-                            existingCategories={existingCategories}
-                        />
+                        <div className="flex gap-2">
+                            <div className="flex-1">
+                                <CategoryCombobox
+                                    value={formData.category}
+                                    onChange={(value) => setFormData({...formData, category: value})}
+                                    existingCategories={existingCategories}
+                                />
+                            </div>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleSuggestCategory}
+                                disabled={suggestingCategory || (!formData.description && !formData.vendor)}
+                                className={categoryJustSuggested ? "bg-green-50 border-green-300" : ""}
+                            >
+                                {suggestingCategory ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                ) : (
+                                    <Sparkles className="w-4 h-4" />
+                                )}
+                            </Button>
+                        </div>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
