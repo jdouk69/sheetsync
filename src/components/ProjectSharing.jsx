@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X, UserPlus, Mail, Shield, Edit, Eye } from "lucide-react";
 import { useLanguage } from "./LanguageContext";
+import { useProjectPermissions } from "./useProjectPermissions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ProjectSharing({ project }) {
     const { t } = useLanguage();
+    const { canEdit, isOwner } = useProjectPermissions(project);
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("editor");
     const [error, setError] = useState("");
@@ -115,10 +117,11 @@ export default function ProjectSharing({ project }) {
                             placeholder="Enter user email to share"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleAddUser()}
+                            onKeyPress={(e) => e.key === 'Enter' && canEdit && handleAddUser()}
+                            disabled={!canEdit}
                         />
                     </div>
-                    <Select value={role} onValueChange={setRole}>
+                    <Select value={role} onValueChange={setRole} disabled={!canEdit}>
                         <SelectTrigger className="w-32">
                             <SelectValue />
                         </SelectTrigger>
@@ -130,7 +133,7 @@ export default function ProjectSharing({ project }) {
                     </Select>
                     <Button 
                         onClick={handleAddUser}
-                        disabled={updateProjectMutation.isPending}
+                        disabled={updateProjectMutation.isPending || !canEdit}
                         className="bg-blue-600 hover:bg-blue-700"
                     >
                         {updateProjectMutation.isPending ? "Adding..." : "Add"}
@@ -177,29 +180,38 @@ export default function ProjectSharing({ project }) {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                                    <Select 
-                                        value={share.role} 
-                                        onValueChange={(newRole) => handleChangeRole(share.email, newRole)}
-                                        disabled={updateProjectMutation.isPending}
-                                    >
-                                        <SelectTrigger className="w-28 h-9 text-xs">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="admin">Admin</SelectItem>
-                                            <SelectItem value="editor">Editor</SelectItem>
-                                            <SelectItem value="viewer">Viewer</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleRemoveUser(share.email)}
-                                        disabled={updateProjectMutation.isPending}
-                                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-9 w-9 p-0"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </Button>
+                                    {canEdit && (
+                                        <Select 
+                                            value={share.role} 
+                                            onValueChange={(newRole) => handleChangeRole(share.email, newRole)}
+                                            disabled={updateProjectMutation.isPending || share.email === project.created_by}
+                                        >
+                                            <SelectTrigger className="w-28 h-9 text-xs">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="admin">Admin</SelectItem>
+                                                <SelectItem value="editor">Editor</SelectItem>
+                                                <SelectItem value="viewer">Viewer</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                    {!canEdit && (
+                                        <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded w-28 text-center">
+                                            {share.role}
+                                        </span>
+                                    )}
+                                    {canEdit && share.email !== project.created_by && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleRemoveUser(share.email)}
+                                            disabled={updateProjectMutation.isPending}
+                                            className="text-red-600 hover:text-red-700 hover:bg-red-50 h-9 w-9 p-0"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                         ))}
