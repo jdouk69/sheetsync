@@ -280,6 +280,43 @@ export default function ReportsPage() {
                     `).join('')}
                     </tbody>
                     </table>
+                    
+                    ${expenses.filter(exp => !exp.isPaid).length > 0 ? `
+                    <h2 class="section-title">${t('unpaidExpenses')}</h2>
+                    <div class="summary-box" style="background: #fef2f2; border-color: #fecaca;">
+                        <div class="summary-row">
+                            <span class="summary-label" style="color: #991b1b;">${t('totalUnpaidAmount')}:</span>
+                            <span class="summary-value" style="color: #b91c1c;">€${expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label" style="color: #991b1b;">${t('unpaidItems')}:</span>
+                            <span class="summary-value" style="color: #b91c1c;">${expenses.filter(exp => !exp.isPaid).length}</span>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>${t('date')}</th>
+                                <th>${t('description')}</th>
+                                <th>${t('category')}</th>
+                                <th>${t('vendor')}</th>
+                                <th>${t('amount')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${expenses.filter(exp => !exp.isPaid).map(exp => `
+                                <tr>
+                                    <td>${format(new Date(exp.date), 'dd/MM/yyyy', { locale: dateLocale })}</td>
+                                    <td>${exp.description}</td>
+                                    <td>${exp.category}</td>
+                                    <td>${exp.vendor || '-'}</td>
+                                    <td class="amount-cell">€${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ` : ''}
+                    
                     </div>
                     </body>
                     </html>
