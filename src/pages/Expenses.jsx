@@ -283,6 +283,44 @@ export default function ExpensesPage() {
                                 setShowForm(false);
                                 setEditingExpense(null);
                             }}
+                            currentUser={user}
+                        />
+                    )}
+                </div>
+
+                <ExpenseSummary expenses={filteredExpenses} />
+
+                <ExpenseFilters
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    availableCategories={availableCategories}
+                />
+
+                {canCreate && (
+                    <div className="flex gap-3 mb-6">
+                        {selectedExpenses.length > 0 && canDelete && (
+                            <Button
+                                variant="destructive"
+                                onClick={handleBulkDelete}
+                                className="gap-2"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                {t('deleteSelected', { count: selectedExpenses.length })}
+                            </Button>
+                        )}
+                        <Button
+                            onClick={() => setShowImport(true)}
+                            variant="outline"
+                            className="gap-2"
+                        >
+                            <Upload className="w-4 h-4" />
+                            {t('importCsv')}
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setShowForm(false);
+                                setEditingExpense(null);
+                            }}
                         />
                     )}
                 </div>

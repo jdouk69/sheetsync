@@ -8,9 +8,11 @@ import { useQuery } from "@tanstack/react-query";
 import CategoryCombobox from "./CategoryCombobox";
 import { format } from "date-fns";
 import { useLanguage } from "../LanguageContext";
+import { Checkbox } from "@/components/ui/checkbox";
 
-export default function ExpenseForm({ expense, onSubmit, onCancel }) {
+export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }) {
     const { t } = useLanguage();
+    const isAdmin = currentUser?.role === 'admin';
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses'],
         queryFn: () => base44.entities.Expense.list(),
@@ -24,7 +26,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
         date: new Date().toISOString().split('T')[0],
         vendor: "",
         photos: [],
-        notes: ""
+        notes: "",
+        isPaid: false
     });
     const [uploading, setUploading] = useState(false);
 
@@ -47,7 +50,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                 date: dateValue,
                 vendor: expense.vendor || "",
                 photos: expense.photos || [],
-                notes: expense.notes || ""
+                notes: expense.notes || "",
+                isPaid: expense.isPaid || false
             });
         } else {
             setFormData({
@@ -57,7 +61,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                 date: new Date().toISOString().split('T')[0],
                 vendor: "",
                 photos: [],
-                notes: ""
+                notes: "",
+                isPaid: false
             });
         }
     }, [expense]);
@@ -228,6 +233,22 @@ export default function ExpenseForm({ expense, onSubmit, onCancel }) {
                         </label>
                     </div>
                 </div>
+
+                {isAdmin && (
+                    <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
+                        <Checkbox
+                            id="isPaid"
+                            checked={formData.isPaid}
+                            onCheckedChange={(checked) => setFormData({...formData, isPaid: checked})}
+                        />
+                        <label
+                            htmlFor="isPaid"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Mark as paid
+                        </label>
+                    </div>
+                )}
 
                 <div className="flex gap-3 pt-4">
                     <Button type="button" variant="outline" onClick={onCancel} className="flex-1">

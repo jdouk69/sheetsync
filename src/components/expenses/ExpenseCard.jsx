@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, User } from "lucide-react";
+import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, User, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import {
     Dialog,
@@ -76,7 +76,13 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             <Calendar className="w-3 h-3" />
                                             {format(new Date(expense.date), 'MMM d, yyyy')}
                                         </span>
-                                    </div>
+                                        {expense.isPaid && (
+                                            <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1 font-semibold">
+                                                <CheckCircle2 className="w-3 h-3" />
+                                                Paid
+                                            </span>
+                                        )}
+                                        </div>
                                 </div>
                                 <div className="text-right">
                                     <div className="text-2xl font-bold text-slate-900">
