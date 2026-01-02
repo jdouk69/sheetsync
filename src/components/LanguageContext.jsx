@@ -24,7 +24,9 @@ const translations = {
         create: "Create",
         current: "Current",
         confirmDeleteProject: "Are you sure you want to delete this project? All associated expenses will remain but won't be linked to any project.",
-        
+        inviteUser: "Invite User",
+        inviteUserToApp: "Invite User to App",
+
         // Expenses Page
         constructionExpenses: "Construction Expenses",
         trackExpenses: "Track your Greece house construction costs",
@@ -147,7 +149,9 @@ const translations = {
         create: "Δημιουργία",
         current: "Τρέχον",
         confirmDeleteProject: "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το έργο; Όλες οι σχετικές δαπάνες θα παραμείνουν αλλά δεν θα συνδέονται με κάποιο έργο.",
-        
+        inviteUser: "Πρόσκληση Χρήστη",
+        inviteUserToApp: "Πρόσκληση Χρήστη στην Εφαρμογή",
+
         // Expenses Page
         constructionExpenses: "Έξοδα Κατασκευής",
         trackExpenses: "Παρακολουθήστε τα έξοδα κατασκευής του σπιτιού σας στην Ελλάδα",

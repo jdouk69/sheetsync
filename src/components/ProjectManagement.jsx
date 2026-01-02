@@ -121,12 +121,12 @@ export default function ProjectManagement({ onClose }) {
                     <DialogTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
                             <UserPlus className="w-4 h-4" />
-                            <span>Invite User</span>
+                            <span>{t('inviteUser')}</span>
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-[95vw] sm:max-w-md">
                         <DialogHeader>
-                            <DialogTitle>Invite User to App</DialogTitle>
+                            <DialogTitle>{t('inviteUserToApp')}</DialogTitle>
                         </DialogHeader>
                         <InviteUser />
                     </DialogContent>
