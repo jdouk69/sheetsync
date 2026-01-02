@@ -27,12 +27,12 @@ export default function ExpenseSummary({ expenses }) {
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
+                        <div className="p-2 bg-blue-100 rounded-lg shrink-0">
                             <Euro className="w-6 h-6 text-blue-600" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                             <p className="text-sm text-slate-600">{t('totalSpent')}</p>
-                            <p className="text-2xl font-bold text-slate-900">
+                            <p className="text-2xl font-bold text-slate-900 break-words">
                                 €{totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </p>
                         </div>
@@ -43,10 +43,10 @@ export default function ExpenseSummary({ expenses }) {
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-green-100 rounded-lg">
+                        <div className="p-2 bg-green-100 rounded-lg shrink-0">
                             <Package className="w-6 h-6 text-green-600" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                             <p className="text-sm text-slate-600">{t('totalExpenses')}</p>
                             <p className="text-2xl font-bold text-slate-900">{totalExpenses}</p>
                         </div>
@@ -57,12 +57,12 @@ export default function ExpenseSummary({ expenses }) {
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
+                        <div className="p-2 bg-purple-100 rounded-lg shrink-0">
                             <TrendingUp className="w-6 h-6 text-purple-600" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                             <p className="text-sm text-slate-600">{t('topCategory')}</p>
-                            <p className="text-lg font-bold text-slate-900">
+                            <p className="text-lg font-bold text-slate-900 break-words">
                                 {topCategory ? topCategory[0] : t('na')}
                             </p>
                         </div>
@@ -73,12 +73,12 @@ export default function ExpenseSummary({ expenses }) {
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-orange-100 rounded-lg">
+                        <div className="p-2 bg-orange-100 rounded-lg shrink-0">
                             <Calendar className="w-6 h-6 text-orange-600" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                             <p className="text-sm text-slate-600">{t('thisMonth')}</p>
-                            <p className="text-2xl font-bold text-slate-900">
+                            <p className="text-2xl font-bold text-slate-900 break-words">
                                 €{monthlyTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </p>
                         </div>
