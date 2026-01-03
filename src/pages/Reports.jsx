@@ -130,6 +130,27 @@ export default function ReportsPage() {
                         padding: 40px;
                         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     }
+                    .close-button {
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #3b82f6;
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        width: 40px;
+                        height: 40px;
+                        font-size: 24px;
+                        cursor: pointer;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                        z-index: 1000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .close-button:hover {
+                        background: #2563eb;
+                    }
                     .report-header { 
                         border-bottom: 3px solid #3b82f6; 
                         padding-bottom: 20px; 
@@ -216,9 +237,13 @@ export default function ReportsPage() {
                         font-weight: 500; 
                         color: #1e293b; 
                     }
+                    @media print {
+                        .close-button { display: none; }
+                    }
                 </style>
             </head>
             <body>
+            <button class="close-button" onclick="window.close()">×</button>
             <div class="container">
             <div class="report-header">
                 <h1 class="report-title">${t('constructionExpenseReport')}</h1>
