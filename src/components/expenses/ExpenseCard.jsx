@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, User, CheckCircle2 } from "lucide-react";
+import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, User, CheckCircle2, Download } from "lucide-react";
 import { format } from "date-fns";
 import {
     Dialog,
@@ -191,6 +191,26 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
             <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
                 <DialogContent className="max-w-5xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center justify-between">
+                            <span>Photo</span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = selectedPhoto;
+                                    link.download = `expense-photo-${Date.now()}.jpg`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }}
+                            >
+                                <Download className="w-4 h-4 mr-2" />
+                                Download
+                            </Button>
+                        </DialogTitle>
+                    </DialogHeader>
                     <img
                         src={selectedPhoto}
                         alt="Full size"
