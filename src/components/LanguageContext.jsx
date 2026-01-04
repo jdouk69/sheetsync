@@ -137,8 +137,22 @@ const translations = {
         totalUnpaidAmount: "Total Unpaid Amount",
         unpaidItems: "unpaid items",
         allExpensesPaid: "All Expenses Paid!",
-        noUnpaidExpenses: "You have no unpaid expenses"
-    },
+        noUnpaidExpenses: "You have no unpaid expenses",
+
+        // Duplicate Search
+        searchForDuplicates: "Search for Duplicates",
+        findMatchingExpenses: "Find expenses with matching amounts or vendors",
+        byAmount: "By Amount",
+        byVendor: "By Vendor",
+        clear: "Clear",
+        search: "Search",
+        noDuplicatesFound: "No duplicates found for {type}",
+        amounts: "amounts",
+        vendors: "vendors",
+        foundDuplicateGroups: "Found {count} group(s) with duplicates",
+        noVendor: "No Vendor",
+        expenses: "expenses"
+        },
     el: {
         // Layout
         appName: "Κατασκευή Ελλάδας",
@@ -275,8 +289,22 @@ const translations = {
         totalUnpaidAmount: "Συνολικό Ανεξόφλητο Ποσό",
         unpaidItems: "ανεξόφλητα στοιχεία",
         allExpensesPaid: "Όλα τα Έξοδα Πληρώθηκαν!",
-        noUnpaidExpenses: "Δεν έχετε ανεξόφλητα έξοδα"
-    }
+        noUnpaidExpenses: "Δεν έχετε ανεξόφλητα έξοδα",
+
+        // Duplicate Search
+        searchForDuplicates: "Αναζήτηση Διπλότυπων",
+        findMatchingExpenses: "Βρείτε έξοδα με αντίστοιχα ποσά ή προμηθευτές",
+        byAmount: "Ανά Ποσό",
+        byVendor: "Ανά Προμηθευτή",
+        clear: "Καθαρισμός",
+        search: "Αναζήτηση",
+        noDuplicatesFound: "Δεν βρέθηκαν διπλότυπα για {type}",
+        amounts: "ποσά",
+        vendors: "προμηθευτές",
+        foundDuplicateGroups: "Βρέθηκαν {count} ομάδα(-ες) με διπλότυπα",
+        noVendor: "Χωρίς Προμηθευτή",
+        expenses: "έξοδα"
+        }
 };
 
 const LanguageContext = createContext();

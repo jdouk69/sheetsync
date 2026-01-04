@@ -49,8 +49,8 @@ export default function DuplicateSearch({ expenses, onEdit, onDelete, currentUse
             <CardContent className="p-4">
                 <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
                     <div className="flex-1">
-                        <h3 className="font-semibold text-slate-900 mb-1">Search for Duplicates</h3>
-                        <p className="text-sm text-slate-600">Find expenses with matching amounts or vendors</p>
+                        <h3 className="font-semibold text-slate-900 mb-1">{t('searchForDuplicates')}</h3>
+                        <p className="text-sm text-slate-600">{t('findMatchingExpenses')}</p>
                     </div>
                     
                     <div className="flex gap-2 w-full md:w-auto">
@@ -59,20 +59,20 @@ export default function DuplicateSearch({ expenses, onEdit, onDelete, currentUse
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="amount">By Amount</SelectItem>
-                                <SelectItem value="vendor">By Vendor</SelectItem>
+                                <SelectItem value="amount">{t('byAmount')}</SelectItem>
+                                <SelectItem value="vendor">{t('byVendor')}</SelectItem>
                             </SelectContent>
                         </Select>
                         
                         {showResults ? (
                             <Button onClick={clearSearch} variant="outline">
                                 <X className="w-4 h-4 mr-2" />
-                                Clear
+                                {t('clear')}
                             </Button>
                         ) : (
                             <Button onClick={findDuplicates} className="bg-blue-600 hover:bg-blue-700">
                                 <Search className="w-4 h-4 mr-2" />
-                                Search
+                                {t('search')}
                             </Button>
                         )}
                     </div>
@@ -82,23 +82,23 @@ export default function DuplicateSearch({ expenses, onEdit, onDelete, currentUse
                     <div className="mt-4 border-t pt-4">
                         {duplicates.length === 0 ? (
                             <p className="text-center text-slate-600 py-4">
-                                No duplicates found for {searchType === "amount" ? "amounts" : "vendors"}
+                                {t('noDuplicatesFound', { type: searchType === "amount" ? t('amounts') : t('vendors') })}
                             </p>
                         ) : (
                             <div className="space-y-6">
                                 <p className="text-sm font-medium text-slate-900">
-                                    Found {duplicates.length} group(s) with duplicates
+                                    {t('foundDuplicateGroups', { count: duplicates.length })}
                                 </p>
                                 
                                 {duplicates.map(([key, items], groupIdx) => (
                                     <div key={groupIdx} className="border-l-4 border-blue-500 pl-4">
                                         <h4 className="font-semibold text-slate-900 mb-2">
                                             {searchType === "amount" 
-                                                ? `Amount: €${parseFloat(key).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                                : `Vendor: ${key === "no-vendor" ? "No Vendor" : items[0].vendor}`
+                                                ? `${t('amount')}: €${parseFloat(key).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                                : `${t('vendor')}: ${key === "no-vendor" ? t('noVendor') : items[0].vendor}`
                                             }
                                             <span className="ml-2 text-sm text-slate-600">
-                                                ({items.length} expenses)
+                                                ({items.length} {t('expenses')})
                                             </span>
                                         </h4>
                                         <div className="space-y-3">
