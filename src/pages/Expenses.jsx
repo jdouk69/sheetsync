@@ -19,7 +19,7 @@ export default function ExpensesPage() {
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
-    const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null });
+    const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null, search: "" });
     const [selectedIds, setSelectedIds] = useState([]);
     const formRef = useRef(null);
     const [user, setUser] = useState(null);
@@ -174,7 +174,12 @@ export default function ExpensesPage() {
             const expenseDate = new Date(expense.date);
             const startDateMatch = !filters.startDate || expenseDate >= new Date(filters.startDate);
             const endDateMatch = !filters.endDate || expenseDate <= new Date(filters.endDate + 'T23:59:59');
-            return categoryMatch && startDateMatch && endDateMatch;
+            const searchMatch = !filters.search || 
+                expense.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                expense.vendor?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                expense.category?.toLowerCase().includes(filters.search.toLowerCase()) ||
+                expense.notes?.toLowerCase().includes(filters.search.toLowerCase());
+            return categoryMatch && startDateMatch && endDateMatch && searchMatch;
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 

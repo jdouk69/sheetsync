@@ -1,13 +1,24 @@
 import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Filter } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import { useLanguage } from "../LanguageContext";
 
 export default function ExpenseFilters({ filters, onFiltersChange, availableCategories = [] }) {
     const { t } = useLanguage();
     return (
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col gap-4">
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input
+                    type="text"
+                    placeholder={t('searchExpenses')}
+                    value={filters.search || ''}
+                    onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+                    className="pl-10"
+                />
+            </div>
+            <div className="flex flex-col md:flex-row gap-4">
             <div className="flex items-center gap-2 flex-1">
                 <Filter className="w-4 h-4 text-slate-500" />
                 <Select
@@ -43,7 +54,7 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                         onChange={(e) => onFiltersChange({ ...filters, endDate: e.target.value })}
                     />
                 </div>
-                </div>
+            </div>
         </div>
     );
 }
