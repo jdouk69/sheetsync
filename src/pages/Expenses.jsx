@@ -174,11 +174,16 @@ export default function ExpensesPage() {
             const expenseDate = new Date(expense.date);
             const startDateMatch = !filters.startDate || expenseDate >= new Date(filters.startDate);
             const endDateMatch = !filters.endDate || expenseDate <= new Date(filters.endDate + 'T23:59:59');
+
+            const searchTerm = filters.search?.toLowerCase();
+            const searchNumber = parseFloat(filters.search);
             const searchMatch = !filters.search || 
-                expense.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                expense.vendor?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                expense.category?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                expense.notes?.toLowerCase().includes(filters.search.toLowerCase());
+                expense.description?.toLowerCase().includes(searchTerm) ||
+                expense.vendor?.toLowerCase().includes(searchTerm) ||
+                expense.category?.toLowerCase().includes(searchTerm) ||
+                expense.notes?.toLowerCase().includes(searchTerm) ||
+                (!isNaN(searchNumber) && expense.amount === searchNumber);
+
             return categoryMatch && startDateMatch && endDateMatch && searchMatch;
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
