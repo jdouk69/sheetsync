@@ -50,7 +50,8 @@ export default function ReportsPage() {
         startDate: '',
         endDate: '',
         search: '',
-        isPaid: 'all'
+        isPaid: 'all',
+        user: 'all'
     });
 
     const expenses = useMemo(() => {
@@ -72,7 +73,9 @@ export default function ReportsPage() {
                 (filters.isPaid === 'paid' && exp.isPaid) || 
                 (filters.isPaid === 'unpaid' && !exp.isPaid);
             
-            return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch && paidMatch;
+            const userMatch = filters.user === 'all' || exp.created_by === filters.user;
+            
+            return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch && paidMatch && userMatch;
         });
     }, [allExpenses, filters]);
 
@@ -82,6 +85,10 @@ export default function ReportsPage() {
 
     const uniqueCategories = useMemo(() => {
         return [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
+    }, [allExpenses]);
+
+    const uniqueUsers = useMemo(() => {
+        return [...new Set(allExpenses.map(exp => exp.created_by).filter(Boolean))];
     }, [allExpenses]);
 
     const categoryData = expenses.reduce((acc, exp) => {
@@ -471,7 +478,7 @@ export default function ReportsPage() {
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">{t('category')}</label>
                             <Select value={filters.category} onValueChange={(value) => setFilters({...filters, category: value})}>
@@ -537,13 +544,27 @@ export default function ReportsPage() {
                                 </SelectContent>
                             </Select>
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('createdBy')}</label>
+                            <Select value={filters.user} onValueChange={(value) => setFilters({...filters, user: value})}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">{t('all')}</SelectItem>
+                                    {uniqueUsers.map(userEmail => (
+                                        <SelectItem key={userEmail} value={userEmail}>{userEmail}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
-                    {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate || filters.search || filters.isPaid !== 'all') && (
+                    {(filters.category !== 'all' || filters.vendor !== 'all' || filters.startDate || filters.endDate || filters.search || filters.isPaid !== 'all' || filters.user !== 'all') && (
                         <div className="mt-4">
                             <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '', search: '', isPaid: 'all' })}
+                                onClick={() => setFilters({ category: 'all', vendor: 'all', startDate: '', endDate: '', search: '', isPaid: 'all', user: 'all' })}
                             >
                                 {t('clearFilters')}
                             </Button>
