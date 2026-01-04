@@ -59,6 +59,7 @@ const translations = {
         markAsPaid: "Mark as paid",
         paidStatus: "Paid Status",
         all: "All",
+        searchExpenses: "Search expenses (description, vendor, category, notes)",
 
         // Expense Card
         viewPhotos: "View Photos",
@@ -196,6 +197,7 @@ const translations = {
         markAsPaid: "Επισημάνετε ως πληρωμένο",
         paidStatus: "Κατάσταση Πληρωμής",
         all: "Όλα",
+        searchExpenses: "Αναζήτηση εξόδων (περιγραφή, προμηθευτής, κατηγορία, σημειώσεις)",
 
         // Expense Card
         viewPhotos: "Προβολή Φωτογραφιών",
