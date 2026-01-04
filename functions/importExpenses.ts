@@ -10,7 +10,7 @@ Deno.serve(async (req) => {
         }
 
         const body = await req.json();
-        const { fileContent, columnMapping } = body;
+        const { fileContent, columnMapping, projectId } = body;
 
         if (!fileContent) {
             return Response.json({ error: 'No file provided' }, { status: 400 });
@@ -103,6 +103,9 @@ Deno.serve(async (req) => {
                     amount: Math.abs(amount),
                     category: values[categoryIdx] || '',
                     date: dateValue,
+                    projectId: projectId,
+                    createdByName: user.full_name || user.email,
+                    updatedByName: user.full_name || user.email
                 };
 
                 if (vendorIdx !== undefined && values[vendorIdx]) {

@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "../LanguageContext";
+import { useProject } from "../ProjectContext";
 
 export default function ImportExpenses({ onImportComplete }) {
     const { t } = useLanguage();
+    const { currentProjectId } = useProject();
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState(null);
     const [importing, setImporting] = useState(false);
@@ -87,7 +89,8 @@ export default function ImportExpenses({ onImportComplete }) {
             
             const response = await base44.functions.invoke('importExpenses', {
                 fileContent: text,
-                columnMapping: columnMapping
+                columnMapping: columnMapping,
+                projectId: currentProjectId
             });
             
             setResult(response.data);
