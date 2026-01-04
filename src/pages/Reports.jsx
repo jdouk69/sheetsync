@@ -130,26 +130,37 @@ export default function ReportsPage() {
                         padding: 40px;
                         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     }
-                    .close-button {
+                    .action-buttons {
                         position: fixed;
                         top: 20px;
                         right: 20px;
+                        display: flex;
+                        gap: 10px;
+                        z-index: 1000;
+                    }
+                    .action-button {
                         background: #3b82f6;
                         color: white;
                         border: none;
-                        border-radius: 50%;
-                        width: 40px;
-                        height: 40px;
-                        font-size: 24px;
+                        border-radius: 8px;
+                        padding: 10px 20px;
+                        font-size: 14px;
                         cursor: pointer;
                         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                        z-index: 1000;
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        gap: 8px;
+                        font-weight: 500;
+                    }
+                    .action-button:hover {
+                        background: #2563eb;
+                    }
+                    .close-button {
+                        background: #ef4444;
                     }
                     .close-button:hover {
-                        background: #2563eb;
+                        background: #dc2626;
                     }
                     .report-header { 
                         border-bottom: 3px solid #3b82f6; 
@@ -238,12 +249,15 @@ export default function ReportsPage() {
                         color: #1e293b; 
                     }
                     @media print {
-                        .close-button { display: none; }
+                        .action-buttons { display: none; }
                     }
                 </style>
             </head>
             <body>
-            <button class="close-button" onclick="window.close()">×</button>
+            <div class="action-buttons">
+                <button class="action-button" onclick="window.print()">🖨️ Print</button>
+                <button class="action-button close-button" onclick="window.close()">✕ Close</button>
+            </div>
             <div class="container">
             <div class="report-header">
                 <h1 class="report-title">${t('constructionExpenseReport')}</h1>
