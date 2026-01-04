@@ -8,6 +8,7 @@ import ExpenseCard from "../components/expenses/ExpenseCard";
 import ExpenseFilters from "../components/expenses/ExpenseFilters";
 import ExpenseSummary from "../components/expenses/ExpenseSummary";
 import ImportExpenses from "../components/expenses/ImportExpenses";
+import DuplicateSearch from "../components/expenses/DuplicateSearch";
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 import { useProjectPermissions } from "../components/useProjectPermissions";
@@ -176,6 +177,8 @@ export default function ExpensesPage() {
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
+    const isAdmin = user?.role === 'admin';
+
     if (authLoading || projectsLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -278,6 +281,16 @@ export default function ExpensesPage() {
                         availableCategories={availableCategories}
                     />
                 </div>
+
+                {isAdmin && (
+                    <DuplicateSearch
+                        expenses={filteredExpenses}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        currentUser={user}
+                        users={users}
+                    />
+                )}
 
                 <div ref={formRef}>
                     {showForm && canEdit && (
