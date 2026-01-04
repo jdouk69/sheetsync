@@ -55,6 +55,7 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                     />
                 </div>
             </div>
+            </div>
         </div>
     );
 }
