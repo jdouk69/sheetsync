@@ -344,7 +344,7 @@ export default function ExpensesPage() {
                             <p className="text-slate-500">{t('noExpensesFound')}</p>
                         </div>
                     ) : (
-                        filteredExpenses.map((expense) => (
+                        paginatedExpenses.map((expense) => (
                             <ExpenseCard
                                 key={expense.id}
                                 expense={expense}
@@ -358,6 +358,33 @@ export default function ExpensesPage() {
                         ))
                     )}
                 </div>
+
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-between bg-white rounded-lg shadow-sm px-4 py-3 mb-6">
+                        <span className="text-sm text-slate-600">
+                            Showing {((currentPage - 1) * PAGE_SIZE) + 1}–{Math.min(currentPage * PAGE_SIZE, filteredExpenses.length)} of {filteredExpenses.length} expenses
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1 rounded border border-slate-300 text-sm disabled:opacity-40 hover:bg-slate-50"
+                            >
+                                Previous
+                            </button>
+                            <span className="text-sm font-medium text-slate-700">
+                                {currentPage} / {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="px-3 py-1 rounded border border-slate-300 text-sm disabled:opacity-40 hover:bg-slate-50"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
