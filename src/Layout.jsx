@@ -7,6 +7,7 @@ import { LanguageProvider, useLanguage } from "./components/LanguageContext";
 import { ProjectProvider } from "./components/ProjectContext";
 import ProjectSelector from "./components/ProjectSelector";
 import { useQuery } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/sonner";
 
 function LayoutContent({ children, currentPageName }) {
     const { language, t, toggleLanguage } = useLanguage();
