@@ -113,6 +113,7 @@ function LayoutContent({ children, currentPageName }) {
             </nav>
 
             <main>{children}</main>
+            <Toaster position="bottom-right" richColors />
         </div>
     );
 }
