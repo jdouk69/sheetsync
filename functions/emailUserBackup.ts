@@ -52,10 +52,17 @@ Deno.serve(async (req) => {
             const unpaidAmount = userExpenses.filter(e => !e.isPaid).reduce((sum, e) => sum + (e.amount || 0), 0);
             const today = new Date().toLocaleDateString('en-GB');
 
+            // Upload CSV and get a download link
+            const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+            const formData = new FormData();
+            formData.append('file', csvBlob, `expenses-backup-${today.replace(/\//g, '-')}.csv`);
+            const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: csvBlob });
+            const downloadUrl = uploadResult.file_url;
+
             const emailBody = `
 Hello ${user.full_name || user.email},
 
-Your weekly expense backup is ready! Here is a summary of your data:
+Your weekly expense backup is ready!
 
 📊 Summary
 - Total Expenses: ${userExpenses.length}
@@ -64,11 +71,8 @@ Your weekly expense backup is ready! Here is a summary of your data:
 - Projects: ${userProjects.map(p => p.name).join(', ')}
 - Generated: ${today}
 
-Your full expense data is attached below as CSV (copy the data between the lines into a .csv file to open in Excel):
-
---- CSV DATA START ---
-${csvContent}
---- CSV DATA END ---
+📥 Download your CSV backup:
+${downloadUrl}
 
 This backup is sent automatically every week.
 
