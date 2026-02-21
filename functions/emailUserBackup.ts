@@ -52,11 +52,20 @@ Deno.serve(async (req) => {
             const unpaidAmount = userExpenses.filter(e => !e.isPaid).reduce((sum, e) => sum + (e.amount || 0), 0);
             const today = new Date().toLocaleDateString('en-GB');
 
-            // Upload CSV as base64 and get a download link
-            const encoder = new TextEncoder();
-            const csvBytes = encoder.encode(csvContent);
-            const base64Csv = btoa(String.fromCharCode(...csvBytes));
-            const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: base64Csv });
+            // Write CSV to /tmp and upload via multipart form
+            const fileName = `expenses-backup-${today.replace(/\//g, '-')}.csv`;
+            const tmpPath = `/tmp/${fileName}`;
+            await Deno.writeTextFile(tmpPath, csvContent);
+            const fileBytes = await Deno.readFile(tmpPath);
+            const blob = new Blob([fileBytes], { type: 'text/csv' });
+            const form = new FormData();
+            form.append('file', blob, fileName);
+            const appId = Deno.env.get('BASE44_APP_ID');
+            const uploadResp = await fetch(`https://api.base44.com/api/apps/${appId}/integrations/Core/UploadFile`, {
+                method: 'POST',
+                body: form
+            });
+            const uploadResult = await uploadResp.json();
             const downloadUrl = uploadResult.file_url;
 
             const emailBody = `
