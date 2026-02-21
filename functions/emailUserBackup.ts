@@ -4,7 +4,9 @@ Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
 
-        // Use service role to access all data
+        const accessToken = await base44.asServiceRole.connectors.getAccessToken("googlesheets");
+        const spreadsheetId = Deno.env.get('BACKUP_SPREADSHEET_ID');
+
         const users = await base44.asServiceRole.entities.User.list();
         const allExpenses = await base44.asServiceRole.entities.Expense.list();
         const allProjects = await base44.asServiceRole.entities.Project.list();
@@ -14,6 +16,7 @@ Deno.serve(async (req) => {
             projectMap[p.id] = p.name;
         }
 
+        const today = new Date().toLocaleDateString('en-GB');
         let emailsSent = 0;
 
         for (const user of users) {
@@ -26,65 +29,78 @@ Deno.serve(async (req) => {
             if (userProjects.length === 0) continue;
 
             const projectIds = new Set(userProjects.map(p => p.id));
-
-            // Filter expenses for this user's projects
             const userExpenses = allExpenses.filter(e => projectIds.has(e.projectId));
 
             if (userExpenses.length === 0) continue;
 
-            // Build CSV
+            // Create a tab name for this user
+            const safeEmail = user.email.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
+            const tabName = `${safeEmail}_${today.replace(/\//g, '-')}`;
+
+            // Add a new sheet tab
+            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    requests: [{
+                        addSheet: {
+                            properties: { title: tabName }
+                        }
+                    }]
+                })
+            });
+
+            // Build rows
             const headers = ['Date', 'Description', 'Category', 'Vendor', 'Amount (€)', 'Paid', 'Notes', 'Project', 'Created By'];
             const rows = userExpenses.map(e => [
                 e.date || '',
-                `"${(e.description || '').replace(/"/g, '""')}"`,
+                e.description || '',
                 e.category || '',
-                `"${(e.vendor || '').replace(/"/g, '""')}"`,
+                e.vendor || '',
                 e.amount || 0,
                 e.isPaid ? 'Yes' : 'No',
-                `"${(e.notes || '').replace(/"/g, '""')}"`,
-                `"${(projectMap[e.projectId] || '').replace(/"/g, '""')}"`,
+                e.notes || '',
+                projectMap[e.projectId] || '',
                 e.createdByName || e.created_by || ''
             ]);
 
-            const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const values = [headers, ...rows];
+
+            // Write data to the tab
+            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(tabName)}!A1:I${values.length}?valueInputOption=RAW`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ values })
+            });
 
             const totalAmount = userExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
             const unpaidAmount = userExpenses.filter(e => !e.isPaid).reduce((sum, e) => sum + (e.amount || 0), 0);
-            const today = new Date().toLocaleDateString('en-GB');
+            const sheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
 
-            // Upload CSV via multipart form to Base44 storage
-            const fileName = `expenses-backup-${today.replace(/\//g, '-')}.csv`;
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const form = new FormData();
-            form.append('file', blob, fileName);
-            const appId = Deno.env.get('BASE44_APP_ID');
-            const uploadResp = await fetch(`https://api.base44.com/api/apps/${appId}/integrations/Core/UploadFile`, {
-                method: 'POST',
-                headers: { 'x-api-key': req.headers.get('x-api-key') || '' },
-                body: form
-            });
-            const uploadResult = await uploadResp.json();
-            const downloadUrl = uploadResult.file_url;
+            const emailBody = `Hello ${user.full_name || user.email},
 
-            const emailBody = `
-Hello ${user.full_name || user.email},
+Your weekly expense backup is ready for ${today}.
 
-Your weekly expense backup is ready!
-
-📊 Summary
+Summary:
 - Total Expenses: ${userExpenses.length}
 - Total Amount: €${totalAmount.toFixed(2)}
 - Unpaid Amount: €${unpaidAmount.toFixed(2)}
 - Projects: ${userProjects.map(p => p.name).join(', ')}
-- Generated: ${today}
 
-📥 Download your CSV backup:
-${downloadUrl}
+Your data has been backed up to a Google Sheet. You can download your CSV from there:
+${sheetUrl}
+
+(Look for the tab named: ${tabName})
 
 This backup is sent automatically every week.
 
-Greece Construction App
-            `.trim();
+Greece Construction App`;
 
             await base44.asServiceRole.integrations.Core.SendEmail({
                 to: user.email,
