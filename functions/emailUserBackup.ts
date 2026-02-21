@@ -52,11 +52,11 @@ Deno.serve(async (req) => {
             const unpaidAmount = userExpenses.filter(e => !e.isPaid).reduce((sum, e) => sum + (e.amount || 0), 0);
             const today = new Date().toLocaleDateString('en-GB');
 
-            // Upload CSV and get a download link
-            const csvBlob = new Blob([csvContent], { type: 'text/csv' });
-            const formData = new FormData();
-            formData.append('file', csvBlob, `expenses-backup-${today.replace(/\//g, '-')}.csv`);
-            const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: csvBlob });
+            // Upload CSV as base64 and get a download link
+            const encoder = new TextEncoder();
+            const csvBytes = encoder.encode(csvContent);
+            const base64Csv = btoa(String.fromCharCode(...csvBytes));
+            const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: base64Csv });
             const downloadUrl = uploadResult.file_url;
 
             const emailBody = `
