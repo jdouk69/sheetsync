@@ -22,6 +22,8 @@ export default function ExpensesPage() {
     const [editingExpense, setEditingExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null, search: "" });
     const [selectedIds, setSelectedIds] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const formRef = useRef(null);
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
