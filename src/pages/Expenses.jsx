@@ -187,6 +187,9 @@ export default function ExpensesPage() {
 
     const availableCategories = [...new Set(expenses.map(exp => exp.category).filter(Boolean))];
 
+    // Reset to page 1 when filters change
+    React.useEffect(() => { setCurrentPage(1); }, [filters, currentProjectId]);
+
     const filteredExpenses = expenses
         .filter(expense => {
             const categoryMatch = filters.category === "all" || expense.category === filters.category;
