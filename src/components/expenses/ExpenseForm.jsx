@@ -289,7 +289,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                         <Checkbox
                             id="isPaid"
                             checked={formData.isPaid}
-                            onCheckedChange={(checked) => setFormData({...formData, isPaid: checked})}
+                            onCheckedChange={(checked) => setFormData({
+                                ...formData,
+                                isPaid: checked,
+                                paidAt: checked ? new Date().toISOString() : null,
+                                paidBy: checked ? currentUser?.email : null
+                            })}
                         />
                         <label
                             htmlFor="isPaid"
