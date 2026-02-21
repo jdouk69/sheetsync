@@ -66,6 +66,10 @@ export default function ExpensesPage() {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
+            toast.success("Expense added successfully");
+        },
+        onError: () => {
+            toast.error("Failed to add expense. Please try again.");
         },
     });
 
@@ -75,6 +79,10 @@ export default function ExpensesPage() {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
+            toast.success("Expense updated successfully");
+        },
+        onError: () => {
+            toast.error("Failed to update expense. Please try again.");
         },
     });
 
@@ -82,6 +90,10 @@ export default function ExpensesPage() {
         mutationFn: (id) => base44.entities.Expense.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            toast.success("Expense deleted");
+        },
+        onError: () => {
+            toast.error("Failed to delete expense. Please try again.");
         },
     });
 
@@ -94,6 +106,10 @@ export default function ExpensesPage() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setSelectedIds([]);
+            toast.success("Expenses deleted successfully");
+        },
+        onError: () => {
+            toast.error("Failed to delete expenses. Please try again.");
         },
     });
 
