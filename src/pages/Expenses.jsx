@@ -210,6 +210,9 @@ export default function ExpensesPage() {
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
+    const totalPages = Math.ceil(filteredExpenses.length / PAGE_SIZE);
+    const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
     if (authLoading || projectsLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
