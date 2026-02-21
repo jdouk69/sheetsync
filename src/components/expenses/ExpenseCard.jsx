@@ -77,9 +77,10 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             {format(new Date(expense.date), 'MMM d, yyyy')}
                                         </span>
                                         {expense.isPaid ? (
-                                            <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1 font-semibold">
+                                            <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1 font-semibold" title={expense.paidAt && expense.paidBy ? `Paid by ${expense.paidBy} on ${format(new Date(expense.paidAt), 'dd/MM/yyyy HH:mm')}` : undefined}>
                                                 <CheckCircle2 className="w-3 h-3" />
                                                 {t('paid')}
+                                                {expense.paidAt && ` · ${format(new Date(expense.paidAt), 'dd/MM/yy')}`}
                                             </span>
                                         ) : (
                                             <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 flex items-center gap-1 font-semibold">
