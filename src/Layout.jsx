@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 function LayoutContent({ children, currentPageName }) {
     const { language, t, toggleLanguage } = useLanguage();
+    const canGoBack = window.history.length > 1;
     const { data: user } = useQuery({
         queryKey: ['currentUser'],
         queryFn: () => base44.auth.me(),
