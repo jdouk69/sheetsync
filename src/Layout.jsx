@@ -30,10 +30,18 @@ function LayoutContent({ children, currentPageName }) {
                     <div className="flex justify-between h-16">
                         <div className="flex items-center gap-8">
                             <div className="flex items-center gap-2">
+                                {canGoBack && (
+                                    <button
+                                        onClick={() => window.history.back()}
+                                        className="md:hidden p-1 rounded-lg text-slate-600 hover:bg-slate-100 select-none"
+                                    >
+                                        <ChevronLeft className="w-5 h-5" />
+                                    </button>
+                                )}
                                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                                     <Home className="w-5 h-5 text-white" />
                                 </div>
-                                <span className="font-bold text-xl text-slate-900">{t('appName')}</span>
+                                <span className="font-bold text-xl text-slate-900 select-none">{t('appName')}</span>
                             </div>
                             
                             <div className="hidden md:flex gap-2">
