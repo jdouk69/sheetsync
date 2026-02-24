@@ -122,7 +122,8 @@ function LayoutContent({ children, currentPageName }) {
                 </div>
             </nav>
 
-            <main>{children}</main>
+            <main className="pb-safe">{children}</main>
+            <MobileTabBar currentPageName={currentPageName} />
             <Toaster position="bottom-right" richColors />
         </div>
     );
