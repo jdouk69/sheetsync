@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
-import { Home, FileText, LogOut, Languages, User } from "lucide-react";
+import { Home, LogOut, Languages, User, ChevronLeft } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { LanguageProvider, useLanguage } from "./components/LanguageContext";
 import { ProjectProvider } from "./components/ProjectContext";
 import ProjectSelector from "./components/ProjectSelector";
+import MobileTabBar from "./components/MobileTabBar";
 import { useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 
