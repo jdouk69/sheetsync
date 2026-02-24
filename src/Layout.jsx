@@ -90,9 +90,38 @@ function LayoutContent({ children, currentPageName }) {
 
                     <div className="border-t border-slate-200 py-3">
                         {user && (
-                            <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg mb-3">
-                                <User className="w-4 h-4 text-slate-600" />
-                                <span className="text-sm font-medium text-slate-900">{user.full_name || user.email}</span>
+                            <div className="flex items-center justify-between px-3 py-2 bg-slate-100 rounded-lg mb-3">
+                                <div className="flex items-center gap-2">
+                                    <User className="w-4 h-4 text-slate-600" />
+                                    <span className="text-sm font-medium text-slate-900 select-none">{user.full_name || user.email}</span>
+                                </div>
+                                {!showDeleteConfirm ? (
+                                    <button
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                        className="text-xs text-red-500 hover:text-red-700 select-none"
+                                    >
+                                        Delete Account
+                                    </button>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-red-600 font-medium">Sure?</span>
+                                        <button
+                                            onClick={async () => {
+                                                await base44.auth.deleteAccount();
+                                                base44.auth.logout();
+                                            }}
+                                            className="text-xs bg-red-600 text-white px-2 py-0.5 rounded hover:bg-red-700 select-none"
+                                        >
+                                            Yes
+                                        </button>
+                                        <button
+                                            onClick={() => setShowDeleteConfirm(false)}
+                                            className="text-xs text-slate-500 hover:text-slate-700 select-none"
+                                        >
+                                            No
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                         <ProjectSelector />
