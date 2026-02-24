@@ -127,28 +127,7 @@ function LayoutContent({ children, currentPageName }) {
                         <ProjectSelector />
                     </div>
 
-                    <div className="md:hidden flex gap-2 pb-3 border-t border-slate-200 pt-3">
-                        <Link
-                            to={createPageUrl('Expenses')}
-                            className={`flex-1 px-4 py-2 rounded-lg text-center transition-colors ${
-                                currentPageName === 'Expenses'
-                                    ? 'bg-blue-100 text-blue-700 font-medium'
-                                    : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                        >
-                            {t('expenses')}
-                        </Link>
-                        <Link
-                            to={createPageUrl('Reports')}
-                            className={`flex-1 px-4 py-2 rounded-lg text-center transition-colors ${
-                                currentPageName === 'Reports'
-                                    ? 'bg-blue-100 text-blue-700 font-medium'
-                                    : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                        >
-                            {t('reports')}
-                        </Link>
-                    </div>
+
                 </div>
             </nav>
 
