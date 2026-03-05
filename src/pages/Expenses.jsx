@@ -12,6 +12,7 @@ import DuplicateSearch from "../components/expenses/DuplicateSearch";
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 import { useProjectPermissions } from "../components/useProjectPermissions";
+import { logActivity } from "../components/activityLogger";
 import { toast } from "sonner";
 
 export default function ExpensesPage() {
