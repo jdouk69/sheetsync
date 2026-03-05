@@ -144,9 +144,19 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const totalAmt = isPartialPayment ? parseFloat(formData.totalAmount) : null;
+        const depositAmt = isPartialPayment ? parseFloat(formData.depositAmount) : null;
+        const paymentStatus = isPartialPayment ? formData.paymentStatus : (formData.isPaid ? "fully_paid" : "unpaid");
+        const isFullyPaid = paymentStatus === "fully_paid";
+
         onSubmit({
             ...formData,
-            amount: parseFloat(formData.amount)
+            amount: isPartialPayment ? (depositAmt || parseFloat(formData.amount)) : parseFloat(formData.amount),
+            totalAmount: isPartialPayment ? totalAmt : null,
+            depositAmount: isPartialPayment ? depositAmt : null,
+            paymentStatus,
+            isPaid: isFullyPaid,
+            paidAt: isFullyPaid ? (formData.paidAt || new Date().toISOString()) : null,
         });
     };
 
