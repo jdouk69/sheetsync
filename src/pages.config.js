@@ -49,12 +49,14 @@
  */
 import Expenses from './pages/Expenses';
 import Reports from './pages/Reports';
+import Admin from './pages/Admin';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Expenses": Expenses,
     "Reports": Reports,
+    "Admin": Admin,
 }
 
 export const pagesConfig = {
