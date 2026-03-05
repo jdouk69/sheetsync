@@ -21,7 +21,7 @@ export default function ExpensesPage() {
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
-    const [filters, setFilters] = useState({ category: "all", startDate: null, endDate: null, search: "" });
+    const [filters, setFilters] = useState({ category: "all", vendor: "all", startDate: null, endDate: null, search: "" });
     const [selectedIds, setSelectedIds] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const PAGE_SIZE = 20;
