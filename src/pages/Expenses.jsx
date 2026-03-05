@@ -212,7 +212,9 @@ export default function ExpensesPage() {
                 expense.notes?.toLowerCase().includes(searchTerm) ||
                 (!isNaN(searchNumber) && expense.amount === searchNumber);
 
-            return categoryMatch && vendorMatch && startDateMatch && endDateMatch && searchMatch;
+            const unpaidMatch = !filters.unpaidOnly || (expense.paymentStatus === 'unpaid' || !expense.paymentStatus);
+
+            return categoryMatch && vendorMatch && startDateMatch && endDateMatch && searchMatch && unpaidMatch;
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
