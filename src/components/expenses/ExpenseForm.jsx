@@ -361,7 +361,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                     </div>
                 </div>
 
-                {isAdmin && (
+                {isAdmin && !isPartialPayment && (
                     <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
                         <Checkbox
                             id="isPaid"
@@ -369,6 +369,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                             onCheckedChange={(checked) => setFormData({
                                 ...formData,
                                 isPaid: checked,
+                                paymentStatus: checked ? "fully_paid" : "unpaid",
                                 paidAt: checked ? new Date().toISOString() : null,
                                 paidBy: checked ? currentUser?.email : null
                             })}
