@@ -171,11 +171,13 @@ const translations = {
         creditCard: "Credit Card",
         cash: "Cash",
         check: "Check",
+        deposit: "Deposit",
         selectPaymentMethod: "Select method",
         paymentRecorded: "Payment recorded successfully",
         paymentDeleted: "Payment deleted",
         totalBalance: "Total Balance Due",
         partiallyPaid: "Partially Paid",
+        ref: "Ref",
         },
     el: {
         // Layout
