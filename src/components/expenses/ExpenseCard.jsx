@@ -226,7 +226,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         className="text-xs text-blue-600 border-blue-300 hover:bg-blue-50"
                                     >
                                         <PlusCircle className="w-3 h-3 mr-1" />
-                                        Add Payment
+                                        {t('addPayment')}
                                     </Button>
                                 </div>
                             )}
