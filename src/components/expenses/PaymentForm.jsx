@@ -37,11 +37,11 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Record Payment</DialogTitle>
+                    <DialogTitle>{t('recordPayment')}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-2">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Amount (€) *</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">{t('paymentAmount')} *</label>
                         <Input
                             required
                             type="number"
@@ -52,11 +52,11 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
                             placeholder="0.00"
                         />
                         {balanceDue > 0 && (
-                            <p className="text-xs text-slate-500 mt-1">Balance due: €{balanceDue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                            <p className="text-xs text-slate-500 mt-1">{t('balanceDue')}: €{balanceDue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                         )}
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">{t('paymentDate')} *</label>
                         <Input
                             required
                             type="date"
@@ -65,7 +65,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Payment Method *</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">{t('paymentMethod')} *</label>
                         <select
                             value={form.method}
                             onChange={(e) => setForm({ ...form, method: e.target.value })}
@@ -77,24 +77,24 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Reference Number</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">{t('referenceNumber')}</label>
                         <Input
                             value={form.referenceNumber}
                             onChange={(e) => setForm({ ...form, referenceNumber: e.target.value })}
-                            placeholder="Transaction ID, check number, etc."
+                            placeholder={t('referenceNumberPlaceholder')}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">{t('paymentNotes')}</label>
                         <Input
                             value={form.notes}
                             onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                            placeholder="Optional notes"
+                            placeholder={t('notesPlaceholder')}
                         />
                     </div>
                     <div className="flex gap-3 pt-2">
-                        <Button type="button" variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
-                        <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">Record Payment</Button>
+                        <Button type="button" variant="outline" onClick={onClose} className="flex-1">{t('cancel')}</Button>
+                        <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">{t('recordPayment')}</Button>
                     </div>
                 </form>
             </DialogContent>
