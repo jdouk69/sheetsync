@@ -151,7 +151,31 @@ const translations = {
         vendors: "vendors",
         foundDuplicateGroups: "Found {count} group(s) with duplicates",
         noVendor: "No Vendor",
-        expenses: "expenses"
+        expenses: "expenses",
+
+        // Payments
+        addPayment: "Add Payment",
+        paymentHistory: "Payment History",
+        totalPaid: "Total Paid",
+        balanceDue: "Balance Due",
+        totalQuoted: "Total Quoted",
+        recordPayment: "Record Payment",
+        paymentAmount: "Payment Amount (€)",
+        paymentDate: "Payment Date",
+        paymentMethod: "Payment Method",
+        referenceNumber: "Reference Number",
+        referenceNumberPlaceholder: "Transaction ID, check #, etc.",
+        paymentNotes: "Notes",
+        depositPaid: "Deposit Paid",
+        bankTransfer: "Bank Transfer",
+        creditCard: "Credit Card",
+        cash: "Cash",
+        check: "Check",
+        selectPaymentMethod: "Select method",
+        paymentRecorded: "Payment recorded successfully",
+        paymentDeleted: "Payment deleted",
+        totalBalance: "Total Balance Due",
+        partiallyPaid: "Partially Paid",
         },
     el: {
         // Layout
