@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "../LanguageContext";
 
 export default function PaymentHistory({ payments, canDelete, onDelete }) {
+    const { t } = useLanguage();
     if (!payments || payments.length === 0) return null;
 
     return (
         <div className="mt-3 border-t border-slate-100 pt-3">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Payment History</p>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{t('paymentHistory')}</p>
             <div className="space-y-1.5">
                 {payments.map((payment) => (
                     <div key={payment.id} className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2 text-sm">
