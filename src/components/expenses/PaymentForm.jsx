@@ -19,14 +19,14 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
     React.useEffect(() => {
         if (open) {
             setForm({
-                amount: balanceDue || "",
+                amount: "",
                 date: new Date().toISOString().split("T")[0],
                 method: "Bank Transfer",
                 referenceNumber: "",
                 notes: "",
             });
         }
-    }, [open, balanceDue]);
+    }, [open]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
