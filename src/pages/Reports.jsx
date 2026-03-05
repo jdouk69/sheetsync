@@ -11,7 +11,30 @@ import { el as elLocale } from 'date-fns/locale';
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899', '#64748b'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899', '#64748b', '#ef4444', '#14b8a6', '#f97316', '#a855f7', '#06b6d4', '#84cc16', '#e11d48', '#0ea5e9', '#d97706', '#7c3aed', '#059669'];
+
+const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, name, percent }) => {
+    if (percent < 0.03) return null; // skip tiny slices
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius + 30;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    const sx = cx + (outerRadius + 6) * Math.cos(-midAngle * RADIAN);
+    const sy = cy + (outerRadius + 6) * Math.sin(-midAngle * RADIAN);
+    const mx = cx + (outerRadius + 18) * Math.cos(-midAngle * RADIAN);
+    const my = cy + (outerRadius + 18) * Math.sin(-midAngle * RADIAN);
+    const anchor = x > cx ? 'start' : 'end';
+    const shortName = name?.length > 18 ? name.slice(0, 16) + '…' : name;
+    return (
+        <g>
+            <path d={`M${sx},${sy}L${mx},${my}L${x},${y}`} stroke="#94a3b8" fill="none" strokeWidth={1} />
+            <circle cx={x} cy={y} r={2} fill="#94a3b8" />
+            <text x={x + (anchor === 'start' ? 4 : -4)} y={y} textAnchor={anchor} dominantBaseline="central" fontSize={11} fill="#334155">
+                {shortName} {(percent * 100).toFixed(0)}%
+            </text>
+        </g>
+    );
+};
 
 export default function ReportsPage() {
     const { t, language } = useLanguage();
