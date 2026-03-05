@@ -15,6 +15,9 @@ export default function AdminUsers({ currentUser }) {
     const [inviteEmail, setInviteEmail] = useState("");
     const [inviteRole, setInviteRole] = useState("user");
     const [inviting, setInviting] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
+    const [editName, setEditName] = useState("");
+    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
     const queryClient = useQueryClient();
 
     const { data: users = [], isLoading } = useQuery({
