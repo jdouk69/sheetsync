@@ -35,6 +35,28 @@ export default function AdminUsers({ currentUser }) {
         onError: () => toast.error("Failed to update role"),
     });
 
+    const updateNameMutation = useMutation({
+        mutationFn: ({ id, full_name }) => base44.entities.User.update(id, { full_name }).then(() => ({ id, full_name })),
+        onSuccess: ({ full_name }) => {
+            queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+            toast.success("User info updated");
+            logActivity({ action: "updated_user_info", entityType: "user", entityId: editingUser?.id, entityLabel: editingUser?.email, user: currentUser, details: `Name changed to ${full_name}` });
+            setEditingUser(null);
+        },
+        onError: () => toast.error("Failed to update user info"),
+    });
+
+    const deleteUserMutation = useMutation({
+        mutationFn: (u) => base44.entities.User.delete(u.id).then(() => u),
+        onSuccess: (u) => {
+            queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+            toast.success("User deleted");
+            logActivity({ action: "deleted_user", entityType: "user", entityId: u.id, entityLabel: u.email, user: currentUser });
+            setDeleteConfirmId(null);
+        },
+        onError: () => toast.error("Failed to delete user"),
+    });
+
     const handleInvite = async (e) => {
         e.preventDefault();
         if (!inviteEmail.includes('@')) {
