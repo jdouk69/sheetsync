@@ -9,7 +9,7 @@ const PAYMENT_METHODS = ["Bank Transfer", "Credit Card", "Cash", "Check", "Other
 export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
     const { t } = useLanguage();
     const [form, setForm] = useState({
-        amount: balanceDue || "",
+        amount: "",
         date: new Date().toISOString().split("T")[0],
         method: "Bank Transfer",
         referenceNumber: "",
