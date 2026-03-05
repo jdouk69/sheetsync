@@ -12,6 +12,7 @@ import { format } from "date-fns";
 
 export default function AdminExpenses() {
     const [search, setSearch] = useState("");
+    const [selectedProject, setSelectedProject] = useState("all");
     const queryClient = useQueryClient();
 
     const { data: expenses = [], isLoading } = useQuery({
