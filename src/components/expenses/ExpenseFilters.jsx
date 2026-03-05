@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Filter, Search } from "lucide-react";
 import { useLanguage } from "../LanguageContext";
 
-export default function ExpenseFilters({ filters, onFiltersChange, availableCategories = [] }) {
+export default function ExpenseFilters({ filters, onFiltersChange, availableCategories = [], availableVendors = [] }) {
     const { t } = useLanguage();
     return (
         <div className="flex flex-col gap-4">
