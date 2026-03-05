@@ -179,18 +179,72 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            {t('amount')} *
+                            {isPartialPayment ? 'Total Quoted Amount *' : `${t('amount')} *`}
                         </label>
                         <Input
                             required
                             type="number"
                             step="0.01"
-                            value={formData.amount}
-                            onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                            value={isPartialPayment ? formData.totalAmount : formData.amount}
+                            onChange={(e) => setFormData({...formData, [isPartialPayment ? 'totalAmount' : 'amount']: e.target.value})}
                             placeholder="0.00"
                         />
                     </div>
                 </div>
+
+                {/* Partial Payment Toggle */}
+                <div className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <Checkbox
+                        id="isPartialPayment"
+                        checked={isPartialPayment}
+                        onCheckedChange={(checked) => {
+                            setIsPartialPayment(checked);
+                            if (!checked) {
+                                setFormData(prev => ({ ...prev, totalAmount: "", depositAmount: "", paymentStatus: "unpaid" }));
+                            }
+                        }}
+                    />
+                    <label htmlFor="isPartialPayment" className="text-sm font-medium text-amber-800 cursor-pointer">
+                        This expense has a deposit / partial payment
+                    </label>
+                </div>
+
+                {isPartialPayment && (
+                    <div className="grid md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Deposit Amount Paid *
+                            </label>
+                            <Input
+                                required={isPartialPayment}
+                                type="number"
+                                step="0.01"
+                                value={formData.depositAmount}
+                                onChange={(e) => setFormData({...formData, depositAmount: e.target.value})}
+                                placeholder="0.00"
+                            />
+                            {formData.totalAmount && formData.depositAmount && (
+                                <p className="text-xs text-slate-500 mt-1">
+                                    Balance due: €{(parseFloat(formData.totalAmount) - parseFloat(formData.depositAmount)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Payment Status
+                            </label>
+                            <select
+                                value={formData.paymentStatus}
+                                onChange={(e) => setFormData({...formData, paymentStatus: e.target.value})}
+                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                            >
+                                <option value="unpaid">Unpaid</option>
+                                <option value="deposit_paid">Deposit Paid</option>
+                                <option value="fully_paid">Fully Paid</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
