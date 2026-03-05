@@ -59,7 +59,7 @@ export default function Admin() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
+            <div className="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl mb-6">
                 {tabs.map(({ id, label, Icon }) => (
                     <button
                         key={id}
