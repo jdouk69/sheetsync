@@ -286,6 +286,13 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                 </CardContent>
             </Card>
 
+            <PaymentForm
+                open={showPaymentForm}
+                onClose={() => setShowPaymentForm(false)}
+                onSubmit={(data) => addPaymentMutation.mutate(data)}
+                balanceDue={balanceDue}
+            />
+
             <Dialog open={showPhotos} onOpenChange={setShowPhotos}>
                 <DialogContent className="max-w-4xl">
                     <DialogHeader>
