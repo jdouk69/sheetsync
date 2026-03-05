@@ -171,7 +171,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 <div className="text-left sm:text-right">
                                     {expense.totalAmount ? (
                                         <div>
-                                            <div className="text-xs text-slate-500">Total Quoted</div>
+                                            <div className="text-xs text-slate-500">{t('totalQuoted')}</div>
                                             <div className="text-2xl font-bold text-slate-900">
                                                 €{expense.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </div>
