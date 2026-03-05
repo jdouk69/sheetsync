@@ -50,14 +50,30 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
     const addPaymentMutation = useMutation({
         mutationFn: async (paymentData) => {
+            // If there are no Payment records yet but expense.amount > 0,
+            // migrate the existing deposit into a Payment record first.
+            let migratedAmount = 0;
+            if (payments.length === 0 && expense.amount > 0 && expense.totalAmount) {
+                migratedAmount = expense.amount;
+                await base44.entities.Payment.create({
+                    expenseId: expense.id,
+                    amount: expense.amount,
+                    date: expense.depositPaidAt ? expense.depositPaidAt.split('T')[0] : expense.date,
+                    method: "Other",
+                    notes: "Migrated deposit",
+                    paidBy: expense.paidBy || expense.created_by,
+                    paidByName: expense.createdByName || expense.paidBy || expense.created_by,
+                });
+            }
+
             const payment = await base44.entities.Payment.create({
                 ...paymentData,
                 expenseId: expense.id,
                 paidBy: currentUser?.email,
                 paidByName: currentUser?.full_name || currentUser?.email,
             });
-            // Update expense status if fully paid
-            const newTotalPaid = totalPaid + paymentData.amount;
+
+            const newTotalPaid = migratedAmount + paymentsTotal + paymentData.amount;
             if (expense.totalAmount && newTotalPaid >= expense.totalAmount) {
                 await base44.entities.Expense.update(expense.id, {
                     paymentStatus: 'fully_paid',
