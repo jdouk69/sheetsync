@@ -65,7 +65,20 @@ function LayoutContent({ children, currentPageName }) {
                                     }`}
                                 >
                                     {t('reports')}
+                                </Link>
+                                {user?.role === 'admin' && (
+                                    <Link
+                                        to={createPageUrl('Admin')}
+                                        className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
+                                            currentPageName === 'Admin'
+                                                ? 'bg-blue-100 text-blue-700 font-medium'
+                                                : 'text-slate-600 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        <Shield className="w-4 h-4" />
+                                        Admin
                                     </Link>
+                                )}
                                     </div>
                                     </div>
 
