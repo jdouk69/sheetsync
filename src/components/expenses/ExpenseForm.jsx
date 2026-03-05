@@ -52,9 +52,14 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                 }
             }
             
+            const hasPartial = !!(expense.totalAmount);
+            setIsPartialPayment(hasPartial);
             setFormData({
                 description: expense.description || "",
                 amount: expense.amount || "",
+                totalAmount: expense.totalAmount || "",
+                depositAmount: expense.depositAmount || "",
+                paymentStatus: expense.paymentStatus || "unpaid",
                 category: expense.category || "Materials",
                 date: dateValue,
                 vendor: expense.vendor || "",
