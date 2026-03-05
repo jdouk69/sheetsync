@@ -579,24 +579,22 @@ export default function ReportsPage() {
                             <h2 className="text-xl font-semibold">{t('expensesByCategory')}</h2>
                         </div>
                         {categoryData.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={300}>
-                                <RechartsPie>
-                                    <Pie
-                                        data={categoryData}
-                                        cx="50%"
-                                        cy="50%"
-                                        labelLine={false}
-                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                        outerRadius={80}
-                                        fill="#8884d8"
-                                        dataKey="value"
-                                    >
-                                        {categoryData.map((entry, index) => (
+                            <ResponsiveContainer width="100%" height={Math.max(300, categoryData.length * 36)}>
+                                <BarChart
+                                    data={[...categoryData].sort((a, b) => b.value - a.value)}
+                                    layout="vertical"
+                                    margin={{ top: 0, right: 60, left: 8, bottom: 0 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                    <XAxis type="number" tickFormatter={(v) => `€${v.toLocaleString()}`} tick={{ fontSize: 11 }} />
+                                    <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 11 }} />
+                                    <Tooltip formatter={(value) => `€${value.toFixed(2)}`} />
+                                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                                        {[...categoryData].sort((a, b) => b.value - a.value).map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
-                                    </Pie>
-                                    <Tooltip formatter={(value) => `€${value.toFixed(2)}`} />
-                                </RechartsPie>
+                                    </Bar>
+                                </BarChart>
                             </ResponsiveContainer>
                         ) : (
                             <p className="text-center text-slate-500 py-12">{t('noDataAvailable')}</p>
