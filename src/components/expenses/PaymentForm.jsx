@@ -4,7 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLanguage } from "../LanguageContext";
 
-const PAYMENT_METHODS = ["Bank Transfer", "Credit Card", "Cash", "Check", "Other"];
+const PAYMENT_METHODS = [
+    { value: "Bank Transfer", labelKey: "bankTransfer" },
+    { value: "Credit Card", labelKey: "creditCard" },
+    { value: "Cash", labelKey: "cash" },
+    { value: "Check", labelKey: "check" },
+    { value: "Deposit", labelKey: "deposit" },
+    { value: "Other", labelKey: "other" },
+];
 
 export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
     const { t } = useLanguage();
