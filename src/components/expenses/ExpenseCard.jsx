@@ -57,7 +57,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                     expenseId: expense.id,
                     amount: expense.depositAmount,
                     date: expense.depositPaidAt ? expense.depositPaidAt.split('T')[0] : expense.date,
-                    method: "Other",
+                    method: "Deposit",
                     notes: "Initial deposit",
                     paidBy: expense.created_by,
                     paidByName: expense.createdByName || expense.created_by,
