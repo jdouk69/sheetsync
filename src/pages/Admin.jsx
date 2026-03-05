@@ -66,7 +66,7 @@ export default function Admin() {
                                 : "text-slate-600 hover:text-slate-900"
                         }`}
                     >
-                        <Icon className="w-4 h-4" />
+                        {React.createElement(icon, { className: "w-4 h-4" })}
                         {label}
                     </button>
                 ))}
