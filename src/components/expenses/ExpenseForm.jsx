@@ -68,9 +68,13 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                 isPaid: expense.isPaid || false
             });
         } else {
+            setIsPartialPayment(false);
             setFormData({
                 description: "",
                 amount: "",
+                totalAmount: "",
+                depositAmount: "",
+                paymentStatus: "unpaid",
                 category: "Materials",
                 date: new Date().toISOString().split('T')[0],
                 vendor: "",
