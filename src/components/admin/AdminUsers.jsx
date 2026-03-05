@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { UserPlus, Loader2, Mail, Shield, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { UserPlus, Loader2, Mail, Shield, User, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { logActivity } from "../activityLogger";
 
