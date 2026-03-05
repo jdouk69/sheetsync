@@ -75,8 +75,50 @@ export default function AdminUsers({ currentUser }) {
         }
     };
 
+    const userToDelete = users.find(u => u.id === deleteConfirmId);
+
     return (
         <div className="space-y-6">
+            {/* Edit Name Dialog */}
+            <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Edit User</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3 py-2">
+                        <div>
+                            <label className="text-sm text-slate-600 mb-1 block">Full Name</label>
+                            <Input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Full name" />
+                        </div>
+                        <div>
+                            <label className="text-sm text-slate-600 mb-1 block">Email</label>
+                            <Input value={editingUser?.email || ""} disabled className="bg-slate-50 text-slate-500" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setEditingUser(null)}>Cancel</Button>
+                        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => updateNameMutation.mutate({ id: editingUser.id, full_name: editName })} disabled={updateNameMutation.isPending}>
+                            {updateNameMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirm Dialog */}
+            <Dialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete User</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-slate-600 py-2">Are you sure you want to delete <strong>{userToDelete?.full_name || userToDelete?.email}</strong>? This cannot be undone.</p>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
+                        <Button variant="destructive" onClick={() => deleteUserMutation.mutate(userToDelete)} disabled={deleteUserMutation.isPending}>
+                            {deleteUserMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             {/* Invite User */}
             <Card>
                 <CardContent className="pt-5">
