@@ -177,6 +177,11 @@ export default function AdminUsers({ currentUser }) {
                                             <p className="text-xs text-slate-500 truncate flex items-center gap-1">
                                                 <Mail className="w-3 h-3" />{u.email}
                                             </p>
+                                            {u.created_date && (
+                                                <p className="text-xs text-slate-400 mt-0.5">
+                                                    Joined {new Date(u.created_date).toLocaleDateString()}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
