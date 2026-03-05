@@ -91,9 +91,26 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         </div>
                                 </div>
                                 <div className="text-left sm:text-right">
-                                    <div className="text-2xl font-bold text-slate-900">
-                                        €{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </div>
+                                    {expense.totalAmount ? (
+                                        <div>
+                                            <div className="text-xs text-slate-500">Total Quoted</div>
+                                            <div className="text-2xl font-bold text-slate-900">
+                                                €{expense.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            </div>
+                                            <div className="text-sm text-amber-700 font-medium">
+                                                Deposit: €{(expense.depositAmount || expense.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            </div>
+                                            {expense.paymentStatus !== 'fully_paid' && (
+                                                <div className="text-sm text-red-600 font-semibold">
+                                                    Balance Due: €{(expense.totalAmount - (expense.depositAmount || expense.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="text-2xl font-bold text-slate-900">
+                                            €{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
