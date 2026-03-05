@@ -29,11 +29,11 @@ export default function PaymentHistory({ payments, canDelete, onDelete }) {
                             <span className="text-slate-500">·</span>
                             <span className="text-slate-600">{format(new Date(payment.date), "dd MMM yyyy")}</span>
                             <span className="text-slate-500">·</span>
-                            <span className="text-slate-600">{payment.method}</span>
+                            <span className="text-slate-600">{t(METHOD_KEYS[payment.method] || 'other')}</span>
                             {payment.referenceNumber && (
                                 <>
                                     <span className="text-slate-500">·</span>
-                                    <span className="text-slate-500 text-xs">Ref: {payment.referenceNumber}</span>
+                                    <span className="text-slate-500 text-xs">{t('ref')}: {payment.referenceNumber}</span>
                                 </>
                             )}
                         </div>
