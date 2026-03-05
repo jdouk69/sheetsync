@@ -79,7 +79,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
                             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
                         >
                             {PAYMENT_METHODS.map((m) => (
-                                <option key={m} value={m}>{m}</option>
+                                <option key={m.value} value={m.value}>{t(m.labelKey)}</option>
                             ))}
                         </select>
                     </div>
