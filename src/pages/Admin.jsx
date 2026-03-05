@@ -7,9 +7,9 @@ import AdminProjects from "../components/admin/AdminProjects";
 import AdminExpenses from "../components/admin/AdminExpenses";
 
 const tabs = [
-    { id: "users", label: "Users", icon: Users },
-    { id: "projects", label: "Projects", icon: FolderOpen },
-    { id: "expenses", label: "Expenses", icon: Receipt },
+    { id: "users", label: "Users", Icon: Users },
+    { id: "projects", label: "Projects", Icon: FolderOpen },
+    { id: "expenses", label: "Expenses", Icon: Receipt },
 ];
 
 export default function Admin() {
