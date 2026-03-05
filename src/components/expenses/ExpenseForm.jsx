@@ -25,6 +25,9 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
     const [formData, setFormData] = useState({
         description: "",
         amount: "",
+        totalAmount: "",
+        depositAmount: "",
+        paymentStatus: "unpaid",
         category: "Materials",
         date: new Date().toISOString().split('T')[0],
         vendor: "",
@@ -32,6 +35,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
         notes: "",
         isPaid: false
     });
+    const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [suggestingCategory, setSuggestingCategory] = useState(false);
     const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
