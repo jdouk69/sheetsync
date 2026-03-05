@@ -198,6 +198,7 @@ export default function ExpensesPage() {
     const filteredExpenses = expenses
         .filter(expense => {
             const categoryMatch = filters.category === "all" || expense.category === filters.category;
+            const vendorMatch = filters.vendor === "all" || expense.vendor === filters.vendor;
             const expenseDate = new Date(expense.date);
             const startDateMatch = !filters.startDate || expenseDate >= new Date(filters.startDate);
             const endDateMatch = !filters.endDate || expenseDate <= new Date(filters.endDate + 'T23:59:59');
