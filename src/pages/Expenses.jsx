@@ -212,7 +212,7 @@ export default function ExpensesPage() {
                 expense.notes?.toLowerCase().includes(searchTerm) ||
                 (!isNaN(searchNumber) && expense.amount === searchNumber);
 
-            return categoryMatch && startDateMatch && endDateMatch && searchMatch;
+            return categoryMatch && vendorMatch && startDateMatch && endDateMatch && searchMatch;
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
