@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { UserPlus, Loader2, Mail, Shield, User } from "lucide-react";
 import { toast } from "sonner";
+import { logActivity } from "../activityLogger";
 
 export default function AdminUsers({ currentUser }) {
     const [inviteEmail, setInviteEmail] = useState("");
