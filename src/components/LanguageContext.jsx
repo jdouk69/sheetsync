@@ -349,11 +349,13 @@ const translations = {
         creditCard: "Πιστωτική Κάρτα",
         cash: "Μετρητά",
         check: "Επιταγή",
+        deposit: "Προκαταβολή",
         selectPaymentMethod: "Επιλέξτε τρόπο",
         paymentRecorded: "Η πληρωμή καταγράφηκε επιτυχώς",
         paymentDeleted: "Η πληρωμή διαγράφηκε",
         totalBalance: "Συνολικό Υπόλοιπο",
         partiallyPaid: "Μερικώς Πληρωμένο",
+        ref: "Αρ. Αναφ.",
         }
 };
 
