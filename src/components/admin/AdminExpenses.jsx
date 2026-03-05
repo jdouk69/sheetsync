@@ -62,6 +62,18 @@ export default function AdminExpenses() {
                         <Receipt className="w-4 h-4 text-blue-600" />
                         All Expenses ({expenses.length})
                     </h2>
+                    <div className="flex gap-2 flex-wrap w-full sm:w-auto">
+                    <Select value={selectedProject} onValueChange={setSelectedProject}>
+                        <SelectTrigger className="w-full sm:w-48">
+                            <SelectValue placeholder="All Projects" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Projects</SelectItem>
+                            {projects.map(p => (
+                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <div className="relative w-full sm:w-64">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <Input
