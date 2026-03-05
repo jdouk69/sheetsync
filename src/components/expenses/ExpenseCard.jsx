@@ -34,6 +34,74 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [showPaymentForm, setShowPaymentForm] = useState(false);
+    const queryClient = useQueryClient();
+
+    const { data: payments = [] } = useQuery({
+        queryKey: ['payments', expense.id],
+        queryFn: () => base44.entities.Payment.filter({ expenseId: expense.id }, 'date'),
+    });
+
+    const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+    const balanceDue = expense.totalAmount ? expense.totalAmount - totalPaid : 0;
+    const isFullyPaid = expense.totalAmount ? totalPaid >= expense.totalAmount : (expense.paymentStatus === 'fully_paid' || expense.isPaid);
+
+    const addPaymentMutation = useMutation({
+        mutationFn: async (paymentData) => {
+            const payment = await base44.entities.Payment.create({
+                ...paymentData,
+                expenseId: expense.id,
+                paidBy: currentUser?.email,
+                paidByName: currentUser?.full_name || currentUser?.email,
+            });
+            // Update expense status if fully paid
+            const newTotalPaid = totalPaid + paymentData.amount;
+            if (expense.totalAmount && newTotalPaid >= expense.totalAmount) {
+                await base44.entities.Expense.update(expense.id, {
+                    paymentStatus: 'fully_paid',
+                    isPaid: true,
+                    paidAt: new Date().toISOString(),
+                    amount: newTotalPaid,
+                });
+            } else if (expense.totalAmount) {
+                await base44.entities.Expense.update(expense.id, {
+                    paymentStatus: 'deposit_paid',
+                    amount: newTotalPaid,
+                });
+            }
+            return payment;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['payments', expense.id] });
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            setShowPaymentForm(false);
+            toast.success("Payment recorded successfully");
+        },
+        onError: () => toast.error("Failed to record payment"),
+    });
+
+    const deletePaymentMutation = useMutation({
+        mutationFn: async (payment) => {
+            await base44.entities.Payment.delete(payment.id);
+            const newTotalPaid = totalPaid - payment.amount;
+            let newStatus = 'unpaid';
+            if (expense.totalAmount) {
+                if (newTotalPaid >= expense.totalAmount) newStatus = 'fully_paid';
+                else if (newTotalPaid > 0) newStatus = 'deposit_paid';
+            }
+            await base44.entities.Expense.update(expense.id, {
+                paymentStatus: newStatus,
+                isPaid: newStatus === 'fully_paid',
+                amount: newTotalPaid || expense.depositAmount || expense.amount,
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['payments', expense.id] });
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            toast.success("Payment deleted");
+        },
+        onError: () => toast.error("Failed to delete payment"),
+    });
 
     // Check if current user can edit/delete this specific expense
     const isCreator = expense.created_by === currentUser?.email;
