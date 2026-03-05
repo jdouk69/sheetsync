@@ -56,7 +56,7 @@ export default function Admin() {
 
             {/* Tabs */}
             <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
-                {tabs.map(({ id, label, icon: Icon }) => (
+                {tabs.map(({ id, label, Icon }) => (
                     <button
                         key={id}
                         onClick={() => setActiveTab(id)}
