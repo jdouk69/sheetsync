@@ -37,7 +37,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const [showPaymentForm, setShowPaymentForm] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data: payments = [] } = useQuery({
+    const { data: payments = [], isLoading: paymentsLoading } = useQuery({
         queryKey: ['payments', expense.id],
         queryFn: () => base44.entities.Payment.filter({ expenseId: expense.id }, 'date'),
     });
