@@ -22,8 +22,9 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
         queryFn: () => base44.entities.Expense.list(),
     });
 
-    const existingCategories = [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
-    const existingVendors = [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))];
+    const projectExpenses = allExpenses.filter(exp => exp.projectId === currentProjectId);
+    const existingCategories = [...new Set(projectExpenses.map(exp => exp.category).filter(Boolean))];
+    const existingVendors = [...new Set(projectExpenses.map(exp => exp.vendor).filter(Boolean))];
     const [formData, setFormData] = useState({
         description: "",
         amount: "",
