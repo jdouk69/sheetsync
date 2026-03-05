@@ -42,12 +42,15 @@ export default function AdminExpenses() {
 
     const projectMap = Object.fromEntries(projects.map(p => [p.id, p.name]));
 
-    const filtered = expenses.filter(e =>
-        e.description?.toLowerCase().includes(search.toLowerCase()) ||
-        e.vendor?.toLowerCase().includes(search.toLowerCase()) ||
-        e.category?.toLowerCase().includes(search.toLowerCase()) ||
-        e.created_by?.toLowerCase().includes(search.toLowerCase())
-    );
+    const filtered = expenses.filter(e => {
+        const matchesProject = selectedProject === "all" || e.projectId === selectedProject;
+        const matchesSearch = !search ||
+            e.description?.toLowerCase().includes(search.toLowerCase()) ||
+            e.vendor?.toLowerCase().includes(search.toLowerCase()) ||
+            e.category?.toLowerCase().includes(search.toLowerCase()) ||
+            e.created_by?.toLowerCase().includes(search.toLowerCase());
+        return matchesProject && matchesSearch;
+    });
 
     const totalAmount = filtered.reduce((sum, e) => sum + (e.amount || 0), 0);
 
