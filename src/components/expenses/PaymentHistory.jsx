@@ -4,6 +4,15 @@ import { CreditCard, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "../LanguageContext";
 
+const METHOD_KEYS = {
+    "Bank Transfer": "bankTransfer",
+    "Credit Card": "creditCard",
+    "Cash": "cash",
+    "Check": "check",
+    "Deposit": "deposit",
+    "Other": "other",
+};
+
 export default function PaymentHistory({ payments, canDelete, onDelete }) {
     const { t } = useLanguage();
     if (!payments || payments.length === 0) return null;
