@@ -173,10 +173,10 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                         <label className="block text-sm font-medium text-slate-700 mb-1">
                             {t('vendor')}
                         </label>
-                        <Input
+                        <VendorCombobox
                             value={formData.vendor}
-                            onChange={(e) => setFormData({...formData, vendor: e.target.value})}
-                            placeholder={t('vendorPlaceholder')}
+                            onChange={(value) => setFormData({...formData, vendor: value})}
+                            existingVendors={existingVendors}
                         />
                     </div>
                     <div>
