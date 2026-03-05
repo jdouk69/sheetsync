@@ -83,6 +83,7 @@ export default function AdminExpenses() {
                             className="pl-9"
                         />
                     </div>
+                    </div>
                 </div>
 
                 {/* Summary bar */}
