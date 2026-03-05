@@ -319,6 +319,7 @@ export default function ExpensesPage() {
                         filters={filters} 
                         onFiltersChange={setFilters}
                         availableCategories={availableCategories}
+                        availableVendors={availableVendors}
                     />
                 </div>
 
