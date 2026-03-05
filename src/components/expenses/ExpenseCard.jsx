@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, User, CheckCircle2, Download } from "lucide-react";
+import { Pencil, Trash2, Calendar, Building2, Image as ImageIcon, User, CheckCircle2, Download, PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 import {
     Dialog,
@@ -12,6 +12,11 @@ import {
 import { useLanguage } from "../LanguageContext";
 import { useProject } from "../ProjectContext";
 import { useProjectPermissions } from "../useProjectPermissions";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import { toast } from "sonner";
+import PaymentForm from "./PaymentForm";
+import PaymentHistory from "./PaymentHistory";
 
 const categoryColors = {
     "Materials": "bg-blue-100 text-blue-800",
