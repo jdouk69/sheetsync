@@ -58,18 +58,9 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                 paidByName: currentUser?.full_name || currentUser?.email,
             });
 
-            // Fetch the fresh list of all payments (including the one just created) to get accurate total
+            // Fetch fresh payments to get accurate total (avoids stale closure values)
             const freshPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
-            const freshTotal = freshPayments.reduce((sum, p) => sum + p.amount, 0);
-
-            // Also account for legacy deposit stored on expense.amount (not yet in Payment records)
-            // A payment was just created so freshPayments.length >= 1.
-            // If before this mutation there were 0 payment records, the deposit lives in expense.amount.
-            // We detect this by checking if freshPayments.length === 1 (only the one we just added).
-            const legacyDeposit = freshPayments.length === 1 && expense.amount > 0 && expense.totalAmount
-                ? expense.amount
-                : 0;
-            const newTotalPaid = freshTotal + legacyDeposit;
+            const newTotalPaid = freshPayments.reduce((sum, p) => sum + p.amount, 0);
 
             if (expense.totalAmount && newTotalPaid >= expense.totalAmount) {
                 await base44.entities.Expense.update(expense.id, {
