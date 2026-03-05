@@ -80,6 +80,7 @@ export default function Admin() {
             {activeTab === "users" && <AdminUsers currentUser={user} />}
             {activeTab === "projects" && <AdminProjects />}
             {activeTab === "expenses" && <AdminExpenses />}
+            {activeTab === "vendors" && <AdminVendorsCategories />}
             {activeTab === "activity" && <AdminActivityLog />}
         </div>
     );
