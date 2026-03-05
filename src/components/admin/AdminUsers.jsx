@@ -117,7 +117,7 @@ export default function AdminUsers({ currentUser }) {
                                         ) : (
                                             <Select
                                                 value={u.role || 'user'}
-                                                onValueChange={(role) => updateRoleMutation.mutate({ id: u.id, role })}
+                                                onValueChange={(role) => updateRoleMutation.mutate({ id: u.id, role, targetEmail: u.email })}
                                             >
                                                 <SelectTrigger className="w-24 h-8 text-xs">
                                                     <SelectValue />
