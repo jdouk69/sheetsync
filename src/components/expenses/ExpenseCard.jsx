@@ -51,6 +51,19 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
     const addPaymentMutation = useMutation({
         mutationFn: async (paymentData) => {
+            // If this is the first payment and there's a legacy deposit, migrate it to a Payment record first
+            if (payments.length === 0 && expense.depositAmount > 0) {
+                await base44.entities.Payment.create({
+                    expenseId: expense.id,
+                    amount: expense.depositAmount,
+                    date: expense.depositPaidAt ? expense.depositPaidAt.split('T')[0] : expense.date,
+                    method: "Other",
+                    notes: "Initial deposit",
+                    paidBy: expense.created_by,
+                    paidByName: expense.createdByName || expense.created_by,
+                });
+            }
+
             // Create the new payment record
             const payment = await base44.entities.Payment.create({
                 ...paymentData,
