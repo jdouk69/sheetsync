@@ -165,7 +165,7 @@ export default function ExpensesPage() {
         }
         
         if (confirm('Are you sure you want to delete this expense?')) {
-            deleteMutation.mutate(expense.id);
+            deleteMutation.mutate(expense);
         }
     };
 
