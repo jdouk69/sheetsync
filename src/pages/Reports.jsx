@@ -575,7 +575,7 @@ export default function ReportsPage() {
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <div className="flex items-center gap-2 mb-4">
-                            <PieChart className="w-5 h-5 text-blue-600" />
+                            <BarChart3 className="w-5 h-5 text-blue-600" />
                             <h2 className="text-xl font-semibold">{t('expensesByCategory')}</h2>
                         </div>
                         {categoryData.length > 0 ? (
