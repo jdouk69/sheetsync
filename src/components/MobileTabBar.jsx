@@ -1,15 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { ReceiptText, BarChart3 } from "lucide-react";
+import { ReceiptText, BarChart3, Shield } from "lucide-react";
 import { useLanguage } from "./LanguageContext";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 export default function MobileTabBar({ currentPageName }) {
     const { t } = useLanguage();
+    const { data: user } = useQuery({
+        queryKey: ['currentUser'],
+        queryFn: () => base44.auth.me(),
+        staleTime: 5 * 60 * 1000,
+    });
 
     const tabs = [
         { name: "Expenses", label: t('expenses'), icon: ReceiptText },
         { name: "Reports", label: t('reports'), icon: BarChart3 },
+        ...(user?.role === 'admin' ? [{ name: "Admin", label: "Admin", icon: Shield }] : []),
     ];
 
     return (
