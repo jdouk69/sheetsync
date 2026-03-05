@@ -190,6 +190,7 @@ export default function ExpensesPage() {
     };
 
     const availableCategories = [...new Set(expenses.map(exp => exp.category).filter(Boolean))];
+    const availableVendors = [...new Set(expenses.map(exp => exp.vendor).filter(Boolean))];
 
     // Reset to page 1 when filters change
     React.useEffect(() => { setCurrentPage(1); }, [filters, currentProjectId]);
