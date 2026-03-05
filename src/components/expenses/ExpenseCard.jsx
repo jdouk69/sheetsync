@@ -175,12 +175,12 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             <div className="text-2xl font-bold text-slate-900">
                                                 €{expense.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </div>
-                                            <div className="text-sm text-amber-700 font-medium">
-                                                Deposit: €{(expense.depositAmount || expense.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            <div className="text-sm text-green-700 font-medium">
+                                                Paid: €{totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </div>
-                                            {expense.paymentStatus !== 'fully_paid' && (
+                                            {!isFullyPaid && balanceDue > 0 && (
                                                 <div className="text-sm text-red-600 font-semibold">
-                                                    Balance Due: €{(expense.totalAmount - (expense.depositAmount || expense.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    Balance Due: €{balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                 </div>
                                             )}
                                         </div>
