@@ -327,7 +327,31 @@ const translations = {
         vendors: "προμηθευτές",
         foundDuplicateGroups: "Βρέθηκαν {count} ομάδα(-ες) με διπλότυπα",
         noVendor: "Χωρίς Προμηθευτή",
-        expenses: "έξοδα"
+        expenses: "έξοδα",
+
+        // Payments
+        addPayment: "Προσθήκη Πληρωμής",
+        paymentHistory: "Ιστορικό Πληρωμών",
+        totalPaid: "Συνολικά Πληρωθέν",
+        balanceDue: "Υπόλοιπο προς Πληρωμή",
+        totalQuoted: "Συνολική Προσφορά",
+        recordPayment: "Καταγραφή Πληρωμής",
+        paymentAmount: "Ποσό Πληρωμής (€)",
+        paymentDate: "Ημερομηνία Πληρωμής",
+        paymentMethod: "Τρόπος Πληρωμής",
+        referenceNumber: "Αριθμός Αναφοράς",
+        referenceNumberPlaceholder: "ID συναλλαγής, αρ. επιταγής, κ.λπ.",
+        paymentNotes: "Σημειώσεις",
+        depositPaid: "Προκαταβολή Πληρωμένη",
+        bankTransfer: "Τραπεζική Μεταφορά",
+        creditCard: "Πιστωτική Κάρτα",
+        cash: "Μετρητά",
+        check: "Επιταγή",
+        selectPaymentMethod: "Επιλέξτε τρόπο",
+        paymentRecorded: "Η πληρωμή καταγράφηκε επιτυχώς",
+        paymentDeleted: "Η πληρωμή διαγράφηκε",
+        totalBalance: "Συνολικό Υπόλοιπο",
+        partiallyPaid: "Μερικώς Πληρωμένο",
         }
 };
 
