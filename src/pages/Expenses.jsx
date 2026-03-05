@@ -65,11 +65,12 @@ export default function ExpensesPage() {
 
     const createMutation = useMutation({
         mutationFn: (data) => base44.entities.Expense.create(data),
-        onSuccess: () => {
+        onSuccess: (created) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
             toast.success("Expense added successfully");
+            logActivity({ action: "created_expense", entityType: "expense", entityId: created?.id, entityLabel: created?.description, user });
         },
         onError: () => {
             toast.error("Failed to add expense. Please try again.");
@@ -78,11 +79,12 @@ export default function ExpensesPage() {
 
     const updateMutation = useMutation({
         mutationFn: ({ id, data }) => base44.entities.Expense.update(id, { ...data, updated_by: user?.email }),
-        onSuccess: () => {
+        onSuccess: (updated) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
             toast.success("Expense updated successfully");
+            logActivity({ action: "updated_expense", entityType: "expense", entityId: updated?.id, entityLabel: updated?.description, user });
         },
         onError: () => {
             toast.error("Failed to update expense. Please try again.");
@@ -90,10 +92,11 @@ export default function ExpensesPage() {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id) => base44.entities.Expense.delete(id),
-        onSuccess: () => {
+        mutationFn: (expense) => base44.entities.Expense.delete(expense.id).then(() => expense),
+        onSuccess: (expense) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             toast.success("Expense deleted");
+            logActivity({ action: "deleted_expense", entityType: "expense", entityId: expense.id, entityLabel: expense.description, user });
         },
         onError: () => {
             toast.error("Failed to delete expense. Please try again.");
