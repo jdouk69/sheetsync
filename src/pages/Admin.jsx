@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Shield, Users, FolderOpen, Receipt, AlertTriangle } from "lucide-react";
+import { Shield, Users, FolderOpen, Receipt, AlertTriangle, Activity } from "lucide-react";
 import AdminUsers from "../components/admin/AdminUsers";
 import AdminProjects from "../components/admin/AdminProjects";
 import AdminExpenses from "../components/admin/AdminExpenses";
+import AdminActivityLog from "../components/admin/AdminActivityLog";
 
 const tabs = [
     { id: "users", label: "Users", Icon: Users },
     { id: "projects", label: "Projects", Icon: FolderOpen },
     { id: "expenses", label: "Expenses", Icon: Receipt },
+    { id: "activity", label: "Activity Log", Icon: Activity },
 ];
 
 export default function Admin() {
