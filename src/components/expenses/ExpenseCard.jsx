@@ -211,6 +211,26 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 )}
                             </div>
 
+                            <PaymentHistory
+                                payments={payments}
+                                canDelete={canEdit}
+                                onDelete={(payment) => deletePaymentMutation.mutate(payment)}
+                            />
+
+                            {expense.totalAmount && !isFullyPaid && canEdit && (
+                                <div className="mt-3">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={(e) => { e.stopPropagation(); setShowPaymentForm(true); }}
+                                        className="text-xs text-blue-600 border-blue-300 hover:bg-blue-50"
+                                    >
+                                        <PlusCircle className="w-3 h-3 mr-1" />
+                                        Add Payment
+                                    </Button>
+                                </div>
+                            )}
+
                             {expense.photos?.length > 0 && (
                                 <div className="mt-3">
                                     <Button
