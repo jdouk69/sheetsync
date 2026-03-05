@@ -158,7 +158,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         ) : expense.paymentStatus === 'deposit_paid' ? (
                                             <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 flex items-center gap-1 font-semibold">
                                                 <CheckCircle2 className="w-3 h-3" />
-                                                Deposit Paid
+                                                {t('depositPaid')}
                                             </span>
                                         ) : (
                                             <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 flex items-center gap-1 font-semibold">
