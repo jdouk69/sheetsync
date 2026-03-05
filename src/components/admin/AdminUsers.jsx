@@ -183,18 +183,26 @@ export default function AdminUsers({ currentUser }) {
                                         {u.id === currentUser?.id ? (
                                             <Badge variant="outline" className="text-blue-600 border-blue-200">You</Badge>
                                         ) : (
-                                            <Select
-                                                value={u.role || 'user'}
-                                                onValueChange={(role) => updateRoleMutation.mutate({ id: u.id, role, targetEmail: u.email })}
-                                            >
-                                                <SelectTrigger className="w-24 h-8 text-xs">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="user">User</SelectItem>
-                                                    <SelectItem value="admin">Admin</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <>
+                                                <Select
+                                                    value={u.role || 'user'}
+                                                    onValueChange={(role) => updateRoleMutation.mutate({ id: u.id, role, targetEmail: u.email })}
+                                                >
+                                                    <SelectTrigger className="w-24 h-8 text-xs">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="user">User</SelectItem>
+                                                        <SelectItem value="admin">Admin</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => { setEditingUser(u); setEditName(u.full_name || ""); }}>
+                                                    <Pencil className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => setDeleteConfirmId(u.id)}>
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </>
                                         )}
                                         {u.role === 'admin' && (
                                             <Shield className="w-4 h-4 text-blue-500" />
