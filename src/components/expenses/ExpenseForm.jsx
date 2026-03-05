@@ -23,6 +23,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
     });
 
     const existingCategories = [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))];
+    const existingVendors = [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))];
     const [formData, setFormData] = useState({
         description: "",
         amount: "",
