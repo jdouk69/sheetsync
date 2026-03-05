@@ -6,6 +6,7 @@ import { X, Upload, Image as ImageIcon } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import CategoryCombobox from "./CategoryCombobox";
+import VendorCombobox from "./VendorCombobox";
 import { format } from "date-fns";
 import { useLanguage } from "../LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
