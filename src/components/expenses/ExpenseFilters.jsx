@@ -37,6 +37,24 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                 </Select>
                 </div>
 
+                <div className="flex items-center gap-2 flex-1">
+                <Filter className="w-4 h-4 text-slate-500" />
+                <Select
+                    value={filters.vendor || "all"}
+                    onValueChange={(value) => onFiltersChange({ ...filters, vendor: value })}
+                >
+                    <SelectTrigger className="w-full md:w-48">
+                        <SelectValue placeholder="All Vendors" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Vendors</SelectItem>
+                        {availableVendors.sort().map(vendor => (
+                            <SelectItem key={vendor} value={vendor}>{vendor}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                </div>
+
                 <div className="flex gap-2 flex-1">
                 <div className="flex-1">
                     <label className="block text-xs text-slate-600 mb-1">{t('startDate')}</label>
