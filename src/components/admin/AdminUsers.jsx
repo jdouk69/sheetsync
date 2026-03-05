@@ -22,10 +22,11 @@ export default function AdminUsers({ currentUser }) {
     });
 
     const updateRoleMutation = useMutation({
-        mutationFn: ({ id, role }) => base44.entities.User.update(id, { role }),
-        onSuccess: () => {
+        mutationFn: ({ id, role, targetEmail }) => base44.entities.User.update(id, { role }).then(() => ({ id, role, targetEmail })),
+        onSuccess: ({ role, targetEmail }) => {
             queryClient.invalidateQueries({ queryKey: ['allUsers'] });
             toast.success("User role updated");
+            logActivity({ action: "updated_user_role", entityType: "user", entityId: "", entityLabel: targetEmail, user: currentUser, details: `Role changed to ${role}` });
         },
         onError: () => toast.error("Failed to update role"),
     });
