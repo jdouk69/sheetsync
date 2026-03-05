@@ -2,6 +2,7 @@ import React from "react";
 import { format } from "date-fns";
 import { CreditCard, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "../LanguageContext";
 
 export default function PaymentHistory({ payments, canDelete, onDelete }) {
     if (!payments || payments.length === 0) return null;
