@@ -228,35 +228,93 @@ export default function AdminUsers({ currentUser }) {
                                     </div>
                                     {/* Bottom row: controls */}
                                     <div className="flex items-center gap-2 mt-2 pl-12">
-                                        {u.id === currentUser?.id ? (
-                                            <Badge variant="outline" className="text-blue-600 border-blue-200">You</Badge>
-                                        ) : (
-                                            <>
-                                                <Select
-                                                    value={u.role || 'user'}
-                                                    onValueChange={(role) => updateRoleMutation.mutate({ id: u.id, role, targetEmail: u.email })}
-                                                >
-                                                    <SelectTrigger className="w-28 h-8 text-xs">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="user">User</SelectItem>
-                                                        <SelectItem value="admin">Admin</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => { setEditingUser(u); setEditName(u.full_name || ""); }}>
-                                                    <Pencil className="w-4 h-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => setDeleteConfirmId(u.id)}>
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
-                                            </>
-                                        )}
-                                        {u.role === 'admin' && (
-                                            <Shield className="w-4 h-4 text-blue-500" />
-                                        )}
+                                       {u.id === currentUser?.id ? (
+                                           <Badge variant="outline" className="text-blue-600 border-blue-200">You</Badge>
+                                       ) : (
+                                           <>
+                                               <Select
+                                                   value={u.role || 'user'}
+                                                   onValueChange={(role) => updateRoleMutation.mutate({ id: u.id, role, targetEmail: u.email })}
+                                               >
+                                                   <SelectTrigger className="w-32 h-8 text-xs">
+                                                       <SelectValue>{roleLabel(u.role || 'user')}</SelectValue>
+                                                   </SelectTrigger>
+                                                   <SelectContent>
+                                                       <SelectItem value="user">User</SelectItem>
+                                                       <SelectItem value="admin">Super Admin</SelectItem>
+                                                   </SelectContent>
+                                               </Select>
+                                               <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => { setEditingUser(u); setEditName(u.full_name || ""); }}>
+                                                   <Pencil className="w-4 h-4" />
+                                               </Button>
+                                               <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => setDeleteConfirmId(u.id)}>
+                                                   <Trash2 className="w-4 h-4" />
+                                               </Button>
+                                           </>
+                                       )}
+                                       {u.role === 'admin' && (
+                                           <Shield className="w-4 h-4 text-blue-500" title="Super Admin" />
+                                       )}
+                                       {/* Expand project roles */}
+                                       <button
+                                           onClick={() => setExpandedUser(expandedUser === u.id ? null : u.id)}
+                                           className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+                                       >
+                                           <FolderOpen className="w-3.5 h-3.5" />
+                                           Projects
+                                           {expandedUser === u.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                       </button>
                                     </div>
-                                </div>
+
+                                    {/* Project roles panel */}
+                                    {expandedUser === u.id && (() => {
+                                       const userProjects = getUserProjects(u.email);
+                                       return (
+                                           <div className="mt-2 ml-12 space-y-1.5">
+                                               {userProjects.length === 0 ? (
+                                                   <p className="text-xs text-slate-400 italic">Not part of any project</p>
+                                               ) : userProjects.map(p => {
+                                                   const isOwner = p.created_by === u.email;
+                                                   const shared = (p.sharedWith || []).find(s => s.email === u.email);
+                                                   const projRole = isOwner ? 'owner' : shared?.role;
+                                                   return (
+                                                       <div key={p.id} className="flex items-center gap-2 flex-wrap bg-white border border-slate-200 rounded-lg px-3 py-1.5">
+                                                           <FolderOpen className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                                           <span className="text-xs font-medium text-slate-700 flex-1 truncate">{p.name}</span>
+                                                           {isOwner ? (
+                                                               <Badge className="text-xs bg-purple-100 text-purple-700 border-0">Owner</Badge>
+                                                           ) : (
+                                                               <>
+                                                                   <Select
+                                                                       value={projRole}
+                                                                       onValueChange={(newRole) => updateProjectRoleMutation.mutate({ project: p, userEmail: u.email, newRole })}
+                                                                   >
+                                                                       <SelectTrigger className="w-28 h-7 text-xs border-slate-200">
+                                                                           <SelectValue />
+                                                                       </SelectTrigger>
+                                                                       <SelectContent>
+                                                                           <SelectItem value="viewer">Viewer</SelectItem>
+                                                                           <SelectItem value="editor">Editor</SelectItem>
+                                                                           <SelectItem value="admin">Project Admin</SelectItem>
+                                                                       </SelectContent>
+                                                                   </Select>
+                                                                   <Button
+                                                                       variant="ghost"
+                                                                       size="icon"
+                                                                       className="h-7 w-7 text-slate-300 hover:text-red-500"
+                                                                       onClick={() => removeFromProjectMutation.mutate({ project: p, userEmail: u.email })}
+                                                                   >
+                                                                       <Trash2 className="w-3.5 h-3.5" />
+                                                                   </Button>
+                                                               </>
+                                                           )}
+                                                       </div>
+                                                   );
+                                               })}
+                                           </div>
+                                       );
+                                    })()}
+                                    </div>
                             ))}
                         </div>
                     )}
