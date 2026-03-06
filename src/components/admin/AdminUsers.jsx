@@ -67,6 +67,37 @@ export default function AdminUsers({ currentUser }) {
         onError: () => toast.error("Failed to delete user"),
     });
 
+    const updateProjectRoleMutation = useMutation({
+        mutationFn: ({ project, userEmail, newRole }) => {
+            const updated = (project.sharedWith || []).map(s =>
+                s.email === userEmail ? { ...s, role: newRole } : s
+            );
+            return base44.entities.Project.update(project.id, { sharedWith: updated }).then(() => ({ project, userEmail, newRole }));
+        },
+        onSuccess: ({ project, userEmail, newRole }) => {
+            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
+            toast.success("Project role updated");
+            logActivity({ action: "updated_project_role", entityType: "project", entityId: project.id, entityLabel: project.name, user: currentUser, details: `${userEmail} role changed to ${newRole}` });
+        },
+        onError: () => toast.error("Failed to update project role"),
+    });
+
+    const removeFromProjectMutation = useMutation({
+        mutationFn: ({ project, userEmail }) => {
+            const updated = (project.sharedWith || []).filter(s => s.email !== userEmail);
+            return base44.entities.Project.update(project.id, { sharedWith: updated }).then(() => ({ project, userEmail }));
+        },
+        onSuccess: ({ project, userEmail }) => {
+            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
+            toast.success("User removed from project");
+            logActivity({ action: "removed_from_project", entityType: "project", entityId: project.id, entityLabel: project.name, user: currentUser, details: `${userEmail} removed` });
+        },
+        onError: () => toast.error("Failed to remove user from project"),
+    });
+
+    const getUserProjects = (email) =>
+        projects.filter(p => (p.sharedWith || []).some(s => s.email === email) || p.created_by === email);
+
     const handleInvite = async (e) => {
         e.preventDefault();
         if (!inviteEmail.includes('@')) {
