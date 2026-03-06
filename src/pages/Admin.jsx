@@ -53,7 +53,7 @@ export default function Admin() {
                     <Shield className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
+                    <h1 className="text-2xl font-bold text-slate-900">Super Admin Dashboard</h1>
                     <p className="text-sm text-slate-500">Manage users, projects, and expenses</p>
                 </div>
             </div>
