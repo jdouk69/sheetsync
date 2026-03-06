@@ -165,17 +165,18 @@ export default function AdminUsers({ currentUser }) {
                     ) : (
                         <div className="space-y-2">
                             {users.map((u) => (
-                                <div key={u.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg gap-3">
+                                <div key={u.id} className="p-3 bg-slate-50 rounded-lg">
+                                    {/* Top row: avatar + info */}
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                                        <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                                             <span className="text-blue-700 text-sm font-semibold">
                                                 {(u.full_name || u.email)?.[0]?.toUpperCase()}
                                             </span>
                                         </div>
-                                        <div className="min-w-0">
+                                        <div className="min-w-0 flex-1">
                                             <p className="text-sm font-medium text-slate-900 truncate">{u.full_name || "—"}</p>
                                             <p className="text-xs text-slate-500 truncate flex items-center gap-1">
-                                                <Mail className="w-3 h-3" />{u.email}
+                                                <Mail className="w-3 h-3 shrink-0" />{u.email}
                                             </p>
                                             {u.created_date && (
                                                 <p className="text-xs text-slate-400 mt-0.5">
@@ -184,7 +185,8 @@ export default function AdminUsers({ currentUser }) {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2 shrink-0">
+                                    {/* Bottom row: controls */}
+                                    <div className="flex items-center gap-2 mt-2 pl-12">
                                         {u.id === currentUser?.id ? (
                                             <Badge variant="outline" className="text-blue-600 border-blue-200">You</Badge>
                                         ) : (
@@ -193,7 +195,7 @@ export default function AdminUsers({ currentUser }) {
                                                     value={u.role || 'user'}
                                                     onValueChange={(role) => updateRoleMutation.mutate({ id: u.id, role, targetEmail: u.email })}
                                                 >
-                                                    <SelectTrigger className="w-24 h-8 text-xs">
+                                                    <SelectTrigger className="w-28 h-8 text-xs">
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
