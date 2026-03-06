@@ -177,12 +177,12 @@ export default function AdminUsers({ currentUser }) {
                             disabled={inviting}
                         />
                         <Select value={inviteRole} onValueChange={setInviteRole}>
-                            <SelectTrigger className="w-full sm:w-32">
+                            <SelectTrigger className="w-full sm:w-36">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="user">User</SelectItem>
-                                <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="admin">Super Admin</SelectItem>
                             </SelectContent>
                         </Select>
                         <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={inviting}>
