@@ -7,9 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { UserPlus, Loader2, Mail, Shield, User, Pencil, Trash2 } from "lucide-react";
+import { UserPlus, Loader2, Mail, Shield, User, Pencil, Trash2, FolderOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { logActivity } from "../activityLogger";
+
+const roleLabel = (role) => role === 'admin' ? 'Super Admin' : 'User';
+const projectRoleColor = { admin: 'bg-blue-100 text-blue-700', editor: 'bg-green-100 text-green-700', viewer: 'bg-slate-100 text-slate-600' };
 
 export default function AdminUsers({ currentUser }) {
     const [inviteEmail, setInviteEmail] = useState("");
