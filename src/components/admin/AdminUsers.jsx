@@ -23,9 +23,16 @@ export default function AdminUsers({ currentUser }) {
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
     const queryClient = useQueryClient();
 
+    const [expandedUser, setExpandedUser] = useState(null);
+
     const { data: users = [], isLoading } = useQuery({
         queryKey: ['allUsers'],
         queryFn: () => base44.entities.User.list(),
+    });
+
+    const { data: projects = [] } = useQuery({
+        queryKey: ['allProjects'],
+        queryFn: () => base44.entities.Project.list(),
     });
 
     const updateRoleMutation = useMutation({
