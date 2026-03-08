@@ -284,6 +284,10 @@ export default function AdminUsers({ currentUser }) {
                                     {/* Project roles panel */}
                                     {expandedUser === u.id && (() => {
                                        const userProjects = getUserProjects(u.email);
+                                       const availableProjects = projects.filter(p =>
+                                           p.created_by !== u.email && !(p.sharedWith || []).some(s => s.email === u.email)
+                                       );
+                                       const adding = addingToProject[u.id] || {};
                                        return (
                                            <div className="mt-2 ml-12 space-y-1.5">
                                                {userProjects.length === 0 ? (
