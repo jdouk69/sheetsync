@@ -96,6 +96,20 @@ export default function AdminUsers({ currentUser }) {
         onError: () => toast.error("Failed to remove user from project"),
     });
 
+    const addToProjectMutation = useMutation({
+        mutationFn: ({ project, userEmail, role }) => {
+            const updated = [...(project.sharedWith || []), { email: userEmail, role }];
+            return base44.entities.Project.update(project.id, { sharedWith: updated }).then(() => ({ project, userEmail, role }));
+        },
+        onSuccess: ({ project, userEmail, role }) => {
+            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
+            toast.success(`Added to ${project.name} as ${role}`);
+            logActivity({ action: "added_to_project", entityType: "project", entityId: project.id, entityLabel: project.name, user: currentUser, details: `${userEmail} added as ${role}` });
+            setAddingToProject({});
+        },
+        onError: () => toast.error("Failed to add user to project"),
+    });
+
     const getUserProjects = (email) =>
         projects.filter(p => (p.sharedWith || []).some(s => s.email === email) || p.created_by === email);
 
