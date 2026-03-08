@@ -21,6 +21,7 @@ export default function AdminProjects() {
     const [expandedProject, setExpandedProject] = useState(null);
     const [editingProject, setEditingProject] = useState(null); // { id, name, status }
     const [addingMember, setAddingMember] = useState({}); // { [projectId]: { email, role } }
+    const [transferringOwner, setTransferringOwner] = useState({}); // { [projectId]: email }
     const queryClient = useQueryClient();
 
     const { data: projects = [], isLoading } = useQuery({
