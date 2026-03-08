@@ -69,14 +69,25 @@ export default function ExpensesPage() {
 
     const createMutation = useMutation({
         mutationFn: (data) => base44.entities.Expense.create(data),
-        onSuccess: (created) => {
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+        onMutate: async (newData) => {
+            await queryClient.cancelQueries({ queryKey: ['expenses', currentProjectId] });
+            const previous = queryClient.getQueryData(['expenses', currentProjectId]);
+            queryClient.setQueryData(['expenses', currentProjectId], (old = []) => [
+                { ...newData, id: `optimistic-${Date.now()}`, created_date: new Date().toISOString() },
+                ...old
+            ]);
             setShowForm(false);
             setEditingExpense(null);
+            return { previous };
+        },
+        onSuccess: (created) => {
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             toast.success("Expense added successfully");
             logActivity({ action: "created_expense", entityType: "expense", entityId: created?.id, entityLabel: created?.description, user });
         },
-        onError: () => {
+        onError: (err, newData, context) => {
+            queryClient.setQueryData(['expenses', currentProjectId], context?.previous);
+            setShowForm(true);
             toast.error("Failed to add expense. Please try again.");
         },
     });

@@ -145,7 +145,19 @@ function LayoutContent({ children, currentPageName }) {
                 </div>
             </nav>
 
-            <main className="pb-16 md:pb-0">{children}</main>
+            <main className="pb-16 md:pb-0">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentPageName}
+                        initial={{ opacity: 0, x: 12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -12 }}
+                        transition={{ duration: 0.18, ease: "easeInOut" }}
+                    >
+                        {children}
+                    </motion.div>
+                </AnimatePresence>
+            </main>
             <MobileTabBar currentPageName={currentPageName} />
             <Toaster position="bottom-right" richColors />
         </div>
