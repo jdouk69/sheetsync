@@ -14,6 +14,7 @@ export function useProjectPermissions(project) {
             return {
                 canView: false,
                 canEdit: false,
+                canEditProject: false,
                 canDelete: false,
                 isOwner: false,
                 role: null
