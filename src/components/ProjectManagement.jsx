@@ -267,16 +267,24 @@ export default function ProjectManagement({ onClose }) {
                 </Card>
             ) : (
                 <div className="grid gap-4">
-                    {projects.map((project) => (
-                        <ProjectCard
-                            key={project.id}
-                            project={project}
-                            currentProjectId={currentProjectId}
-                            onShare={setSharingProject}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                        />
-                    ))}
+                    {projects.length === 0 && !currentProjectPermissions.canEdit ? (
+                        <div className="text-center py-10 text-slate-500">
+                            <FolderOpen className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                            <p className="font-medium text-slate-700">No projects yet</p>
+                            <p className="text-sm mt-1">You haven't been added to any project. Please contact your administrator to get access.</p>
+                        </div>
+                    ) : (
+                        projects.map((project) => (
+                            <ProjectCard
+                                key={project.id}
+                                project={project}
+                                currentProjectId={currentProjectId}
+                                onShare={setSharingProject}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            />
+                        ))
+                    )}
                 </div>
             )}
         </div>
