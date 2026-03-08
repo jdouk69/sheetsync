@@ -129,31 +129,75 @@ export default function AdminProjects() {
                                     <div className="flex items-center justify-between p-3 bg-slate-50 gap-3">
                                         <div className="min-w-0 flex-1">
                                             {isEditing ? (
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <Input
-                                                        value={editingProject.name}
-                                                        onChange={e => setEditingProject(p => ({ ...p, name: e.target.value }))}
-                                                        className="h-7 text-sm flex-1 min-w-[120px]"
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <Input
+                                                            value={editingProject.name}
+                                                            onChange={e => setEditingProject(p => ({ ...p, name: e.target.value }))}
+                                                            className="h-7 text-sm flex-1 min-w-[120px]"
+                                                            placeholder="Project name"
+                                                        />
+                                                        <Select
+                                                            value={editingProject.status}
+                                                            onValueChange={v => setEditingProject(p => ({ ...p, status: v }))}
+                                                        >
+                                                            <SelectTrigger className="h-7 text-xs w-28">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="active">Active</SelectItem>
+                                                                <SelectItem value="completed">Completed</SelectItem>
+                                                                <SelectItem value="on_hold">On Hold</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <Select
+                                                            value={editingProject.currency}
+                                                            onValueChange={v => setEditingProject(p => ({ ...p, currency: v }))}
+                                                        >
+                                                            <SelectTrigger className="h-7 text-xs w-20">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="EUR">EUR</SelectItem>
+                                                                <SelectItem value="USD">USD</SelectItem>
+                                                                <SelectItem value="GBP">GBP</SelectItem>
+                                                                <SelectItem value="CAD">CAD</SelectItem>
+                                                                <SelectItem value="CHF">CHF</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <Textarea
+                                                        value={editingProject.description}
+                                                        onChange={e => setEditingProject(p => ({ ...p, description: e.target.value }))}
+                                                        placeholder="Description (optional)"
+                                                        className="text-xs h-16 resize-none"
                                                     />
-                                                    <Select
-                                                        value={editingProject.status}
-                                                        onValueChange={v => setEditingProject(p => ({ ...p, status: v }))}
-                                                    >
-                                                        <SelectTrigger className="h-7 text-xs w-28">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="active">Active</SelectItem>
-                                                            <SelectItem value="completed">Completed</SelectItem>
-                                                            <SelectItem value="on_hold">On Hold</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={handleSaveEdit} disabled={updateMutation.isPending}>
-                                                        <Check className="w-3 h-3" />
-                                                    </Button>
-                                                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingProject(null)}>
-                                                        <X className="w-3 h-3" />
-                                                    </Button>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <div className="flex items-center gap-1 flex-1 min-w-[130px]">
+                                                            <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
+                                                            <Input
+                                                                type="date"
+                                                                value={editingProject.startDate}
+                                                                onChange={e => setEditingProject(p => ({ ...p, startDate: e.target.value }))}
+                                                                className="h-7 text-xs"
+                                                            />
+                                                        </div>
+                                                        <div className="flex items-center gap-1 flex-1 min-w-[130px]">
+                                                            <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
+                                                            <Input
+                                                                type="date"
+                                                                value={editingProject.endDate}
+                                                                onChange={e => setEditingProject(p => ({ ...p, endDate: e.target.value }))}
+                                                                className="h-7 text-xs"
+                                                            />
+                                                        </div>
+                                                        <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={handleSaveEdit} disabled={updateMutation.isPending}>
+                                                            <Check className="w-3 h-3" />
+                                                        </Button>
+                                                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingProject(null)}>
+                                                            <X className="w-3 h-3" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <>
