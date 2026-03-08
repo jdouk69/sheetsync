@@ -7,7 +7,7 @@ import { useProjectPermissions } from "./useProjectPermissions";
 
 export default function ProjectCard({ project, currentProjectId, onShare, onEdit, onDelete }) {
     const { t } = useLanguage();
-    const { canEdit, canDelete } = useProjectPermissions(project);
+    const { canEdit, canEditProject, canDelete } = useProjectPermissions(project);
 
     return (
         <Card className={currentProjectId === project.id ? 'ring-2 ring-blue-500' : ''}>
