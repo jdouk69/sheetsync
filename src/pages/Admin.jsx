@@ -83,6 +83,7 @@ export default function Admin() {
             {activeTab === "projects" && <AdminProjects />}
             {activeTab === "expenses" && <AdminExpenses />}
             {activeTab === "vendors" && <AdminVendorsCategories />}
+            {activeTab === "snapshots" && <AdminSnapshots />}
             {activeTab === "activity" && <AdminActivityLog />}
         </div>
     );
