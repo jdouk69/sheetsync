@@ -273,6 +273,24 @@ export default function AdminProjects() {
                                                 <Badge className="text-xs bg-purple-100 text-purple-700">Owner</Badge>
                                             </div>
 
+                                            {/* Transfer ownership row */}
+                                            <div className="flex items-center gap-2 pt-1 flex-wrap">
+                                                <Input
+                                                    value={transferringOwner[project.id] || ""}
+                                                    onChange={e => setTransferringOwner(prev => ({ ...prev, [project.id]: e.target.value }))}
+                                                    placeholder="New owner email..."
+                                                    className="h-7 text-xs flex-1 min-w-[140px]"
+                                                />
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-7 text-xs gap-1 border-purple-300 text-purple-700 hover:bg-purple-50"
+                                                    onClick={() => handleTransferOwnership(project)}
+                                                >
+                                                    <UserCog className="w-3 h-3" /> Transfer Owner
+                                                </Button>
+                                            </div>
+
                                             {/* Shared members */}
                                             {(project.sharedWith || []).map(member => (
                                                 <div key={member.email} className="flex items-center justify-between text-xs py-1 px-2 bg-slate-50 rounded gap-2">
