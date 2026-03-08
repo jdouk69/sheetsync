@@ -49,16 +49,16 @@
  */
 import Admin from './pages/Admin';
 import Expenses from './pages/Expenses';
-import Reports from './pages/Reports';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Reports from './pages/Reports';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Admin": Admin,
     "Expenses": Expenses,
-    "Reports": Reports,
     "PrivacyPolicy": PrivacyPolicy,
+    "Reports": Reports,
 }
 
 export const pagesConfig = {
