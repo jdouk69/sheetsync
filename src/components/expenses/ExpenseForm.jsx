@@ -237,15 +237,19 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                             <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Payment Status
                             </label>
-                            <select
+                            <Select
                                 value={formData.paymentStatus}
-                                onChange={(e) => setFormData({...formData, paymentStatus: e.target.value})}
-                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                                onValueChange={(value) => setFormData({...formData, paymentStatus: value})}
                             >
-                                <option value="unpaid">Unpaid</option>
-                                <option value="deposit_paid">Deposit Paid</option>
-                                <option value="fully_paid">Fully Paid</option>
-                            </select>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="unpaid">Unpaid</SelectItem>
+                                    <SelectItem value="deposit_paid">Deposit Paid</SelectItem>
+                                    <SelectItem value="fully_paid">Fully Paid</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 )}

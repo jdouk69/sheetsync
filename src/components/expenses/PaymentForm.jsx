@@ -74,15 +74,19 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">{t('paymentMethod')} *</label>
-                        <select
+                        <Select
                             value={form.method}
-                            onChange={(e) => setForm({ ...form, method: e.target.value })}
-                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                            onValueChange={(value) => setForm({ ...form, method: value })}
                         >
-                            {PAYMENT_METHODS.map((m) => (
-                                <option key={m.value} value={m.value}>{t(m.labelKey)}</option>
-                            ))}
-                        </select>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {PAYMENT_METHODS.map((m) => (
+                                    <SelectItem key={m.value} value={m.value}>{t(m.labelKey)}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">{t('referenceNumber')}</label>

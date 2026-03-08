@@ -244,10 +244,10 @@ export default function AdminUsers({ currentUser }) {
                                                        <SelectItem value="admin">Super Admin</SelectItem>
                                                    </SelectContent>
                                                </Select>
-                                               <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => { setEditingUser(u); setEditName(u.full_name || ""); }}>
+                                               <Button variant="ghost" size="icon" className="h-11 w-11 text-slate-400 hover:text-blue-600" onClick={() => { setEditingUser(u); setEditName(u.full_name || ""); }}>
                                                    <Pencil className="w-4 h-4" />
                                                </Button>
-                                               <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => setDeleteConfirmId(u.id)}>
+                                               <Button variant="ghost" size="icon" className="h-11 w-11 text-slate-400 hover:text-red-600" onClick={() => setDeleteConfirmId(u.id)}>
                                                    <Trash2 className="w-4 h-4" />
                                                </Button>
                                            </>
