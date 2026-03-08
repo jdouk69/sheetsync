@@ -18,7 +18,8 @@ import { Sparkles } from "lucide-react";
 
 export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }) {
     const { t } = useLanguage();
-    const { currentProjectId } = useProject();
+    const { currentProjectId, currentProject } = useProject();
+    const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
     const isAdmin = currentUser?.role === 'admin';
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses'],
@@ -231,7 +232,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                             />
                             {formData.totalAmount && formData.depositAmount && (
                                 <p className="text-xs text-slate-500 mt-1">
-                                    Balance due: €{(parseFloat(formData.totalAmount) - parseFloat(formData.depositAmount)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    Balance due: {currencySymbol}{(parseFloat(formData.totalAmount) - parseFloat(formData.depositAmount)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </p>
                             )}
                         </div>

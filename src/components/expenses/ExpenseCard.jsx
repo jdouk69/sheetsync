@@ -33,6 +33,7 @@ const categoryColors = {
 export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onToggleSelect, currentUser, users }) {
     const { t } = useLanguage();
     const { currentProject } = useProject();
+    const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -195,20 +196,20 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         <div>
                                             <div className="text-xs text-slate-500">{t('totalQuoted')}</div>
                                             <div className="text-2xl font-bold text-slate-900">
-                                                €{expense.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                {currencySymbol}{expense.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </div>
                                             <div className="text-sm text-green-700 font-medium">
-                                                {t('totalPaid')}: €{totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                {t('totalPaid')}: {currencySymbol}{totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </div>
                                             {!isFullyPaid && balanceDue > 0 && (
                                                 <div className="text-sm text-red-600 font-semibold">
-                                                    {t('balanceDue')}: €{balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    {t('balanceDue')}: {currencySymbol}{balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
                                         <div className="text-2xl font-bold text-slate-900">
-                                            €{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            {currencySymbol}{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </div>
                                     )}
                                 </div>
