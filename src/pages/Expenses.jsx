@@ -307,7 +307,23 @@ export default function ExpensesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
+        <div
+            className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
+            {(pullDistance > 10 || pullRefreshing) && (
+                <div
+                    className="fixed top-16 left-0 right-0 flex justify-center z-50 transition-all pointer-events-none"
+                    style={{ transform: `translateY(${pullRefreshing ? 8 : Math.min(pullDistance * 0.4, 24)}px)` }}
+                >
+                    <div className={`bg-white rounded-full shadow-md px-3 py-1.5 flex items-center gap-2 text-xs text-slate-600 ${pullRefreshing ? 'animate-pulse' : ''}`}>
+                        <div className={`w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent ${pullRefreshing ? 'animate-spin' : ''}`} />
+                        {pullRefreshing ? 'Refreshing...' : pullDistance >= PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh'}
+                    </div>
+                </div>
+            )}
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
