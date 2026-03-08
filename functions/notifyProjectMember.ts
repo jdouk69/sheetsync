@@ -20,25 +20,20 @@ Deno.serve(async (req) => {
         }
 
         const projectName = data.name || "a project";
-
-        // Fetch all registered users to check if the new member has an account
-        const allUsers = await base44.asServiceRole.entities.User.list();
-        const registeredEmails = new Set(allUsers.map(u => u.email));
-
         const notified = [];
         const skipped = [];
 
         for (const member of newMembers) {
-            if (!registeredEmails.has(member.email)) {
-                skipped.push(member.email);
-                continue;
+            try {
+                await base44.asServiceRole.integrations.Core.SendEmail({
+                    to: member.email,
+                    subject: `You've been added to "${projectName}"`,
+                    body: `Hello,\n\nYou have been added to the project "${projectName}" with the role of ${member.role}.\n\nYou can now log in to view and manage this project.\n\nBest regards,\nThe Team`
+                });
+                notified.push(member.email);
+            } catch (e) {
+                skipped.push({ email: member.email, reason: e.message });
             }
-            await base44.asServiceRole.integrations.Core.SendEmail({
-                to: member.email,
-                subject: `You've been added to "${projectName}"`,
-                body: `Hello,\n\nYou have been added to the project "${projectName}" with the role of ${member.role}.\n\nYou can now log in to view and manage this project.\n\nBest regards,\nThe Team`
-            });
-            notified.push(member.email);
         }
 
         return Response.json({ success: true, notified, skipped });
