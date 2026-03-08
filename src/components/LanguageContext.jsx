@@ -178,6 +178,8 @@ const translations = {
         totalBalance: "Total Balance Due",
         partiallyPaid: "Partially Paid",
         ref: "Ref",
+        noProjectsTitle: "No projects yet",
+        noProjectsMessage: "You haven't been added to any project. Please contact your administrator to get access.",
         },
     el: {
         // Layout
@@ -356,6 +358,8 @@ const translations = {
         totalBalance: "Συνολικό Υπόλοιπο",
         partiallyPaid: "Μερικώς Πληρωμένο",
         ref: "Αρ. Αναφ.",
+        noProjectsTitle: "Δεν υπάρχουν έργα ακόμα",
+        noProjectsMessage: "Δεν έχετε προστεθεί σε κανένα έργο. Επικοινωνήστε με τον διαχειριστή σας για πρόσβαση.",
         }
 };
 

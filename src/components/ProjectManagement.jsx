@@ -270,8 +270,8 @@ export default function ProjectManagement({ onClose }) {
                     {projects.length === 0 && !currentProjectPermissions.canEdit ? (
                         <div className="text-center py-10 text-slate-500">
                             <FolderOpen className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                            <p className="font-medium text-slate-700">No projects yet</p>
-                            <p className="text-sm mt-1">You haven't been added to any project. Please contact your administrator to get access.</p>
+                            <p className="font-medium text-slate-700">{t('noProjectsTitle')}</p>
+                            <p className="text-sm mt-1">{t('noProjectsMessage')}</p>
                         </div>
                     ) : (
                         projects.map((project) => (
