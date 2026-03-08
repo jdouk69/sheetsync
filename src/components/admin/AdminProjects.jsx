@@ -180,7 +180,7 @@ export default function AdminProjects() {
                                                 <Button
                                                     variant="ghost" size="icon"
                                                     className="h-7 w-7 text-slate-400 hover:text-blue-600"
-                                                    onClick={() => setEditingProject({ id: project.id, name: project.name, status: project.status || "active" })}
+                                                    onClick={() => setEditingProject({ id: project.id, name: project.name, status: project.status || "active", description: project.description || "", currency: project.currency || "EUR", startDate: project.startDate || "", endDate: project.endDate || "" })}
                                                 >
                                                     <Pencil className="w-3.5 h-3.5" />
                                                 </Button>
