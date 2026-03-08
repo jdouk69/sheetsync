@@ -299,7 +299,7 @@ export default function AdminUsers({ currentUser }) {
                                                    return (
                                                        <div key={p.id} className="flex items-center gap-2 flex-wrap bg-white border border-slate-200 rounded-lg px-3 py-1.5">
                                                            <FolderOpen className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                                           <span className="text-xs font-medium text-slate-700 flex-1 truncate">{p.name}</span>
+                                                           <span className="text-xs font-medium text-slate-700 flex-1 min-w-[80px]">{p.name}</span>
                                                            {isOwner ? (
                                                                <Badge className="text-xs bg-purple-100 text-purple-700 border-0">Owner</Badge>
                                                            ) : (
