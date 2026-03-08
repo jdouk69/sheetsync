@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Euro, TrendingUp, Package, Calendar } from "lucide-react";
+import { TrendingUp, Package, Calendar, DollarSign } from "lucide-react";
 import { useLanguage } from "../LanguageContext";
 import { useProject } from "../ProjectContext";
 
@@ -8,6 +8,8 @@ const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr
 
 export default function ExpenseSummary({ expenses }) {
     const { t } = useLanguage();
+    const { currentProject } = useProject();
+    const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
     const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
     const totalExpenses = expenses.length;
     
@@ -31,13 +33,13 @@ export default function ExpenseSummary({ expenses }) {
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-100 rounded-lg shrink-0">
-                            <Euro className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="text-sm text-slate-600">{t('totalSpent')}</p>
-                            <p className="text-2xl font-bold text-slate-900 break-words">
-                                €{totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </p>
+                                    <DollarSign className="w-6 h-6 text-blue-600" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm text-slate-600">{t('totalSpent')}</p>
+                                    <p className="text-2xl font-bold text-slate-900 break-words">
+                                        {currencySymbol}{totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                    </p>
                         </div>
                     </div>
                 </CardContent>
@@ -82,7 +84,7 @@ export default function ExpenseSummary({ expenses }) {
                         <div className="min-w-0 flex-1">
                             <p className="text-sm text-slate-600">{t('thisMonth')}</p>
                             <p className="text-2xl font-bold text-slate-900 break-words">
-                                €{monthlyTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                {currencySymbol}{monthlyTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </p>
                         </div>
                     </div>
