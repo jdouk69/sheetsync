@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FolderOpen, Loader2, Trash2, Users, Search, ChevronDown, ChevronUp, Pencil, Check, X, UserMinus, UserPlus } from "lucide-react";
+import { FolderOpen, Loader2, Trash2, Users, Search, ChevronDown, ChevronUp, Pencil, Check, X, UserMinus, UserPlus, Calendar } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 const statusColors = {
