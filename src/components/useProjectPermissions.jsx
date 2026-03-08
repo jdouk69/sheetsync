@@ -20,6 +20,17 @@ export function useProjectPermissions(project) {
             };
         }
 
+        // Super admins have full permissions on all projects
+        if (user.role === 'admin') {
+            return {
+                canView: true,
+                canEdit: true,
+                canDelete: true,
+                isOwner: project.created_by === user.email,
+                role: project.created_by === user.email ? 'owner' : 'admin'
+            };
+        }
+
         // Project owner has all permissions
         const isOwner = project.created_by === user.email;
         if (isOwner) {
