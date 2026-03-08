@@ -13,7 +13,21 @@ import { Toaster } from "@/components/ui/sonner";
 
 function LayoutContent({ children, currentPageName }) {
     const { language, t, toggleLanguage } = useLanguage();
-    const canGoBack = window.history.length > 1;
+
+    // Apply dark mode based on system preference
+    React.useEffect(() => {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        const apply = (e) => {
+            document.documentElement.classList.toggle('dark', e.matches);
+        };
+        apply(mq);
+        mq.addEventListener('change', apply);
+        return () => mq.removeEventListener('change', apply);
+    }, []);
+
+    // Show back button only on sub-pages (not main nav pages)
+    const mainPages = ['/', '/Expenses', '/Reports', '/Admin'];
+    const canGoBack = !mainPages.includes(window.location.pathname);
     const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
     const { data: user } = useQuery({
         queryKey: ['currentUser'],
