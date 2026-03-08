@@ -301,7 +301,7 @@ export default function AdminUsers({ currentUser }) {
                                                                    <Button
                                                                        variant="ghost"
                                                                        size="icon"
-                                                                       className="h-7 w-7 text-slate-300 hover:text-red-500"
+                                                                       className="h-11 w-11 text-slate-300 hover:text-red-500"
                                                                        onClick={() => removeFromProjectMutation.mutate({ project: p, userEmail: u.email })}
                                                                    >
                                                                        <Trash2 className="w-3.5 h-3.5" />
