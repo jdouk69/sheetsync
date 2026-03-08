@@ -59,7 +59,7 @@ export default function ProjectCard({ project, currentProjectId, onShare, onEdit
                         )}
                     </div>
                     <div className="flex flex-col gap-2">
-                        {canEdit && (
+                        {canEditProject && (
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -69,7 +69,7 @@ export default function ProjectCard({ project, currentProjectId, onShare, onEdit
                                 <Users className="w-4 h-4" />
                             </Button>
                         )}
-                        {canEdit && (
+                        {canEditProject && (
                             <Button
                                 variant="outline"
                                 size="sm"
