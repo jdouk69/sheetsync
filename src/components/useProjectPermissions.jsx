@@ -75,7 +75,8 @@ export function useProjectPermissions(project) {
         
         return {
             canView: true,
-            canEdit: role === 'admin' || role === 'editor',
+            canEdit: role === 'admin' || role === 'editor',   // edit expenses
+            canEditProject: role === 'admin',                  // edit project settings
             canDelete: role === 'admin',
             isOwner: false,
             role
