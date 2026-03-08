@@ -35,6 +35,27 @@ export default function ExpensesPage() {
 
     const queryClient = useQueryClient();
 
+    const handleTouchStart = (e) => {
+        if (window.scrollY === 0) touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+        if (pullRefreshing) return;
+        const delta = e.touches[0].clientY - touchStartY.current;
+        if (delta > 0 && window.scrollY === 0) {
+            setPullDistance(Math.min(delta, PULL_THRESHOLD + 20));
+        }
+    };
+
+    const handleTouchEnd = async () => {
+        if (pullDistance >= PULL_THRESHOLD) {
+            setPullRefreshing(true);
+            await queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            setPullRefreshing(false);
+        }
+        setPullDistance(0);
+    };
+
     React.useEffect(() => {
         const checkAuth = async () => {
             try {
