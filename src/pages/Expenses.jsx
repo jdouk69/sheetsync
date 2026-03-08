@@ -108,12 +108,19 @@ export default function ExpensesPage() {
 
     const deleteMutation = useMutation({
         mutationFn: (expense) => base44.entities.Expense.delete(expense.id).then(() => expense),
+        onMutate: async (expense) => {
+            await queryClient.cancelQueries({ queryKey: ['expenses', currentProjectId] });
+            const previous = queryClient.getQueryData(['expenses', currentProjectId]);
+            queryClient.setQueryData(['expenses', currentProjectId], (old = []) => old.filter(e => e.id !== expense.id));
+            return { previous };
+        },
         onSuccess: (expense) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             toast.success("Expense deleted");
             logActivity({ action: "deleted_expense", entityType: "expense", entityId: expense.id, entityLabel: expense.description, user });
         },
-        onError: () => {
+        onError: (err, expense, context) => {
+            queryClient.setQueryData(['expenses', currentProjectId], context?.previous);
             toast.error("Failed to delete expense. Please try again.");
         },
     });

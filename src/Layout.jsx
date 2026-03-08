@@ -27,6 +27,10 @@ function LayoutContent({ children, currentPageName }) {
 
     return (
         <div className="min-h-screen bg-slate-50 overflow-y-auto" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <style>{`
+            html, body { overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
+            button, [role="tab"], nav, [role="navigation"] { user-select: none; -webkit-user-select: none; }
+        `}</style>
             <nav className="bg-white shadow-sm border-b border-slate-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
