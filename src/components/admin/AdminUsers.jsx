@@ -24,6 +24,7 @@ export default function AdminUsers({ currentUser }) {
     const queryClient = useQueryClient();
 
     const [expandedUser, setExpandedUser] = useState(null);
+    const [addingToProject, setAddingToProject] = useState({}); // { [userId]: { projectId, role } }
 
     const { data: users = [], isLoading } = useQuery({
         queryKey: ['allUsers'],
