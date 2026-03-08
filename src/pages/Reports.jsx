@@ -305,15 +305,15 @@ export default function ReportsPage() {
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">${t('totalAmount')}:</span>
-                    <span class="summary-value">€${total.toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
+                    <span class="summary-value">${currencySymbol}${total.toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">${t('paid')}:</span>
-                    <span class="summary-value">€${expenses.filter(exp => exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
+                    <span class="summary-value">${currencySymbol}${expenses.filter(exp => exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">${t('unpaid')}:</span>
-                    <span class="summary-value">€${expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
+                    <span class="summary-value">${currencySymbol}${expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
                 </div>
             </div>
             
@@ -323,7 +323,7 @@ export default function ReportsPage() {
                 return `
                     <div class="category-item">
                         <span class="category-name">${cat.name}</span>
-                        <span class="category-amount">€${cat.value.toLocaleString(locale, { minimumFractionDigits: 2 })} (${percentage}%)</span>
+                        <span class="category-amount">${currencySymbol}${cat.value.toLocaleString(locale, { minimumFractionDigits: 2 })} (${percentage}%)</span>
                     </div>
                 `;
             }).join('')}
@@ -347,7 +347,7 @@ export default function ReportsPage() {
                             <td>${exp.description}</td>
                             <td>${exp.category}</td>
                             <td>${exp.vendor || '-'}</td>
-                            <td class="amount-cell">€${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
+                            <td class="amount-cell">${currencySymbol}${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
                             <td>${exp.isPaid ? '✓' : '✗'}</td>
                         </tr>
                     `).join('')}
@@ -359,7 +359,7 @@ export default function ReportsPage() {
                     <div class="summary-box" style="background: #fef2f2; border-color: #fecaca;">
                         <div class="summary-row">
                             <span class="summary-label" style="color: #991b1b;">${t('totalUnpaidAmount')}:</span>
-                            <span class="summary-value" style="color: #b91c1c;">€${expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
+                            <span class="summary-value" style="color: #b91c1c;">${currencySymbol}${expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
                         </div>
                         <div class="summary-row">
                             <span class="summary-label" style="color: #991b1b;">${t('unpaidItems')}:</span>
@@ -383,7 +383,7 @@ export default function ReportsPage() {
                                     <td>${exp.description}</td>
                                     <td>${exp.category}</td>
                                     <td>${exp.vendor || '-'}</td>
-                                    <td class="amount-cell">€${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
+                                    <td class="amount-cell">${currencySymbol}${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -401,7 +401,7 @@ export default function ReportsPage() {
                     };
 
     const handleExportCSV = () => {
-        const headers = [t('date'), t('description'), t('amount') + ' (€)', t('category'), t('vendor'), t('notes'), t('paid')];
+        const headers = [t('date'), t('description'), `${t('amount')} (${currencySymbol})`, t('category'), t('vendor'), t('notes'), t('paid')];
         const rows = expenses.map(exp => [
             format(new Date(exp.date), 'yyyy-MM-dd'),
             exp.description,
@@ -621,7 +621,7 @@ export default function ReportsPage() {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip formatter={(value) => `€${value.toFixed(2)}`} />
+                                    <Tooltip formatter={(value) => `${currencySymbol}${value.toFixed(2)}`} />
                                 </RechartsPie>
                             </ResponsiveContainer>
                         ) : (
@@ -640,7 +640,7 @@ export default function ReportsPage() {
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="name" />
                                     <YAxis />
-                                    <Tooltip formatter={(value) => `€${value.toFixed(2)}`} />
+                                    <Tooltip formatter={(value) => `${currencySymbol}${value.toFixed(2)}`} />
                                     <Bar dataKey="amount" fill="#3b82f6" />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -661,7 +661,7 @@ export default function ReportsPage() {
                                     <div className="flex justify-between text-sm mb-1">
                                         <span className="font-medium">{cat.name}</span>
                                         <span className="text-slate-600">
-                                            €{cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })} ({percentage.toFixed(1)}%)
+                                            {currencySymbol}{cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })} ({percentage.toFixed(1)}%)
                                         </span>
                                     </div>
                                     <div className="w-full bg-slate-200 rounded-full h-2">
@@ -690,7 +690,7 @@ export default function ReportsPage() {
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm font-medium text-red-900">{t('totalUnpaidAmount')}:</span>
                                     <span className="text-xl font-bold text-red-700">
-                                        €{expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                        {currencySymbol}{expenses.filter(exp => !exp.isPaid).reduce((sum, exp) => sum + exp.amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                     </span>
                                 </div>
                                 <div className="text-xs text-red-700 mt-1">
@@ -722,7 +722,7 @@ export default function ReportsPage() {
                                                     </span>
                                                 </td>
                                                 <td className="py-3 px-2 text-right font-semibold text-slate-900">
-                                                    €{exp.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                                    {currencySymbol}{exp.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                                 </td>
                                             </tr>
                                         ))}
