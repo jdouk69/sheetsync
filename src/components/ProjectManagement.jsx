@@ -44,6 +44,7 @@ export default function ProjectManagement({ onClose }) {
         name: "",
         description: "",
         status: "active",
+        currency: "EUR",
         startDate: "",
         endDate: ""
     });

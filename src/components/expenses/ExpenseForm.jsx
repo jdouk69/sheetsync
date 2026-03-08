@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { useLanguage } from "../LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useProject } from "../ProjectContext";
+
+const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 import { Sparkles } from "lucide-react";
 
 export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }) {

@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { useLanguage } from "../LanguageContext";
 import { useProject } from "../ProjectContext";
+
+const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 import { useProjectPermissions } from "../useProjectPermissions";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";

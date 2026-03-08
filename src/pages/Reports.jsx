@@ -14,6 +14,7 @@ import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899', '#64748b', '#ef4444', '#14b8a6', '#f97316', '#a855f7', '#06b6d4', '#84cc16', '#e11d48', '#0ea5e9', '#d97706', '#7c3aed', '#059669'];
+const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 
 const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, name, percent }) => {
     if (percent < 0.03) return null; // skip tiny slices

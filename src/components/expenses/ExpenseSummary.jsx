@@ -2,6 +2,9 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Euro, TrendingUp, Package, Calendar } from "lucide-react";
 import { useLanguage } from "../LanguageContext";
+import { useProject } from "../ProjectContext";
+
+const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 
 export default function ExpenseSummary({ expenses }) {
     const { t } = useLanguage();
