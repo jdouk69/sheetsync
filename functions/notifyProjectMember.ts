@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
                 await base44.asServiceRole.integrations.Core.SendEmail({
                     to: member.email,
                     subject: `You've been added to "${projectName}"`,
-                    body: `Hello,\n\nYou have been added to the project "${projectName}" with the role of ${member.role}.\n\nYou can now log in to view and manage this project.\n\nBest regards,\nThe Team`
+                    body: `<p>Hello,</p><p>You have been added to the project <strong>"${projectName}"</strong> with the role of <strong>${member.role}</strong>.</p><p>You can now log in to view and manage this project.</p><p>Best regards,<br>The Team</p>`
                 });
                 notified.push(member.email);
             } catch (e) {
