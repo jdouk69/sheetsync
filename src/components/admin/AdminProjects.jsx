@@ -78,6 +78,21 @@ export default function AdminProjects() {
         updateMutation.mutate({ id: project.id, data: { sharedWith: updated } });
     };
 
+    const handleTransferOwnership = async (project) => {
+        const newEmail = transferringOwner[project.id]?.trim();
+        if (!newEmail) return toast.error("Enter the new owner's email");
+        if (newEmail === project.created_by) return toast.error("This user is already the owner");
+        if (!confirm(`Transfer ownership of "${project.name}" to ${newEmail}?`)) return;
+        try {
+            await base44.functions.invoke('transferProjectOwnership', { projectId: project.id, newOwnerEmail: newEmail });
+            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
+            toast.success(`Ownership transferred to ${newEmail}`);
+            setTransferringOwner(prev => ({ ...prev, [project.id]: "" }));
+        } catch (e) {
+            toast.error(e?.response?.data?.error || "Failed to transfer ownership");
+        }
+    };
+
     const handleAddMember = (project) => {
         const { email, role = "editor" } = addingMember[project.id] || {};
         if (!email?.trim()) return toast.error("Enter an email");
