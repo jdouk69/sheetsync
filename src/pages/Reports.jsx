@@ -41,7 +41,8 @@ const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, name, percent }) => 
 
 export default function ReportsPage() {
     const { t, language } = useLanguage();
-    const { currentProjectId, projects, isLoading: projectsLoading } = useProject();
+    const { currentProjectId, projects, currentProject, isLoading: projectsLoading } = useProject();
+    const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
 
