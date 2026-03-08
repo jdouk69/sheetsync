@@ -123,7 +123,7 @@ export default function ProjectManagement({ onClose }) {
     return (
         <div className="space-y-4 pb-8">
             <div className="flex justify-between items-center mb-4">
-                {currentProjectPermissions.canEdit && (
+                {(currentProjectPermissions.canEdit || projects.length === 0) && (
                     <Button
                         onClick={() => setShowForm(true)}
                         className="bg-blue-600 hover:bg-blue-700"
