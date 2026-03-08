@@ -84,6 +84,7 @@ export default function ProjectManagement({ onClose }) {
             name: "",
             description: "",
             status: "active",
+            currency: "EUR",
             startDate: "",
             endDate: ""
         });
@@ -95,6 +96,7 @@ export default function ProjectManagement({ onClose }) {
             name: project.name || "",
             description: project.description || "",
             status: project.status || "active",
+            currency: project.currency || "EUR",
             startDate: project.startDate || "",
             endDate: project.endDate || ""
         });
@@ -203,7 +205,7 @@ export default function ProjectManagement({ onClose }) {
                                 />
                             </div>
 
-                            <div className="grid md:grid-cols-3 gap-4">
+                            <div className="grid md:grid-cols-4 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">
                                         {t('status')}
@@ -219,6 +221,27 @@ export default function ProjectManagement({ onClose }) {
                                             <SelectItem value="active">{t('active')}</SelectItem>
                                             <SelectItem value="completed">{t('completed')}</SelectItem>
                                             <SelectItem value="on_hold">{t('onHold')}</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Currency
+                                    </label>
+                                    <Select
+                                        value={formData.currency}
+                                        onValueChange={(value) => setFormData({...formData, currency: value})}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="EUR">€ EUR</SelectItem>
+                                            <SelectItem value="USD">$ USD</SelectItem>
+                                            <SelectItem value="GBP">£ GBP</SelectItem>
+                                            <SelectItem value="CAD">CA$ CAD</SelectItem>
+                                            <SelectItem value="CHF">Fr CHF</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
