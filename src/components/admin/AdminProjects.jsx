@@ -56,7 +56,14 @@ export default function AdminProjects() {
     const handleSaveEdit = () => {
         updateMutation.mutate({
             id: editingProject.id,
-            data: { name: editingProject.name, status: editingProject.status },
+            data: {
+                name: editingProject.name,
+                status: editingProject.status,
+                description: editingProject.description,
+                currency: editingProject.currency,
+                startDate: editingProject.startDate,
+                endDate: editingProject.endDate,
+            },
         });
     };
 
