@@ -25,6 +25,7 @@ export function useProjectPermissions(project) {
             return {
                 canView: true,
                 canEdit: true,
+                canEditProject: true,
                 canDelete: true,
                 isOwner: project.created_by === user.email,
                 role: project.created_by === user.email ? 'owner' : 'admin'
@@ -37,6 +38,7 @@ export function useProjectPermissions(project) {
             return {
                 canView: true,
                 canEdit: true,
+                canEditProject: true,
                 canDelete: true,
                 isOwner: true,
                 role: 'owner'
