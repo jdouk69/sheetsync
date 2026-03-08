@@ -1,4 +1,5 @@
 import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { Home, LogOut, Languages, User, ChevronLeft, Shield } from "lucide-react";

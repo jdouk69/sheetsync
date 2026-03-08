@@ -28,7 +28,11 @@ export default function ExpensesPage() {
     const formRef = useRef(null);
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
-    
+    const [pullDistance, setPullDistance] = useState(0);
+    const [pullRefreshing, setPullRefreshing] = useState(false);
+    const touchStartY = useRef(0);
+    const PULL_THRESHOLD = 70;
+
     const queryClient = useQueryClient();
 
     React.useEffect(() => {
