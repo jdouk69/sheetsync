@@ -330,9 +330,51 @@ export default function AdminUsers({ currentUser }) {
                                                        </div>
                                                    );
                                                })}
+                                           {/* Add to project */}
+                                           {availableProjects.length > 0 && (
+                                               <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-slate-100 mt-1">
+                                                   <Select
+                                                       value={adding.projectId || ""}
+                                                       onValueChange={(val) => setAddingToProject(prev => ({ ...prev, [u.id]: { ...prev[u.id], projectId: val } }))}
+                                                   >
+                                                       <SelectTrigger className="h-7 text-xs flex-1 min-w-[120px] border-dashed border-slate-300 bg-white">
+                                                           <SelectValue placeholder="Add to project..." />
+                                                       </SelectTrigger>
+                                                       <SelectContent>
+                                                           {availableProjects.map(p => (
+                                                               <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                                           ))}
+                                                       </SelectContent>
+                                                   </Select>
+                                                   <Select
+                                                       value={adding.role || "editor"}
+                                                       onValueChange={(val) => setAddingToProject(prev => ({ ...prev, [u.id]: { ...prev[u.id], role: val } }))}
+                                                   >
+                                                       <SelectTrigger className="w-28 h-7 text-xs border-slate-200 bg-white">
+                                                           <SelectValue />
+                                                       </SelectTrigger>
+                                                       <SelectContent>
+                                                           <SelectItem value="viewer">Viewer</SelectItem>
+                                                           <SelectItem value="editor">Editor</SelectItem>
+                                                           <SelectItem value="admin">Project Admin</SelectItem>
+                                                       </SelectContent>
+                                                   </Select>
+                                                   <Button
+                                                       size="sm"
+                                                       className="h-7 text-xs bg-blue-600 hover:bg-blue-700"
+                                                       disabled={!adding.projectId || addToProjectMutation.isPending}
+                                                       onClick={() => {
+                                                           const project = projects.find(p => p.id === adding.projectId);
+                                                           addToProjectMutation.mutate({ project, userEmail: u.email, role: adding.role || "editor" });
+                                                       }}
+                                                   >
+                                                       Add
+                                                   </Button>
+                                               </div>
+                                           )}
                                            </div>
-                                       );
-                                    })()}
+                                           );
+                                           })()}
                                     </div>
                             ))}
                         </div>
