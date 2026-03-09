@@ -104,6 +104,32 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
         onError: () => toast.error("Failed to record payment"),
     });
 
+    const editPaymentMutation = useMutation({
+        mutationFn: async ({ paymentId, paymentData }) => {
+            await base44.entities.Payment.update(paymentId, paymentData);
+            const freshPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
+            const newTotalPaid = freshPayments.reduce((sum, p) => sum + p.amount, 0);
+            let newStatus = 'unpaid';
+            if (expense.totalAmount) {
+                if (newTotalPaid >= expense.totalAmount) newStatus = 'fully_paid';
+                else if (newTotalPaid > 0) newStatus = 'deposit_paid';
+            }
+            await base44.entities.Expense.update(expense.id, {
+                paymentStatus: newStatus,
+                isPaid: newStatus === 'fully_paid',
+                amount: newTotalPaid,
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['payments', expense.id] });
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            setEditingPayment(null);
+            setShowPaymentForm(false);
+            toast.success("Payment updated");
+        },
+        onError: () => toast.error("Failed to update payment"),
+    });
+
     const deletePaymentMutation = useMutation({
         mutationFn: async (payment) => {
             await base44.entities.Payment.delete(payment.id);
