@@ -13,7 +13,7 @@ const METHOD_KEYS = {
     "Other": "other",
 };
 
-export default function PaymentHistory({ payments, canDelete, onDelete }) {
+export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }) {
     const { t } = useLanguage();
     if (!payments || payments.length === 0) return null;
 
