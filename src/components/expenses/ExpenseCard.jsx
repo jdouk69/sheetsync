@@ -38,6 +38,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const [showPhotos, setShowPhotos] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
+    const [editingPayment, setEditingPayment] = useState(null);
     const queryClient = useQueryClient();
 
     const { data: payments = [], isLoading: paymentsLoading } = useQuery({
