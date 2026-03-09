@@ -14,7 +14,7 @@ const PAYMENT_METHODS = [
     { value: "Other", labelKey: "other" },
 ];
 
-export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
+export default function PaymentForm({ open, onClose, onSubmit, balanceDue, editPayment }) {
     const { t } = useLanguage();
     const [form, setForm] = useState({
         amount: "",
@@ -26,15 +26,25 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue }) {
 
     React.useEffect(() => {
         if (open) {
-            setForm({
-                amount: "",
-                date: new Date().toISOString().split("T")[0],
-                method: "Bank Transfer",
-                referenceNumber: "",
-                notes: "",
-            });
+            if (editPayment) {
+                setForm({
+                    amount: String(editPayment.amount),
+                    date: editPayment.date,
+                    method: editPayment.method || "Bank Transfer",
+                    referenceNumber: editPayment.referenceNumber || "",
+                    notes: editPayment.notes || "",
+                });
+            } else {
+                setForm({
+                    amount: "",
+                    date: new Date().toISOString().split("T")[0],
+                    method: "Bank Transfer",
+                    referenceNumber: "",
+                    notes: "",
+                });
+            }
         }
-    }, [open]);
+    }, [open, editPayment]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
