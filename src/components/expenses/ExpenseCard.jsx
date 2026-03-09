@@ -265,6 +265,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 payments={payments}
                                 canDelete={canEdit}
                                 onDelete={(payment) => deletePaymentMutation.mutate(payment)}
+                                onEdit={(payment) => { setEditingPayment(payment); setShowPaymentForm(true); }}
                             />
 
                             {expense.totalAmount && !isFullyPaid && canEdit && (
