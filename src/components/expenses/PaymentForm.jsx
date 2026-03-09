@@ -116,7 +116,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue, editP
                     </div>
                     <div className="flex gap-3 pt-2">
                         <Button type="button" variant="outline" onClick={onClose} className="flex-1">{t('cancel')}</Button>
-                        <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">{t('recordPayment')}</Button>
+                        <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">{editPayment ? t('save') || 'Save' : t('recordPayment')}</Button>
                     </div>
                 </form>
             </DialogContent>
