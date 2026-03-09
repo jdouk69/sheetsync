@@ -5,36 +5,37 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const body = await req.json();
 
-        const newUser = body.data;
-        if (!newUser) {
-            return Response.json({ success: true, message: 'No user data in payload' });
-        }
-
-        const email = newUser.email || 'Unknown';
-        const name = newUser.full_name || 'No name provided';
-        const joinedAt = newUser.created_date ? new Date(newUser.created_date).toLocaleString() : 'Unknown';
-
         const allUsers = await base44.asServiceRole.entities.User.list();
         const admins = allUsers.filter(u => u.role === 'admin');
 
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const newUsers = allUsers.filter(u => u.created_date && new Date(u.created_date) > oneDayAgo);
+
+        if (newUsers.length === 0) {
+            return Response.json({ success: true, message: 'No new users in the last 24 hours', newUsers: 0 });
+        }
+
+        const userList = newUsers.map(u =>
+            `<li><strong>${u.full_name || 'No name'}</strong> (${u.email}) — joined ${new Date(u.created_date).toLocaleString()}</li>`
+        ).join('');
+
         for (const admin of admins) {
-            if (admin.email === email) continue;
+            const newNonAdminUsers = newUsers.filter(u => u.email !== admin.email);
+            if (newNonAdminUsers.length === 0) continue;
 
             await base44.asServiceRole.integrations.Core.SendEmail({
                 to: admin.email,
-                subject: `New User Signed Up: ${name}`,
+                subject: `${newUsers.length} New User${newUsers.length > 1 ? 's' : ''} Signed Up Today`,
                 body: `
-                    <h2>A new user has joined the app</h2>
-                    <p><strong>Name:</strong> ${name}</p>
-                    <p><strong>Email:</strong> ${email}</p>
-                    <p><strong>Joined:</strong> ${joinedAt}</p>
+                    <h2>${newUsers.length} new user${newUsers.length > 1 ? 's' : ''} joined in the last 24 hours</h2>
+                    <ul>${userList}</ul>
                     <br/>
-                    <p>You can manage this user from the Super Admin Dashboard.</p>
+                    <p>You can manage these users from the Super Admin Dashboard.</p>
                 `
             });
         }
 
-        return Response.json({ success: true, notifiedAdmins: admins.length });
+        return Response.json({ success: true, newUsers: newUsers.length, notifiedAdmins: admins.length });
     } catch (error) {
         return Response.json({ error: error.message }, { status: 500 });
     }
