@@ -55,7 +55,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue, editP
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>{t('recordPayment')}</DialogTitle>
+                    <DialogTitle>{editPayment ? t('editPayment') || 'Edit Payment' : t('recordPayment')}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-2">
                     <div>
