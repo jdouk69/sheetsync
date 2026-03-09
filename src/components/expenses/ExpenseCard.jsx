@@ -339,9 +339,16 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
             <PaymentForm
                 open={showPaymentForm}
-                onClose={() => setShowPaymentForm(false)}
-                onSubmit={(data) => addPaymentMutation.mutate(data)}
+                onClose={() => { setShowPaymentForm(false); setEditingPayment(null); }}
+                onSubmit={(data) => {
+                    if (editingPayment) {
+                        editPaymentMutation.mutate({ paymentId: editingPayment.id, paymentData: data });
+                    } else {
+                        addPaymentMutation.mutate(data);
+                    }
+                }}
                 balanceDue={balanceDue}
+                editPayment={editingPayment}
             />
 
             <Dialog open={showPhotos} onOpenChange={setShowPhotos}>
