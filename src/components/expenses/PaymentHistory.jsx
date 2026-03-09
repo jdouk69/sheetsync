@@ -38,14 +38,26 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }
                             )}
                         </div>
                         {canDelete && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
-                                onClick={(e) => { e.stopPropagation(); onDelete(payment); }}
-                            >
-                                <Trash2 className="w-3 h-3" />
-                            </Button>
+                            <div className="flex items-center gap-1">
+                                {onEdit && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 w-6 p-0 text-slate-400 hover:text-blue-600"
+                                        onClick={(e) => { e.stopPropagation(); onEdit(payment); }}
+                                    >
+                                        <Pencil className="w-3 h-3" />
+                                    </Button>
+                                )}
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
+                                    onClick={(e) => { e.stopPropagation(); onDelete(payment); }}
+                                >
+                                    <Trash2 className="w-3 h-3" />
+                                </Button>
+                            </div>
                         )}
                     </div>
                 ))}
