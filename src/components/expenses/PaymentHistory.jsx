@@ -1,6 +1,6 @@
 import React from "react";
 import { format } from "date-fns";
-import { CreditCard, Trash2 } from "lucide-react";
+import { CreditCard, Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "../LanguageContext";
 
