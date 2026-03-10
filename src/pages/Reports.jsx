@@ -684,6 +684,50 @@ export default function ReportsPage() {
                     </div>
                 </div>
 
+                {expenses.length > 0 && (
+                    <div className="bg-white rounded-lg shadow-sm p-6">
+                        <h2 className="text-xl font-semibold mb-4">
+                            {filters.category !== 'all' ? `${filters.category} — ` : ''}{t('expenseDetails')} ({expenses.length})
+                        </h2>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b-2 border-slate-200">
+                                        <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('date')}</th>
+                                        <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('description')}</th>
+                                        <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('vendor')}</th>
+                                        <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('category')}</th>
+                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('amount')}</th>
+                                        <th className="text-center py-2 px-2 font-semibold text-slate-700">{t('paid')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {expenses.map(exp => (
+                                        <tr key={exp.id} className="border-b border-slate-100 hover:bg-slate-50">
+                                            <td className="py-2 px-2 text-slate-600">
+                                                {format(new Date(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}
+                                            </td>
+                                            <td className="py-2 px-2 font-medium text-slate-900">{exp.description}</td>
+                                            <td className="py-2 px-2 text-slate-600">{exp.vendor || '-'}</td>
+                                            <td className="py-2 px-2">
+                                                <span className="text-xs px-2 py-1 bg-slate-100 text-slate-700 rounded-full">{exp.category}</span>
+                                            </td>
+                                            <td className="py-2 px-2 text-right font-semibold text-slate-900">
+                                                {currencySymbol}{exp.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                            </td>
+                                            <td className="py-2 px-2 text-center">
+                                                {exp.isPaid
+                                                    ? <CheckCircle className="w-4 h-4 text-green-500 inline" />
+                                                    : <XCircle className="w-4 h-4 text-red-400 inline" />}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <XCircle className="w-5 h-5 text-red-600" />
