@@ -656,10 +656,15 @@ export default function ReportsPage() {
                         {categoryData.map((cat, index) => {
                             const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
                             const percentage = (cat.value / total) * 100;
+                            const isSelected = filters.category === cat.name;
                             return (
-                                <div key={cat.name}>
+                                <div
+                                    key={cat.name}
+                                    className={`cursor-pointer rounded-lg p-2 -mx-2 transition-colors ${isSelected ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
+                                    onClick={() => setFilters(f => ({ ...f, category: isSelected ? 'all' : cat.name }))}
+                                >
                                     <div className="flex justify-between text-sm mb-1">
-                                        <span className="font-medium">{cat.name}</span>
+                                        <span className={`font-medium ${isSelected ? 'text-blue-700' : ''}`}>{cat.name}</span>
                                         <span className="text-slate-600">
                                             {currencySymbol}{cat.value.toLocaleString('en-US', { minimumFractionDigits: 2 })} ({percentage.toFixed(1)}%)
                                         </span>
