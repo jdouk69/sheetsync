@@ -22,7 +22,7 @@ export default function MobileTabBar({ currentPageName }) {
 
     return (
         <nav
-            className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 flex"
+            className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex"
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
             {tabs.map(({ name, label, icon: Icon }) => {
@@ -33,8 +33,8 @@ export default function MobileTabBar({ currentPageName }) {
                         to={createPageUrl(name)}
                         className={`flex-1 flex flex-col items-center justify-center py-2 gap-1 select-none transition-colors ${
                             isActive
-                                ? "text-blue-600"
-                                : "text-slate-500 hover:text-slate-700"
+                                ? "text-blue-600 dark:text-blue-400"
+                                : "text-muted-foreground hover:text-foreground"
                         }`}
                     >
                         <Icon className="w-5 h-5" />

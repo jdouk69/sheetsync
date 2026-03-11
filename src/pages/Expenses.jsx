@@ -268,18 +268,18 @@ export default function ExpensesPage() {
 
     if (authLoading || projectsLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-slate-600">Loading...</div>
+            <div className="flex items-center justify-center min-h-screen bg-background">
+                <div className="text-muted-foreground">Loading...</div>
             </div>
         );
     }
 
     if (!user) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-50">
-                <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Authentication Required</h2>
-                    <p className="text-slate-600 mb-6">You need to be logged in to view expenses.</p>
+            <div className="flex items-center justify-center min-h-screen bg-background">
+                <div className="text-center max-w-md p-8 bg-card rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-bold text-foreground mb-4">Authentication Required</h2>
+                    <p className="text-muted-foreground mb-6">You need to be logged in to view expenses.</p>
                     <button
                         onClick={() => base44.auth.redirectToLogin()}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -293,12 +293,12 @@ export default function ExpensesPage() {
 
     if (projects.length === 0 || !currentProjectId) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
+            <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="flex items-center justify-center min-h-[60vh]">
                         <div className="text-center">
-                            <h2 className="text-2xl font-bold text-slate-900 mb-2">No Project Selected</h2>
-                            <p className="text-slate-600">Please create a project first to start tracking expenses.</p>
+                            <h2 className="text-2xl font-bold text-foreground mb-2">No Project Selected</h2>
+                            <p className="text-muted-foreground">Please create a project first to start tracking expenses.</p>
                         </div>
                     </div>
                 </div>
@@ -308,17 +308,20 @@ export default function ExpensesPage() {
 
     return (
         <div
-            className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6"
+            className="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-6"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
         >
             {(pullDistance > 10 || pullRefreshing) && (
                 <div
-                    className="fixed top-16 left-0 right-0 flex justify-center z-50 transition-all pointer-events-none"
-                    style={{ transform: `translateY(${pullRefreshing ? 8 : Math.min(pullDistance * 0.4, 24)}px)` }}
+                    className="fixed left-0 right-0 flex justify-center z-50 transition-all pointer-events-none"
+                    style={{ 
+                        top: 'calc(env(safe-area-inset-top) + 4.5rem)',
+                        transform: `translateY(${pullRefreshing ? 8 : Math.min(pullDistance * 0.4, 24)}px)` 
+                    }}
                 >
-                    <div className={`bg-white rounded-full shadow-md px-3 py-1.5 flex items-center gap-2 text-xs text-slate-600 ${pullRefreshing ? 'animate-pulse' : ''}`}>
+                    <div className={`bg-card rounded-full shadow-md px-3 py-1.5 flex items-center gap-2 text-xs text-muted-foreground ${pullRefreshing ? 'animate-pulse' : ''}`}>
                         <div className={`w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent ${pullRefreshing ? 'animate-spin' : ''}`} />
                         {pullRefreshing ? 'Refreshing...' : pullDistance >= PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh'}
                     </div>
@@ -327,8 +330,8 @@ export default function ExpensesPage() {
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900">{t('constructionExpenses')}</h1>
-                        <p className="text-slate-600 mt-1">{t('trackExpenses')}</p>
+                        <h1 className="text-3xl font-bold text-foreground">{t('constructionExpenses')}</h1>
+                        <p className="text-muted-foreground mt-1">{t('trackExpenses')}</p>
                     </div>
                     <div className="flex gap-2">
                         {selectedIds.length > 0 && canDelete && (
@@ -361,7 +364,7 @@ export default function ExpensesPage() {
 
                 <ExpenseSummary expenses={filteredExpenses} />
 
-                <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+                <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
                     {canDelete && (
                         <div className="flex items-center gap-4 mb-4">
                             <label className="flex items-center gap-2 cursor-pointer">
@@ -369,12 +372,12 @@ export default function ExpensesPage() {
                                     type="checkbox"
                                     checked={filteredExpenses.length > 0 && selectedIds.length === filteredExpenses.length}
                                     onChange={toggleSelectAll}
-                                    className="w-4 h-4 rounded border-slate-300"
+                                    className="w-4 h-4 rounded border-input"
                                 />
-                                <span className="text-sm text-slate-600">{t('selectAll')}</span>
+                                <span className="text-sm text-muted-foreground">{t('selectAll')}</span>
                             </label>
                             {selectedIds.length > 0 && (
-                                <span className="text-sm text-slate-600">{selectedIds.length} {t('selected')}</span>
+                                <span className="text-sm text-muted-foreground">{selectedIds.length} {t('selected')}</span>
                             )}
                         </div>
                     )}
@@ -410,8 +413,8 @@ export default function ExpensesPage() {
 
                 <div className="grid gap-4 pb-20">
                     {filteredExpenses.length === 0 ? (
-                        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                            <p className="text-slate-500">{t('noExpensesFound')}</p>
+                        <div className="bg-card rounded-lg shadow-sm p-12 text-center">
+                            <p className="text-muted-foreground">{t('noExpensesFound')}</p>
                         </div>
                     ) : (
                         paginatedExpenses.map((expense) => (
@@ -430,25 +433,25 @@ export default function ExpensesPage() {
                 </div>
 
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-between bg-white rounded-lg shadow-sm px-4 py-3 mb-6">
-                        <span className="text-sm text-slate-600">
+                    <div className="flex items-center justify-between bg-card rounded-lg shadow-sm px-4 py-3 mb-6">
+                        <span className="text-sm text-muted-foreground">
                             Showing {((currentPage - 1) * PAGE_SIZE) + 1}–{Math.min(currentPage * PAGE_SIZE, filteredExpenses.length)} of {filteredExpenses.length} expenses
                         </span>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1 rounded border border-slate-300 text-sm disabled:opacity-40 hover:bg-slate-50"
+                                className="px-3 py-1 rounded border border-input text-sm disabled:opacity-40 hover:bg-accent"
                             >
                                 Previous
                             </button>
-                            <span className="text-sm font-medium text-slate-700">
+                            <span className="text-sm font-medium text-foreground">
                                 {currentPage} / {totalPages}
                             </span>
                             <button
                                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-1 rounded border border-slate-300 text-sm disabled:opacity-40 hover:bg-slate-50"
+                                className="px-3 py-1 rounded border border-input text-sm disabled:opacity-40 hover:bg-accent"
                             >
                                 Next
                             </button>
