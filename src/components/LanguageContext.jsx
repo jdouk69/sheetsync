@@ -29,7 +29,7 @@ const translations = {
 
         // Expenses Page
         constructionExpenses: "Construction Expenses",
-        trackExpenses: "Track your Greece house construction costs",
+        trackExpenses: "Track and manage all your project expenses",
         deleteSelected: "Delete {count} Selected",
         importCsv: "Import CSV",
         addExpense: "Add Expense",
@@ -209,7 +209,7 @@ const translations = {
 
         // Expenses Page
         constructionExpenses: "Έξοδα Κατασκευής",
-        trackExpenses: "Παρακολουθήστε τα έξοδα κατασκευής του σπιτιού σας στην Ελλάδα",
+        trackExpenses: "Παρακολουθήστε και διαχειριστείτε όλα τα έξοδα του έργου σας",
         deleteSelected: "Διαγραφή {count} Επιλεγμένων",
         importCsv: "Εισαγωγή CSV",
         addExpense: "Προσθήκη Εξόδου",
