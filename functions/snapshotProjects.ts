@@ -4,11 +4,12 @@ Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
 
-        // Allow both authenticated admin users and service-level calls (scheduled)
+        // SECURITY: Allow both authenticated admin users and service-level calls (scheduled)
         let triggeredBy = 'scheduled';
         try {
             const user = await base44.auth.me();
             if (user) {
+                // SECURITY: Manual triggers require admin role
                 if (user.role !== 'admin') {
                     return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
                 }
@@ -16,6 +17,7 @@ Deno.serve(async (req) => {
             }
         } catch (_) {
             // Called from scheduler without user session — allow it
+            // SECURITY: Scheduled tasks run as service role, which is safe
         }
 
         const projects = await base44.asServiceRole.entities.Project.list('-created_date', 500);

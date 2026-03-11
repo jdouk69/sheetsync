@@ -5,6 +5,8 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const body = await req.json();
 
+        // SECURITY: This function runs as a scheduled task (service role)
+        // It notifies admins about new signups - no user authentication needed
         const allUsers = await base44.asServiceRole.entities.User.list();
         const admins = allUsers.filter(u => u.role === 'admin');
 

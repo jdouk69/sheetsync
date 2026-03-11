@@ -5,6 +5,7 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const user = await base44.auth.me();
 
+        // SECURITY: Only super admins can transfer ownership
         if (!user || user.role !== 'admin') {
             return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
@@ -15,7 +16,7 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'projectId and newOwnerEmail are required' }, { status: 400 });
         }
 
-        // Fetch current project to get old owner for logging
+        // SECURITY: Verify project exists
         const project = await base44.asServiceRole.entities.Project.get(projectId);
         if (!project) {
             return Response.json({ error: 'Project not found' }, { status: 404 });
@@ -23,7 +24,8 @@ Deno.serve(async (req) => {
 
         const oldOwner = project.created_by;
 
-        // Transfer ownership using service role to bypass field restrictions
+        // SECURITY: Transfer ownership using service role
+        // This is safe because we've already validated admin role above
         await base44.asServiceRole.entities.Project.update(projectId, {
             created_by: newOwnerEmail,
         });

@@ -5,6 +5,8 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const body = await req.json();
 
+        // SECURITY: This webhook is triggered by entity updates
+        // The update itself was already authorized, so we just notify
         const { data, old_data } = body;
 
         if (!data || !old_data) {

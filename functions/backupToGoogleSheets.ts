@@ -4,6 +4,16 @@ Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
 
+        // SECURITY: Validate admin access for manual triggers
+        try {
+            const user = await base44.auth.me();
+            if (user && user.role !== 'admin') {
+                return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+            }
+        } catch (_) {
+            // Allow scheduled/automated calls without user session
+        }
+
         // Get access token for Google Sheets
         const accessToken = await base44.asServiceRole.connectors.getAccessToken("googlesheets");
 
