@@ -166,7 +166,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
     return (
         <>
-            <Card className={`transition-shadow ${isSelected ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}>
+            <Card className={`transition-shadow bg-card ${isSelected ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}>
                 <CardContent className="p-4">
                     <div className="flex gap-3">
                         {onToggleSelect && (
@@ -183,19 +183,19 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 mb-2">
                                 <div className="flex-1">
                                     {expense.vendor && (
-                                        <div className="flex items-center gap-2 text-lg text-slate-700 font-semibold mb-1">
+                                        <div className="flex items-center gap-2 text-lg text-foreground font-semibold mb-1">
                                             <Building2 className="w-4 h-4" />
                                             {expense.vendor}
                                         </div>
                                     )}
-                                    <h3 className="text-sm text-slate-900">
+                                    <h3 className="text-sm text-foreground">
                                         {expense.description}
                                     </h3>
                                     <div className="flex flex-wrap gap-2 mt-2">
-                                        <span className={`text-xs px-2 py-1 rounded-full font-semibold ${categoryColors[expense.category]}`}>
+                                        <span className={`text-xs px-2 py-1 rounded-full font-semibold ${categoryColors[expense.category]} dark:opacity-90`}>
                                             {expense.category}
                                         </span>
-                                        <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700 flex items-center gap-1">
+                                        <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground flex items-center gap-1">
                                             <Calendar className="w-3 h-3" />
                                             {format(new Date(expense.date), 'MMM d, yyyy')}
                                         </span>
@@ -221,8 +221,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 <div className="text-left sm:text-right">
                                     {expense.totalAmount ? (
                                         <div>
-                                            <div className="text-xs text-slate-500">{t('totalQuoted')}</div>
-                                            <div className="text-2xl font-bold text-slate-900">
+                                            <div className="text-xs text-muted-foreground">{t('totalQuoted')}</div>
+                                            <div className="text-2xl font-bold text-foreground">
                                                 {currencySymbol}{expense.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </div>
                                             <div className="text-sm text-green-700 font-medium">
@@ -235,7 +235,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="text-2xl font-bold text-slate-900">
+                                        <div className="text-2xl font-bold text-foreground">
                                             {currencySymbol}{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </div>
                                     )}
@@ -243,7 +243,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             </div>
 
                             {expense.notes && (
-                                <p className="text-sm text-slate-600 mt-2">{expense.notes}</p>
+                                <p className="text-sm text-muted-foreground mt-2">{expense.notes}</p>
                             )}
 
                             <div className="flex flex-wrap gap-2 mt-3 text-xs">

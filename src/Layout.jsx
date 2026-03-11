@@ -31,12 +31,12 @@ function LayoutContent({ children, currentPageName }) {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 overflow-y-auto" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <div className="min-h-screen bg-background overflow-y-auto" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <style>{`
             html, body { overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
             button, [role="tab"], nav, [role="navigation"] { user-select: none; -webkit-user-select: none; }
         `}</style>
-            <nav className="bg-white shadow-sm border-b border-slate-200">
+            <nav className="bg-card shadow-sm border-b border-border">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center gap-8">
@@ -52,7 +52,7 @@ function LayoutContent({ children, currentPageName }) {
                                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                                     <Home className="w-5 h-5 text-white" />
                                 </div>
-                                <span className="font-bold text-xl text-slate-900 select-none">{t('appName')}</span>
+                                <span className="font-bold text-xl text-foreground select-none">{t('appName')}</span>
                             </div>
                             
                             <div className="hidden md:flex gap-2">
@@ -60,8 +60,8 @@ function LayoutContent({ children, currentPageName }) {
                                     to={createPageUrl('Expenses')}
                                     className={`px-4 py-2 rounded-lg transition-colors ${
                                         currentPageName === 'Expenses'
-                                            ? 'bg-blue-100 text-blue-700 font-medium'
-                                            : 'text-slate-600 hover:bg-slate-100'
+                                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-100 font-medium'
+                                            : 'text-muted-foreground hover:bg-accent'
                                     }`}
                                 >
                                     {t('expenses')}
@@ -70,8 +70,8 @@ function LayoutContent({ children, currentPageName }) {
                                     to={createPageUrl('Reports')}
                                     className={`px-4 py-2 rounded-lg transition-colors ${
                                         currentPageName === 'Reports'
-                                            ? 'bg-blue-100 text-blue-700 font-medium'
-                                            : 'text-slate-600 hover:bg-slate-100'
+                                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-100 font-medium'
+                                            : 'text-muted-foreground hover:bg-accent'
                                     }`}
                                 >
                                     {t('reports')}
@@ -81,8 +81,8 @@ function LayoutContent({ children, currentPageName }) {
                                         to={createPageUrl('Admin')}
                                         className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
                                             currentPageName === 'Admin'
-                                                ? 'bg-blue-100 text-blue-700 font-medium'
-                                                : 'text-slate-600 hover:bg-slate-100'
+                                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-100 font-medium'
+                                                : 'text-muted-foreground hover:bg-accent'
                                         }`}
                                     >
                                         <Shield className="w-4 h-4" />
@@ -95,7 +95,7 @@ function LayoutContent({ children, currentPageName }) {
                                     <div className="flex items-center gap-2">
                                     <button
                                     onClick={toggleLanguage}
-                                    className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                                     title={language === 'en' ? 'Switch to Greek' : 'Αλλαγή σε Αγγλικά'}
                                     >
                                     <Languages className="w-4 h-4" />
@@ -103,7 +103,7 @@ function LayoutContent({ children, currentPageName }) {
                                     </button>
                                     <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                                     >
                                     <LogOut className="w-4 h-4" />
                                     <span className="hidden md:inline">{t('logout')}</span>
@@ -111,12 +111,12 @@ function LayoutContent({ children, currentPageName }) {
                                     </div>
                     </div>
 
-                    <div className="border-t border-slate-200 py-3">
+                    <div className="border-t border-border py-3">
                         {user && (
-                            <div className="flex items-center justify-between px-3 py-2 bg-slate-100 rounded-lg mb-3">
+                            <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg mb-3">
                                 <div className="flex items-center gap-2">
-                                    <User className="w-4 h-4 text-slate-600" />
-                                    <span className="text-sm font-medium text-slate-900 select-none">{user.full_name || user.email}</span>
+                                    <User className="w-4 h-4 text-muted-foreground" />
+                                    <span className="text-sm font-medium text-foreground select-none">{user.full_name || user.email}</span>
                                 </div>
                                 {!showDeleteConfirm ? (
                                     <button

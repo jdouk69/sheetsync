@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
     const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const isMobile = window.innerWidth < 768;
 
     const suggestedCategories = [
         t('materials'),
@@ -42,6 +44,64 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
         }
     };
 
+    const commandContent = (
+        <Command>
+            <CommandInput 
+                placeholder={t('searchCategory')}
+                value={search}
+                onValueChange={setSearch}
+                onKeyDown={handleKeyDown}
+            />
+            <CommandEmpty>
+                <div className="p-2 text-sm">
+                    {t('pressEnter', { key: 'Enter', value: search })}
+                </div>
+            </CommandEmpty>
+            <CommandGroup className="max-h-64 overflow-auto">
+                {allCategories
+                    .filter(cat => cat.toLowerCase().includes(search.toLowerCase()))
+                    .map((category) => (
+                        <CommandItem
+                            key={category}
+                            value={category}
+                            onSelect={() => handleSelect(category)}
+                        >
+                            <Check
+                                className={cn(
+                                    "mr-2 h-4 w-4",
+                                    value === category ? "opacity-100" : "opacity-0"
+                                )}
+                            />
+                            {category}
+                        </CommandItem>
+                    ))}
+            </CommandGroup>
+        </Command>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-full justify-between"
+                    >
+                        {value || t('selectCategory')}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent className="p-0">
+                    <div className="mt-4 border-t">
+                        {commandContent}
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -54,40 +114,9 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                     {value || t('selectCategory')}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                <Command>
-                    <CommandInput 
-                        placeholder={t('searchCategory')}
-                        value={search}
-                        onValueChange={setSearch}
-                        onKeyDown={handleKeyDown}
-                    />
-                    <CommandEmpty>
-                        <div className="p-2 text-sm">
-                            {t('pressEnter', { key: 'Enter', value: search })}
-                        </div>
-                    </CommandEmpty>
-                    <CommandGroup className="max-h-64 overflow-auto">
-                        {allCategories
-                            .filter(cat => cat.toLowerCase().includes(search.toLowerCase()))
-                            .map((category) => (
-                                <CommandItem
-                                    key={category}
-                                    value={category}
-                                    onSelect={() => handleSelect(category)}
-                                >
-                                    <Check
-                                        className={cn(
-                                            "mr-2 h-4 w-4",
-                                            value === category ? "opacity-100" : "opacity-0"
-                                        )}
-                                    />
-                                    {category}
-                                </CommandItem>
-                            ))}
-                    </CommandGroup>
-                </Command>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+                {commandContent}
             </PopoverContent>
         </Popover>
     );
