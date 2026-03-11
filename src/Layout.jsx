@@ -14,16 +14,7 @@ import { Toaster } from "@/components/ui/sonner";
 function LayoutContent({ children, currentPageName }) {
     const { language, t, toggleLanguage } = useLanguage();
 
-    // Apply dark mode based on system preference
-    React.useEffect(() => {
-        const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        const apply = (e) => {
-            document.documentElement.classList.toggle('dark', e.matches);
-        };
-        apply(mq);
-        mq.addEventListener('change', apply);
-        return () => mq.removeEventListener('change', apply);
-    }, []);
+
 
     // Show back button only on sub-pages (not main nav pages)
     const mainPages = ['/', '/Expenses', '/Reports', '/Admin'];
