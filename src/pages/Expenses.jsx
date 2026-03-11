@@ -330,7 +330,7 @@ export default function ExpensesPage() {
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground">{currentProject?.name}</h1>
+                        <h1 className="text-3xl font-bold text-foreground">{currentProject?.name} Expenses</h1>
                         <p className="text-muted-foreground mt-1">Track and manage all your project expenses</p>
                     </div>
                     <div className="flex gap-2">
