@@ -73,19 +73,19 @@ export default function ExpensesPage() {
     const { data: expenses = [], isLoading } = useQuery({
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
-            if (!currentProjectId || !user) return [];
+            if (!currentProjectId) return [];
             // Get all expenses for this project (regardless of who created them)
             return base44.entities.Expense.filter({ 
                 projectId: currentProjectId
             }, '-date');
         },
-        enabled: !!currentProjectId && !!user,
+        enabled: !!currentProjectId && !authLoading,
     });
 
     const { data: users = [] } = useQuery({
         queryKey: ['users'],
         queryFn: () => base44.entities.User.list(),
-        enabled: !!user,
+        enabled: !authLoading,
     });
 
     const createMutation = useMutation({
