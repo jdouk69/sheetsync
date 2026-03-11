@@ -13,14 +13,17 @@ export function ProjectProvider({ children }) {
             const user = await base44.auth.me();
             if (!user) return [];
             
-            // Get all projects
+            // SECURITY: Get all projects - server should enforce RLS
+            // Client-side filter as defense-in-depth only
             const allProjects = await base44.entities.Project.list('-created_date');
             
-            // Filter to show projects where user is creator OR in sharedWith (or old sharedWithUsers for backwards compatibility)
+            // SECURITY: Filter to show only projects user has access to
+            // This is a client-side safety net - true security must be server-side
             return allProjects.filter(project => 
                 project.created_by === user.email || 
                 (project.sharedWith && project.sharedWith.some(s => s.email === user.email)) ||
-                (project.sharedWithUsers && project.sharedWithUsers.includes(user.email))
+                (project.sharedWithUsers && project.sharedWithUsers.includes(user.email)) ||
+                user.role === 'admin'
             );
         },
     });
