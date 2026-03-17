@@ -114,9 +114,9 @@ export default function VendorCombobox({ value, onChange, existingVendors = [] }
             </Button>
 
             <Drawer open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
-                <DrawerContent className="min-h-[50vh]">
-                    <div className="p-4 flex flex-col" style={{ maxHeight: '70vh' }}>
-                        <div className="text-sm font-semibold text-foreground mb-3">Vendor</div>
+                <DrawerContent className="min-h-[50dvh]">
+                    <div className="p-4 flex flex-col" style={{ maxHeight: '70dvh' }}>
+                        <div className="text-sm font-semibold text-foreground mb-3 shrink-0">Vendor</div>
                         <input
                             ref={inputRef}
                             type="text"
@@ -141,13 +141,13 @@ export default function VendorCombobox({ value, onChange, existingVendors = [] }
                                 }
                             }}
                         />
-                        <ul className="flex-1 overflow-y-auto divide-y divide-border rounded-md border border-border">
+                        <ul className="flex-1 overflow-y-auto divide-y divide-border rounded-md border border-border min-h-0">
                             {search.trim() && !hasExactMatch && (
                                 <li>
                                     <button
                                         type="button"
                                         className="w-full text-left px-3 py-3 text-sm text-blue-600 font-medium flex items-center gap-2 active:bg-blue-100"
-                                        onPointerDown={(e) => { e.preventDefault(); handleCreate(); }}
+                                        onClick={handleCreate}
                                     >
                                         <Plus className="w-4 h-4 shrink-0" />
                                         Add "{search.trim()}"
@@ -159,7 +159,7 @@ export default function VendorCombobox({ value, onChange, existingVendors = [] }
                                     <button
                                         type="button"
                                         className="w-full text-left px-3 py-3 text-sm flex items-center justify-between active:bg-accent"
-                                        onPointerDown={(e) => { e.preventDefault(); handleSelect(vendor); }}
+                                        onClick={() => handleSelect(vendor)}
                                     >
                                         <span>{vendor}</span>
                                         {value === vendor && <Check className="w-4 h-4 text-blue-600 shrink-0" />}
