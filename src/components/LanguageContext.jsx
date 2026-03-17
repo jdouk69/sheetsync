@@ -180,6 +180,10 @@ const translations = {
         ref: "Ref",
         noProjectsTitle: "No projects yet",
         noProjectsMessage: "You haven't been added to any project. Please contact your administrator to get access.",
+        deleteAccount: "Delete Account",
+        deleteMyAccount: "Delete My Account",
+        deleteAccountConfirm: "Are you sure you want to delete your account? This action cannot be undone and you will lose access immediately.",
+        deleting: "Deleting...",
         },
     el: {
         // Layout
