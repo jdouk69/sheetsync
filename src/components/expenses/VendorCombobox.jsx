@@ -83,7 +83,34 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                 </DrawerTrigger>
                 <DrawerContent className="p-0">
                     <div className="mt-4 border-t">
-                        {commandContent}
+                        <Command>
+                            <CommandInput
+                                placeholder={t('vendorPlaceholder')}
+                                value={search}
+                                onValueChange={setSearch}
+                                onKeyDown={handleKeyDown}
+                                autoFocus
+                            />
+                            <CommandEmpty>
+                                <div className="p-2 text-sm text-muted-foreground">
+                                    Press Enter to add "{search}"
+                                </div>
+                            </CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-auto">
+                                {vendors
+                                    .filter(v => v.toLowerCase().includes(search.toLowerCase()))
+                                    .map((vendor) => (
+                                        <CommandItem
+                                            key={vendor}
+                                            value={vendor}
+                                            onSelect={() => handleSelect(vendor)}
+                                        >
+                                            <Check className={cn("mr-2 h-4 w-4", value === vendor ? "opacity-100" : "opacity-0")} />
+                                            {vendor}
+                                        </CommandItem>
+                                    ))}
+                            </CommandGroup>
+                        </Command>
                     </div>
                 </DrawerContent>
             </Drawer>
