@@ -161,6 +161,7 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                                 <li className="px-3 py-3 text-sm text-muted-foreground">No categories found. Type to add one.</li>
                             )}
                         </ul>
+                        <div className="pb-8 shrink-0" />
                     </div>
                 </DrawerContent>
             </Drawer>
