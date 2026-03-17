@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,7 +9,6 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
     const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const isMobile = window.innerWidth < 768;
 
     const vendors = [...new Set(existingVendors.filter(Boolean))].sort();
     const filtered = vendors.filter(v => v.toLowerCase().includes(search.toLowerCase()));
@@ -26,119 +24,89 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
         setSearch("");
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && search.trim()) {
-            e.preventDefault();
-            handleSelect(search.trim());
-        }
-    };
-
-    if (isMobile) {
-        return (
-            <>
-                <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full justify-between font-normal"
-                    onClick={() => setOpen(true)}
-                >
-                    <span className={cn("truncate", !value && "text-muted-foreground")}>
-                        {value || t('vendorPlaceholder')}
-                    </span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-
-                {open && (
-                    <div className="fixed inset-0 z-50 flex flex-col justify-end" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
-                        <div className="bg-white rounded-t-2xl flex flex-col" style={{maxHeight: '70vh'}}>
-                            <div className="flex items-center justify-between p-4 border-b">
-                                <span className="font-semibold text-base">{t('vendor')}</span>
-                                <button type="button" onClick={handleClose} className="p-1">
-                                    <X className="h-5 w-5 text-gray-500" />
-                                </button>
-                            </div>
-                            <div className="p-3 border-b">
-                                <input
-                                    type="text"
-                                    placeholder={t('vendorPlaceholder')}
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-base outline-none bg-white"
-                                    autoComplete="off"
-                                    autoCorrect="off"
-                                    autoCapitalize="off"
-                                    spellCheck="false"
-                                />
-                            </div>
-                            <div className="overflow-y-auto flex-1 pb-6">
-                                {search.trim() && (
-                                    <button
-                                        type="button"
-                                        className="w-full text-left px-4 py-4 text-sm text-blue-600 border-b border-gray-100 active:bg-gray-100"
-                                        onClick={() => handleSelect(search.trim())}
-                                    >
-                                        Add "{search.trim()}"
-                                    </button>
-                                )}
-                                {filtered.length === 0 && !search.trim() && (
-                                    <p className="p-4 text-sm text-gray-400 text-center">No vendors yet</p>
-                                )}
-                                {filtered.map((vendor) => (
-                                    <button
-                                        type="button"
-                                        key={vendor}
-                                        className="w-full text-left px-4 py-4 text-sm border-b border-gray-100 flex items-center gap-2 active:bg-gray-100"
-                                        onClick={() => handleSelect(vendor)}
-                                    >
-                                        <Check className={cn("h-4 w-4 shrink-0 text-blue-600", value === vendor ? "opacity-100" : "opacity-0")} />
-                                        {vendor}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </>
-        );
-    }
-
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between font-normal"
-                >
-                    <span className={cn("truncate", !value && "text-muted-foreground")}>
-                        {value || t('vendorPlaceholder')}
-                    </span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-                <Command>
-                    <CommandInput
+    const modal = open ? createPortal(
+        <div
+            style={{
+                position: 'fixed', inset: 0, zIndex: 9999,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
+            }}
+            onClick={handleClose}
+        >
+            <div
+                style={{
+                    backgroundColor: '#fff', borderRadius: '16px 16px 0 0',
+                    maxHeight: '70vh', display: 'flex', flexDirection: 'column'
+                }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px', borderBottom:'1px solid #e5e7eb'}}>
+                    <span style={{fontWeight:600, fontSize:'16px'}}>{t('vendor')}</span>
+                    <button type="button" onClick={handleClose} style={{padding:'4px'}}>
+                        <X size={20} color="#6b7280" />
+                    </button>
+                </div>
+                <div style={{padding:'12px', borderBottom:'1px solid #e5e7eb'}}>
+                    <input
+                        type="text"
                         placeholder={t('vendorPlaceholder')}
                         value={search}
-                        onValueChange={setSearch}
-                        onKeyDown={handleKeyDown}
+                        onChange={(e) => setSearch(e.target.value)}
+                        style={{
+                            width:'100%', padding:'10px 12px', fontSize:'16px',
+                            border:'1px solid #d1d5db', borderRadius:'8px', outline:'none',
+                            backgroundColor:'#fff'
+                        }}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck="false"
                     />
-                    <CommandEmpty>
-                        <div className="p-2 text-sm text-muted-foreground">Press Enter to add "{search}"</div>
-                    </CommandEmpty>
-                    <CommandGroup className="max-h-64 overflow-auto">
-                        {vendors.filter(v => v.toLowerCase().includes(search.toLowerCase())).map((vendor) => (
-                            <CommandItem key={vendor} value={vendor} onSelect={() => handleSelect(vendor)}>
-                                <Check className={cn("mr-2 h-4 w-4", value === vendor ? "opacity-100" : "opacity-0")} />
-                                {vendor}
-                            </CommandItem>
-                        ))}
-                    </CommandGroup>
-                </Command>
-            </PopoverContent>
-        </Popover>
+                </div>
+                <div style={{overflowY:'auto', flex:1, paddingBottom:'24px'}}>
+                    {search.trim() && (
+                        <button
+                            type="button"
+                            style={{width:'100%', textAlign:'left', padding:'14px 16px', fontSize:'14px', color:'#2563eb', borderBottom:'1px solid #f3f4f6', background:'none'}}
+                            onClick={() => handleSelect(search.trim())}
+                        >
+                            Add "{search.trim()}"
+                        </button>
+                    )}
+                    {filtered.length === 0 && !search.trim() && (
+                        <p style={{padding:'16px', textAlign:'center', fontSize:'14px', color:'#9ca3af'}}>No vendors yet</p>
+                    )}
+                    {filtered.map((vendor) => (
+                        <button
+                            type="button"
+                            key={vendor}
+                            style={{width:'100%', textAlign:'left', padding:'14px 16px', fontSize:'15px', borderBottom:'1px solid #f3f4f6', display:'flex', alignItems:'center', gap:'8px', background:'none'}}
+                            onClick={() => handleSelect(vendor)}
+                        >
+                            <Check size={16} color="#2563eb" style={{opacity: value === vendor ? 1 : 0, flexShrink:0}} />
+                            {vendor}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>,
+        document.body
+    ) : null;
+
+    return (
+        <>
+            <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-between font-normal"
+                onClick={() => setOpen(true)}
+            >
+                <span className={cn("truncate", !value && "text-muted-foreground")}>
+                    {value || t('vendorPlaceholder')}
+                </span>
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+            {modal}
+        </>
     );
 }
