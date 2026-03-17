@@ -47,8 +47,8 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </DrawerTrigger>
-                <DrawerContent className="p-0 max-h-[70vh]">
-                    <div className="flex flex-col h-full">
+                <DrawerContent className="p-0" style={{maxHeight: '70vh'}}>
+                    <div className="flex flex-col" style={{maxHeight: '70vh'}}>
                         <div className="p-3 border-b">
                             <input
                                 type="text"
