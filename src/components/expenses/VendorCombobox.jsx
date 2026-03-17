@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { createPortal } from "react-dom";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "../LanguageContext";
 
@@ -9,6 +11,7 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
     const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const isMobile = window.innerWidth < 768;
 
     const vendors = [...new Set(existingVendors.filter(Boolean))].sort();
     const filtered = vendors.filter(v => v.toLowerCase().includes(search.toLowerCase()));
@@ -19,94 +22,114 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
         setSearch("");
     };
 
-    const handleClose = () => {
-        setOpen(false);
-        setSearch("");
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && search.trim()) {
+            e.preventDefault();
+            onChange(search.trim());
+            setOpen(false);
+            setSearch("");
+        }
     };
 
-    const modal = open ? createPortal(
-        <div
-            style={{
-                position: 'fixed', inset: 0, zIndex: 9999,
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
-            }}
-            onClick={handleClose}
-        >
-            <div
-                style={{
-                    backgroundColor: '#fff', borderRadius: '16px 16px 0 0',
-                    maxHeight: '70vh', display: 'flex', flexDirection: 'column'
-                }}
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px', borderBottom:'1px solid #e5e7eb'}}>
-                    <span style={{fontWeight:600, fontSize:'16px'}}>{t('vendor')}</span>
-                    <button type="button" onClick={handleClose} style={{padding:'4px'}}>
-                        <X size={20} color="#6b7280" />
-                    </button>
-                </div>
-                <div style={{padding:'12px', borderBottom:'1px solid #e5e7eb'}}>
-                    <input
-                        type="text"
-                        placeholder={t('vendorPlaceholder')}
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        style={{
-                            width:'100%', padding:'10px 12px', fontSize:'16px',
-                            border:'1px solid #d1d5db', borderRadius:'8px', outline:'none',
-                            backgroundColor:'#fff'
-                        }}
-                        autoComplete="off"
-                        autoCorrect="off"
-                        autoCapitalize="off"
-                        spellCheck="false"
-                    />
-                </div>
-                <div style={{overflowY:'auto', flex:1, paddingBottom:'24px'}}>
-                    {search.trim() && (
-                        <button
-                            type="button"
-                            style={{width:'100%', textAlign:'left', padding:'14px 16px', fontSize:'14px', color:'#2563eb', borderBottom:'1px solid #f3f4f6', background:'none'}}
-                            onClick={() => handleSelect(search.trim())}
-                        >
-                            Add "{search.trim()}"
-                        </button>
-                    )}
-                    {filtered.length === 0 && !search.trim() && (
-                        <p style={{padding:'16px', textAlign:'center', fontSize:'14px', color:'#9ca3af'}}>No vendors yet</p>
-                    )}
-                    {filtered.map((vendor) => (
-                        <button
-                            type="button"
-                            key={vendor}
-                            style={{width:'100%', textAlign:'left', padding:'14px 16px', fontSize:'15px', borderBottom:'1px solid #f3f4f6', display:'flex', alignItems:'center', gap:'8px', background:'none'}}
-                            onClick={() => handleSelect(vendor)}
-                        >
-                            <Check size={16} color="#2563eb" style={{opacity: value === vendor ? 1 : 0, flexShrink:0}} />
-                            {vendor}
-                        </button>
-                    ))}
-                </div>
-            </div>
-        </div>,
-        document.body
-    ) : null;
+    if (isMobile) {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-full justify-between font-normal"
+                    >
+                        <span className={cn("truncate", !value && "text-muted-foreground")}>
+                            {value || t('vendorPlaceholder')}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent className="p-0" style={{maxHeight: '70vh'}}>
+                    <div className="flex flex-col" style={{maxHeight: '70vh'}}>
+                        <div className="p-3 border-b">
+                            <input
+                                type="text"
+                                placeholder={t('vendorPlaceholder')}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                className="w-full px-3 py-2 border border-input rounded-md text-sm outline-none focus:ring-2 focus:ring-ring bg-background"
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck="false"
+                            />
+                        </div>
+                        <div className="overflow-y-auto flex-1 pb-8">
+                            {search.trim() && (
+                                <button
+                                    className="w-full text-left px-4 py-3 text-sm text-blue-600 border-b border-border hover:bg-accent"
+                                    onTouchEnd={(e) => { e.preventDefault(); handleSelect(search.trim()); }}
+                                    onClick={() => handleSelect(search.trim())}
+                                >
+                                    Add "{search.trim()}"
+                                </button>
+                            )}
+                            {filtered.length === 0 && !search.trim() && (
+                                <p className="p-4 text-sm text-muted-foreground text-center">No vendors yet</p>
+                            )}
+                            {filtered.map((vendor) => (
+                                <button
+                                    key={vendor}
+                                    className="w-full text-left px-4 py-3 text-sm border-b border-border last:border-0 flex items-center gap-2 hover:bg-accent active:bg-accent"
+                                    onTouchEnd={(e) => { e.preventDefault(); handleSelect(vendor); }}
+                                    onClick={() => handleSelect(vendor)}
+                                >
+                                    <Check className={cn("h-4 w-4 shrink-0", value === vendor ? "opacity-100 text-blue-600" : "opacity-0")} />
+                                    {vendor}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
 
     return (
-        <>
-            <Button
-                type="button"
-                variant="outline"
-                className="w-full justify-between font-normal"
-                onClick={() => setOpen(true)}
-            >
-                <span className={cn("truncate", !value && "text-muted-foreground")}>
-                    {value || t('vendorPlaceholder')}
-                </span>
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-            {modal}
-        </>
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between font-normal"
+                >
+                    <span className={cn("truncate", !value && "text-muted-foreground")}>
+                        {value || t('vendorPlaceholder')}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+                <Command>
+                    <CommandInput
+                        placeholder={t('vendorPlaceholder')}
+                        value={search}
+                        onValueChange={setSearch}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <CommandEmpty>
+                        <div className="p-2 text-sm text-muted-foreground">Press Enter to add "{search}"</div>
+                    </CommandEmpty>
+                    <CommandGroup className="max-h-64 overflow-auto">
+                        {vendors.filter(v => v.toLowerCase().includes(search.toLowerCase())).map((vendor) => (
+                            <CommandItem key={vendor} value={vendor} onSelect={() => handleSelect(vendor)}>
+                                <Check className={cn("mr-2 h-4 w-4", value === vendor ? "opacity-100" : "opacity-0")} />
+                                {vendor}
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 }
