@@ -95,7 +95,34 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                 </DrawerTrigger>
                 <DrawerContent className="p-0">
                     <div className="mt-4 border-t">
-                        {commandContent}
+                        <Command>
+                            <CommandInput
+                                placeholder={t('searchCategory')}
+                                value={search}
+                                onValueChange={setSearch}
+                                onKeyDown={handleKeyDown}
+                                autoFocus
+                            />
+                            <CommandEmpty>
+                                <div className="p-2 text-sm">
+                                    {t('pressEnter', { key: 'Enter', value: search })}
+                                </div>
+                            </CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-auto">
+                                {allCategories
+                                    .filter(cat => cat.toLowerCase().includes(search.toLowerCase()))
+                                    .map((category) => (
+                                        <CommandItem
+                                            key={category}
+                                            value={category}
+                                            onSelect={() => handleSelect(category)}
+                                        >
+                                            <Check className={cn("mr-2 h-4 w-4", value === category ? "opacity-100" : "opacity-0")} />
+                                            {category}
+                                        </CommandItem>
+                                    ))}
+                            </CommandGroup>
+                        </Command>
                     </div>
                 </DrawerContent>
             </Drawer>
