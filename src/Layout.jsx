@@ -137,15 +137,15 @@ function LayoutContent({ children, currentPageName }) {
                                     <Dialog open={showDeleteConfirm} onOpenChange={(open) => !open && setShowDeleteConfirm(false)}>
                                         <DialogContent>
                                             <DialogHeader>
-                                                <DialogTitle>Delete My Account</DialogTitle>
+                                                <DialogTitle>{t('deleteMyAccount')}</DialogTitle>
                                             </DialogHeader>
                                             <p className="text-sm text-slate-600 py-2">
-                                                Are you sure you want to delete your account? This action <strong>cannot be undone</strong> and you will lose access immediately.
+                                                {t('deleteAccountConfirm')}
                                             </p>
                                             <DialogFooter>
-                                                <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>Cancel</Button>
+                                                <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>{t('cancel')}</Button>
                                                 <Button variant="destructive" onClick={handleDeleteAccount} disabled={deleting}>
-                                                    {deleting ? "Deleting..." : "Delete My Account"}
+                                                    {deleting ? t('deleting') : t('deleteMyAccount')}
                                                 </Button>
                                             </DialogFooter>
                                         </DialogContent>
