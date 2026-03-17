@@ -2,7 +2,7 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
-import { Home, LogOut, Languages, User, ChevronLeft, Shield } from "lucide-react";
+import { Home, LogOut, Languages, ChevronLeft, Shield } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { LanguageProvider, useLanguage } from "./components/LanguageContext";
 import { ProjectProvider } from "./components/ProjectContext";
