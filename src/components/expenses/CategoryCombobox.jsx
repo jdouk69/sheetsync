@@ -116,6 +116,7 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                                             key={category}
                                             value={category}
                                             onSelect={() => handleSelect(category)}
+                                            onPointerDown={(e) => { e.preventDefault(); handleSelect(category); }}
                                         >
                                             <Check className={cn("mr-2 h-4 w-4", value === category ? "opacity-100" : "opacity-0")} />
                                             {category}
