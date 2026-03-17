@@ -104,6 +104,7 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                                             key={vendor}
                                             value={vendor}
                                             onSelect={() => handleSelect(vendor)}
+                                            onPointerDown={(e) => { e.preventDefault(); handleSelect(vendor); }}
                                         >
                                             <Check className={cn("mr-2 h-4 w-4", value === vendor ? "opacity-100" : "opacity-0")} />
                                             {vendor}
