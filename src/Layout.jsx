@@ -33,6 +33,7 @@ function LayoutContent({ children, currentPageName }) {
     return (
         <div className="min-h-screen bg-slate-50 overflow-y-auto" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <style>{`
+            html, body { overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
             button, [role="tab"], nav, [role="navigation"] { user-select: none; -webkit-user-select: none; }
             @media (prefers-color-scheme: dark) { html { color-scheme: light !important; } }
         `}</style>
