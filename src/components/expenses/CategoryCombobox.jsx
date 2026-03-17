@@ -116,8 +116,8 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
             </Button>
 
             <Drawer open={open} onOpenChange={setOpen}>
-                <DrawerContent className="pb-safe">
-                    <div className="p-4 pb-8">
+                <DrawerContent className="min-h-[50vh]">
+                    <div className="p-4 flex flex-col" style={{ maxHeight: '70vh' }}>
                         <div className="text-sm font-semibold text-foreground mb-3">Category</div>
                         <input
                             ref={inputRef}
@@ -130,10 +130,9 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                             autoCapitalize="off"
                             spellCheck="false"
                             inputMode="text"
-                            className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring mb-3"
-                            onFocus={() => setTimeout(() => inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)}
+                            className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring mb-3 shrink-0"
                         />
-                        <ul className="max-h-64 overflow-y-auto divide-y divide-border rounded-md border border-border">
+                        <ul className="flex-1 overflow-y-auto divide-y divide-border rounded-md border border-border">
                             {search.trim() && !hasExactMatch && (
                                 <li>
                                     <button
