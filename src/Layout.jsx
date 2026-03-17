@@ -117,6 +117,14 @@ function LayoutContent({ children, currentPageName }) {
                                     <span className="text-sm font-medium">{language === 'en' ? 'EL' : 'EN'}</span>
                                     </button>
                                     <button
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    className="flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Delete my account"
+                                    >
+                                    <Trash2 className="w-4 h-4" />
+                                    <span className="hidden md:inline text-sm">Delete Account</span>
+                                    </button>
+                                    <button
                                     onClick={handleLogout}
                                     className="flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                                     >
@@ -124,6 +132,24 @@ function LayoutContent({ children, currentPageName }) {
                                     <span className="hidden md:inline">{t('logout')}</span>
                                     </button>
                                     </div>
+
+                                    {/* Delete Account Confirmation Dialog */}
+                                    <Dialog open={showDeleteConfirm} onOpenChange={(open) => !open && setShowDeleteConfirm(false)}>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Delete My Account</DialogTitle>
+                                            </DialogHeader>
+                                            <p className="text-sm text-slate-600 py-2">
+                                                Are you sure you want to delete your account? This action <strong>cannot be undone</strong> and you will lose access immediately.
+                                            </p>
+                                            <DialogFooter>
+                                                <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>Cancel</Button>
+                                                <Button variant="destructive" onClick={handleDeleteAccount} disabled={deleting}>
+                                                    {deleting ? "Deleting..." : "Delete My Account"}
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
                     </div>
 
                     <div className="border-t border-border py-3">
