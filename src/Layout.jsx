@@ -19,7 +19,7 @@ function LayoutContent({ children, currentPageName }) {
     // Show back button only on sub-pages (not main nav pages)
     const mainPages = ['/', '/Expenses', '/Reports', '/Admin'];
     const canGoBack = !mainPages.includes(window.location.pathname);
-    const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+
     const { data: user } = useQuery({
         queryKey: ['currentUser'],
         queryFn: () => base44.auth.me(),
