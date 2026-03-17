@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { createPortal } from "react-dom";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "../LanguageContext";
 
@@ -9,6 +11,7 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
     const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const isMobile = window.innerWidth < 768;
 
     const suggestedCategories = [
         t('materials'), t('labor'), t('equipment'), t('permits'),
@@ -25,91 +28,109 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
         setSearch("");
     };
 
-    const handleClose = () => {
-        setOpen(false);
-        setSearch("");
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && search.trim()) {
+            e.preventDefault();
+            onChange(search.trim());
+            setOpen(false);
+            setSearch("");
+        }
     };
 
-    const modal = open ? createPortal(
-        <div
-            style={{
-                position: 'fixed', inset: 0, zIndex: 9999,
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
-            }}
-            onClick={handleClose}
-        >
-            <div
-                style={{
-                    backgroundColor: '#fff', borderRadius: '16px 16px 0 0',
-                    maxHeight: '70vh', display: 'flex', flexDirection: 'column'
-                }}
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px', borderBottom:'1px solid #e5e7eb'}}>
-                    <span style={{fontWeight:600, fontSize:'16px'}}>{t('category')}</span>
-                    <button type="button" onClick={handleClose} style={{padding:'4px'}}>
-                        <X size={20} color="#6b7280" />
-                    </button>
-                </div>
-                <div style={{padding:'12px', borderBottom:'1px solid #e5e7eb'}}>
-                    <input
-                        type="text"
-                        placeholder={t('searchCategory')}
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        style={{
-                            width:'100%', padding:'10px 12px', fontSize:'16px',
-                            border:'1px solid #d1d5db', borderRadius:'8px', outline:'none',
-                            backgroundColor:'#fff'
-                        }}
-                        autoComplete="off"
-                        autoCorrect="off"
-                        autoCapitalize="off"
-                        spellCheck="false"
-                    />
-                </div>
-                <div style={{overflowY:'auto', flex:1, paddingBottom:'24px'}}>
-                    {search.trim() && (
-                        <button
-                            type="button"
-                            style={{width:'100%', textAlign:'left', padding:'14px 16px', fontSize:'14px', color:'#2563eb', borderBottom:'1px solid #f3f4f6', background:'none'}}
-                            onClick={() => handleSelect(search.trim())}
-                        >
-                            Add "{search.trim()}"
-                        </button>
-                    )}
-                    {filtered.map((category) => (
-                        <button
-                            type="button"
-                            key={category}
-                            style={{width:'100%', textAlign:'left', padding:'14px 16px', fontSize:'15px', borderBottom:'1px solid #f3f4f6', display:'flex', alignItems:'center', gap:'8px', background:'none'}}
-                            onClick={() => handleSelect(category)}
-                        >
-                            <Check size={16} color="#2563eb" style={{opacity: value === category ? 1 : 0, flexShrink:0}} />
-                            {category}
-                        </button>
-                    ))}
-                </div>
-            </div>
-        </div>,
-        document.body
-    ) : null;
+    if (isMobile) {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-full justify-between"
+                    >
+                        <span className={cn(!value && "text-muted-foreground")}>
+                            {value || t('selectCategory')}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent className="p-0" style={{maxHeight: '70vh'}}>
+                    <div className="flex flex-col" style={{maxHeight: '70vh'}}>
+                        <div className="p-3 border-b">
+                            <input
+                                type="text"
+                                placeholder={t('searchCategory')}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                className="w-full px-3 py-2 border border-input rounded-md text-sm outline-none focus:ring-2 focus:ring-ring bg-background"
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck="false"
+                            />
+                        </div>
+                        <div className="overflow-y-auto flex-1 pb-8">
+                            {search.trim() && (
+                                <button
+                                    className="w-full text-left px-4 py-3 text-sm text-blue-600 border-b border-border hover:bg-accent"
+                                    onTouchEnd={(e) => { e.preventDefault(); handleSelect(search.trim()); }}
+                                    onClick={() => handleSelect(search.trim())}
+                                >
+                                    Add "{search.trim()}"
+                                </button>
+                            )}
+                            {filtered.map((category) => (
+                                <button
+                                    key={category}
+                                    className="w-full text-left px-4 py-3 text-sm border-b border-border last:border-0 flex items-center gap-2 hover:bg-accent active:bg-accent"
+                                    onTouchEnd={(e) => { e.preventDefault(); handleSelect(category); }}
+                                    onClick={() => handleSelect(category)}
+                                >
+                                    <Check className={cn("h-4 w-4 shrink-0", value === category ? "opacity-100 text-blue-600" : "opacity-0")} />
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
 
     return (
-        <>
-            <Button
-                type="button"
-                variant="outline"
-                className="w-full justify-between"
-                onClick={() => setOpen(true)}
-            >
-                <span className={cn(!value && "text-muted-foreground")}>
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                >
                     {value || t('selectCategory')}
-                </span>
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-            {modal}
-        </>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+                <Command>
+                    <CommandInput
+                        placeholder={t('searchCategory')}
+                        value={search}
+                        onValueChange={setSearch}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <CommandEmpty>
+                        <div className="p-2 text-sm">{t('pressEnter', { key: 'Enter', value: search })}</div>
+                    </CommandEmpty>
+                    <CommandGroup className="max-h-64 overflow-auto">
+                        {allCategories.filter(cat => cat.toLowerCase().includes(search.toLowerCase())).map((category) => (
+                            <CommandItem key={category} value={category} onSelect={() => handleSelect(category)}>
+                                <Check className={cn("mr-2 h-4 w-4", value === category ? "opacity-100" : "opacity-0")} />
+                                {category}
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 }
