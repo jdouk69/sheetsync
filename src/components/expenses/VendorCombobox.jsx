@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Command, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
@@ -18,14 +18,14 @@ function useIsMobile() {
     return isMobile;
 }
 
-export default function VendorCombobox({ value, onChange, existingVendors }) {
+export default function VendorCombobox({ value, onChange, existingVendors = [] }) {
     const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const isMobile = useIsMobile();
     const inputRef = useRef(null);
 
-    const vendors = [...new Set(existingVendors.filter(Boolean))].sort();
+    const vendors = [...new Set((existingVendors || []).filter(Boolean))].sort();
     const filtered = vendors.filter(v => v.toLowerCase().includes(search.toLowerCase()));
     const hasExactMatch = vendors.some(v => v.toLowerCase() === search.toLowerCase().trim());
 
@@ -87,19 +87,20 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                                     Create "{search.trim()}"
                                 </CommandItem>
                             )}
+                            {vendors.length === 0 && !search && (
+                                <div className="px-3 py-3 text-sm text-muted-foreground">No vendors yet. Type to add one.</div>
+                            )}
                         </CommandGroup>
-                        {!search && filtered.length === 0 && (
-                            <CommandEmpty>No vendors yet. Type to add one.</CommandEmpty>
-                        )}
                     </Command>
                 </PopoverContent>
             </Popover>
         );
     }
 
-    // Mobile: Drawer with plain input + flat list (no cmdk portal)
+    // Mobile: trigger button + Drawer rendered at same level (not nested in grid cell stacking context)
+    // The Drawer is outside the Button so it doesn't inherit grid constraints
     return (
-        <>
+        <div>
             <Button
                 variant="outline"
                 className="w-full justify-between font-normal"
@@ -112,9 +113,9 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
 
-            <Drawer open={open} onOpenChange={setOpen}>
-                <DrawerContent className="pb-safe">
-                    <div className="p-4 pb-8">
+            <Drawer open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
+                <DrawerContent>
+                    <div className="p-4 pb-10">
                         <div className="text-sm font-semibold text-foreground mb-3">Vendor</div>
                         <input
                             ref={inputRef}
@@ -127,16 +128,26 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                             autoCapitalize="off"
                             spellCheck="false"
                             inputMode="text"
+                            name="vendor-search-field"
                             className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring mb-3"
-                            onFocus={() => setTimeout(() => inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    if (search.trim() && !hasExactMatch) handleCreate();
+                                    else if (hasExactMatch) {
+                                        const match = vendors.find(v => v.toLowerCase() === search.toLowerCase().trim());
+                                        if (match) handleSelect(match);
+                                    }
+                                }
+                            }}
                         />
                         <ul className="max-h-64 overflow-y-auto divide-y divide-border rounded-md border border-border">
                             {search.trim() && !hasExactMatch && (
                                 <li>
                                     <button
                                         type="button"
-                                        className="w-full text-left px-3 py-3 text-sm text-blue-600 font-medium flex items-center gap-2 hover:bg-blue-50 active:bg-blue-100"
-                                        onClick={handleCreate}
+                                        className="w-full text-left px-3 py-3 text-sm text-blue-600 font-medium flex items-center gap-2 active:bg-blue-100"
+                                        onPointerDown={(e) => { e.preventDefault(); handleCreate(); }}
                                     >
                                         <Plus className="w-4 h-4 shrink-0" />
                                         Add "{search.trim()}"
@@ -147,8 +158,8 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                                 <li key={vendor}>
                                     <button
                                         type="button"
-                                        className="w-full text-left px-3 py-3 text-sm flex items-center justify-between hover:bg-accent active:bg-accent"
-                                        onClick={() => handleSelect(vendor)}
+                                        className="w-full text-left px-3 py-3 text-sm flex items-center justify-between active:bg-accent"
+                                        onPointerDown={(e) => { e.preventDefault(); handleSelect(vendor); }}
                                     >
                                         <span>{vendor}</span>
                                         {value === vendor && <Check className="w-4 h-4 text-blue-600 shrink-0" />}
@@ -162,6 +173,6 @@ export default function VendorCombobox({ value, onChange, existingVendors }) {
                     </div>
                 </DrawerContent>
             </Drawer>
-        </>
+        </div>
     );
 }
