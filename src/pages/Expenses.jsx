@@ -397,6 +397,24 @@ export default function ExpensesPage() {
                     users={users}
                 />
 
+                {canEdit && !showForm && (
+                    <div className="mb-4">
+                        <Button
+                            onClick={() => {
+                                setEditingExpense(null);
+                                setShowForm(true);
+                                setTimeout(() => {
+                                    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }, 100);
+                            }}
+                            className="w-full bg-blue-600 hover:bg-blue-700"
+                        >
+                            <Plus className="w-4 h-4 mr-2" />
+                            {t('addExpense')}
+                        </Button>
+                    </div>
+                )}
+
                 <div ref={formRef}>
                     {showForm && canEdit && (
                         <ExpenseForm
