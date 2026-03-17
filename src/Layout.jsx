@@ -119,10 +119,10 @@ function LayoutContent({ children, currentPageName }) {
                                     <button
                                     onClick={() => setShowDeleteConfirm(true)}
                                     className="flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Delete my account"
+                                    title={t('deleteMyAccount')}
                                     >
                                     <Trash2 className="w-4 h-4" />
-                                    <span className="hidden md:inline text-sm">Delete Account</span>
+                                    <span className="hidden md:inline text-sm">{t('deleteAccount')}</span>
                                     </button>
                                     <button
                                     onClick={handleLogout}
