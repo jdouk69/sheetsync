@@ -15,8 +15,20 @@ import { Toaster } from "@/components/ui/sonner";
 
 function LayoutContent({ children, currentPageName }) {
     const { language, t, toggleLanguage } = useLanguage();
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
-
+    const handleDeleteAccount = async () => {
+        setDeleting(true);
+        try {
+            const me = await base44.auth.me();
+            await base44.entities.User.delete(me.id);
+            base44.auth.logout();
+        } catch (error) {
+            setDeleting(false);
+            setShowDeleteConfirm(false);
+        }
+    };
 
     // Show back button only on sub-pages (not main nav pages)
     const mainPages = ['/', '/Expenses', '/Reports', '/Admin'];
