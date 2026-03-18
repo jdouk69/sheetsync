@@ -53,7 +53,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
             let dateValue = new Date().toISOString().split('T')[0];
             if (expense.date) {
                 try {
-                    dateValue = format(new Date(expense.date), 'yyyy-MM-dd');
+                    dateValue = expense.date.split('T')[0];
                 } catch (e) {
                     console.error('Date formatting error:', e);
                 }
