@@ -132,7 +132,7 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
                             inputMode="text"
                             className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring mb-3 shrink-0"
                         />
-                        <ul className="flex-1 overflow-y-auto divide-y divide-border rounded-md border border-border">
+                        <ul className="flex-1 overflow-y-auto divide-y divide-border rounded-md border border-border min-h-0">
                             {search.trim() && !hasExactMatch && (
                                 <li>
                                     <button
