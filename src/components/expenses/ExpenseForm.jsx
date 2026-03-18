@@ -184,7 +184,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div ref={formContainerRef} className="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">
                 {expense ? t('editExpense') : t('addNewExpense')}
             </h2>
