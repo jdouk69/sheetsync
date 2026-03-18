@@ -12,9 +12,9 @@ import { format } from "date-fns";
 import { useLanguage } from "../LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useProject } from "../ProjectContext";
+import { Sparkles } from "lucide-react";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
-import { Sparkles } from "lucide-react";
 
 export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }) {
     const { t } = useLanguage();
@@ -37,6 +37,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
         if (container) container.addEventListener('focusin', handleFocusIn);
         return () => { if (container) container.removeEventListener('focusin', handleFocusIn); };
     }, []);
+
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses'],
         queryFn: () => base44.entities.Expense.list(),
@@ -65,7 +66,6 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
 
     useEffect(() => {
         if (expense) {
-            // Format date to yyyy-MM-dd for date input
             let dateValue = new Date().toISOString().split('T')[0];
             if (expense.date) {
                 try {
@@ -138,9 +138,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
     };
 
     const handleSuggestCategory = async () => {
-        if (!formData.description && !formData.vendor) {
-            return;
-        }
+        if (!formData.description && !formData.vendor) return;
 
         setSuggestingCategory(true);
         try {
