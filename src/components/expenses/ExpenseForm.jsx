@@ -181,6 +181,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
             paymentStatus,
             isPaid: isFullyPaid,
             paidAt: isFullyPaid ? (formData.paidAt || new Date().toISOString()) : null,
+            paidCash: formData.paidCash,
         });
     };
 
