@@ -184,6 +184,7 @@ const translations = {
         deleteMyAccount: "Delete My Account",
         deleteAccountConfirm: "Are you sure you want to delete your account? This action cannot be undone and you will lose access immediately.",
         deleting: "Deleting...",
+        paidCash: "Paid Cash",
         },
     el: {
         // Layout
@@ -368,6 +369,7 @@ const translations = {
         deleteMyAccount: "Διαγραφή του Λογαριασμού μου",
         deleteAccountConfirm: "Είστε σίγουροι ότι θέλετε να διαγράψετε τον λογαριασμό σας; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί και θα χάσετε αμέσως την πρόσβασή σας.",
         deleting: "Διαγραφή...",
+        paidCash: "Πληρωμή Μετρητά",
         }
 };
 
