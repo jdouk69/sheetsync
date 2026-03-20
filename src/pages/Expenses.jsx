@@ -101,10 +101,10 @@ export default function ExpensesPage() {
             setEditingExpense(null);
             return { previous };
         },
-        onSuccess: (created) => {
+        onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             toast.success("Expense added successfully");
-            logActivity({ action: "created_expense", entityType: "expense", entityId: created?.id, entityLabel: created?.description, user });
+            logActivity({ action: "created_expense", entityType: "expense", entityId: response?.data?.expense?.id, entityLabel: response?.data?.expense?.description, user });
         },
         onError: (err, newData, context) => {
             queryClient.setQueryData(['expenses', currentProjectId], context?.previous);
@@ -115,12 +115,12 @@ export default function ExpensesPage() {
 
     const updateMutation = useMutation({
         mutationFn: ({ id, data }) => base44.functions.invoke('updateExpense', { expenseId: id, updates: data }),
-        onSuccess: (updated) => {
+        onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
             toast.success("Expense updated successfully");
-            logActivity({ action: "updated_expense", entityType: "expense", entityId: updated?.id, entityLabel: updated?.description, user });
+            logActivity({ action: "updated_expense", entityType: "expense", entityId: response?.data?.expense?.id, entityLabel: response?.data?.expense?.description, user });
         },
         onError: () => {
             toast.error("Failed to update expense. Please try again.");
