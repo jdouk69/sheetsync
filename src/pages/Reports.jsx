@@ -338,7 +338,8 @@ export default function ReportsPage() {
                         <th>${t('vendor')}</th>
                         <th>${t('amount')}</th>
                         <th>${t('paid')}</th>
-                    </tr>
+                        <th>${t('paidCash')}</th>
+                        </tr>
                 </thead>
                 <tbody>
                     ${expenses.map(exp => `
@@ -349,7 +350,8 @@ export default function ReportsPage() {
                             <td>${exp.vendor || '-'}</td>
                             <td class="amount-cell">${currencySymbol}${exp.amount.toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
                             <td>${exp.isPaid ? '✓' : '✗'}</td>
-                        </tr>
+                            <td>${exp.paidCash ? '✓' : '✗'}</td>
+                            </tr>
                     `).join('')}
                     </tbody>
                     </table>
@@ -401,7 +403,7 @@ export default function ReportsPage() {
                     };
 
     const handleExportCSV = () => {
-        const headers = [t('date'), t('description'), `${t('amount')} (${currencySymbol})`, t('category'), t('vendor'), t('notes'), t('paid')];
+        const headers = [t('date'), t('description'), `${t('amount')} (${currencySymbol})`, t('category'), t('vendor'), t('notes'), t('paid'), t('paidCash')];
         const rows = expenses.map(exp => [
             format(new Date(exp.date), 'yyyy-MM-dd'),
             exp.description,
@@ -409,7 +411,8 @@ export default function ReportsPage() {
             exp.category,
             exp.vendor || '',
             exp.notes || '',
-            exp.isPaid ? 'Yes' : 'No'
+            exp.isPaid ? 'Yes' : 'No',
+            exp.paidCash ? 'Yes' : 'No'
         ]);
 
         const csvContent = [
@@ -699,7 +702,8 @@ export default function ReportsPage() {
                                         <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('category')}</th>
                                         <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('amount')}</th>
                                         <th className="text-center py-2 px-2 font-semibold text-slate-700">{t('paid')}</th>
-                                    </tr>
+                                        <th className="text-center py-2 px-2 font-semibold text-slate-700">{t('paidCash')}</th>
+                                        </tr>
                                 </thead>
                                 <tbody>
                                     {expenses.map(exp => (
@@ -720,7 +724,12 @@ export default function ReportsPage() {
                                                     ? <CheckCircle className="w-4 h-4 text-green-500 inline" />
                                                     : <XCircle className="w-4 h-4 text-red-400 inline" />}
                                             </td>
-                                        </tr>
+                                            <td className="py-2 px-2 text-center">
+                                                {exp.paidCash
+                                                    ? <CheckCircle className="w-4 h-4 text-green-500 inline" />
+                                                    : <XCircle className="w-4 h-4 text-slate-300 inline" />}
+                                            </td>
+                                            </tr>
                                     ))}
                                 </tbody>
                             </table>
