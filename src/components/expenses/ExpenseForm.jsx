@@ -57,7 +57,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
         vendor: "",
         photos: [],
         notes: "",
-        isPaid: false
+        isPaid: false,
+        paidCash: false
     });
     const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -88,7 +89,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                 vendor: expense.vendor || "",
                 photos: expense.photos || [],
                 notes: expense.notes || "",
-                isPaid: expense.isPaid || false
+                isPaid: expense.isPaid || false,
+                paidCash: expense.paidCash || false
             });
         } else {
             setIsPartialPayment(false);
@@ -103,7 +105,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                 vendor: "",
                 photos: [],
                 notes: "",
-                isPaid: false
+                isPaid: false,
+                paidCash: false
             });
         }
     }, [expense]);
@@ -387,24 +390,42 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                 </div>
 
                 {isAdmin && !isPartialPayment && (
-                    <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
-                        <Checkbox
-                            id="isPaid"
-                            checked={formData.isPaid}
-                            onCheckedChange={(checked) => setFormData({
-                                ...formData,
-                                isPaid: checked,
-                                paymentStatus: checked ? "fully_paid" : "unpaid",
-                                paidAt: checked ? new Date().toISOString() : null,
-                                paidBy: checked ? currentUser?.email : null
-                            })}
-                        />
-                        <label
-                            htmlFor="isPaid"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                            {t('markAsPaid')}
-                        </label>
+                    <div className="space-y-3">
+                        <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
+                            <Checkbox
+                                id="isPaid"
+                                checked={formData.isPaid}
+                                onCheckedChange={(checked) => setFormData({
+                                    ...formData,
+                                    isPaid: checked,
+                                    paymentStatus: checked ? "fully_paid" : "unpaid",
+                                    paidAt: checked ? new Date().toISOString() : null,
+                                    paidBy: checked ? currentUser?.email : null
+                                })}
+                            />
+                            <label
+                                htmlFor="isPaid"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                                {t('markAsPaid')}
+                            </label>
+                        </div>
+                        <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
+                            <Checkbox
+                                id="paidCash"
+                                checked={formData.paidCash}
+                                onCheckedChange={(checked) => setFormData({
+                                    ...formData,
+                                    paidCash: checked
+                                })}
+                            />
+                            <label
+                                htmlFor="paidCash"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                                Paid Cash
+                            </label>
+                        </div>
                     </div>
                 )}
 
