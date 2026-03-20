@@ -389,27 +389,29 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                     </div>
                 </div>
 
-                {isAdmin && !isPartialPayment && (
+                {!isPartialPayment && (
                     <div className="space-y-3">
-                        <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
-                            <Checkbox
-                                id="isPaid"
-                                checked={formData.isPaid}
-                                onCheckedChange={(checked) => setFormData({
-                                    ...formData,
-                                    isPaid: checked,
-                                    paymentStatus: checked ? "fully_paid" : "unpaid",
-                                    paidAt: checked ? new Date().toISOString() : null,
-                                    paidBy: checked ? currentUser?.email : null
-                                })}
-                            />
-                            <label
-                                htmlFor="isPaid"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                                {t('markAsPaid')}
-                            </label>
-                        </div>
+                        {isAdmin && (
+                            <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
+                                <Checkbox
+                                    id="isPaid"
+                                    checked={formData.isPaid}
+                                    onCheckedChange={(checked) => setFormData({
+                                        ...formData,
+                                        isPaid: checked,
+                                        paymentStatus: checked ? "fully_paid" : "unpaid",
+                                        paidAt: checked ? new Date().toISOString() : null,
+                                        paidBy: checked ? currentUser?.email : null
+                                    })}
+                                />
+                                <label
+                                    htmlFor="isPaid"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    {t('markAsPaid')}
+                                </label>
+                            </div>
+                        )}
                         <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
                             <Checkbox
                                 id="paidCash"
