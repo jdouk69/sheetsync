@@ -89,7 +89,7 @@ export default function ExpensesPage() {
     });
 
     const createMutation = useMutation({
-        mutationFn: (data) => base44.entities.Expense.create(data),
+        mutationFn: (data) => base44.functions.invoke('createExpense', data),
         onMutate: async (newData) => {
             await queryClient.cancelQueries({ queryKey: ['expenses', currentProjectId] });
             const previous = queryClient.getQueryData(['expenses', currentProjectId]);
@@ -114,7 +114,7 @@ export default function ExpensesPage() {
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }) => base44.entities.Expense.update(id, { ...data, updated_by: user?.email }),
+        mutationFn: ({ id, data }) => base44.functions.invoke('updateExpense', { expenseId: id, updates: data }),
         onSuccess: (updated) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
