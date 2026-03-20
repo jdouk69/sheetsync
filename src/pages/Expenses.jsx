@@ -162,7 +162,7 @@ export default function ExpensesPage() {
         },
     });
 
-    const handleSubmit = (data) => {
+    const handleSubmit = async (data) => {
         const expenseData = { 
             ...data, 
             projectId: currentProjectId,
@@ -170,7 +170,16 @@ export default function ExpensesPage() {
             updatedByName: user?.full_name || user?.email
         };
         if (editingExpense) {
-            updateMutation.mutate({ id: editingExpense.id, data: expenseData });
+            // Use direct entity update for simple field changes
+            try {
+                await base44.entities.Expense.update(editingExpense.id, expenseData);
+                queryClient.invalidateQueries({ queryKey: ['expenses'] });
+                setShowForm(false);
+                setEditingExpense(null);
+                toast.success("Expense updated successfully");
+            } catch (error) {
+                toast.error("Failed to update expense. Please try again.");
+            }
         } else {
             createMutation.mutate(expenseData);
         }
