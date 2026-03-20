@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
 
 Deno.serve(async (req) => {
     try {
@@ -60,17 +60,6 @@ Deno.serve(async (req) => {
 
         // Update expense
         const updatedExpense = await base44.asServiceRole.entities.Expense.update(expenseId, secureUpdates);
-
-        // Log activity
-        await base44.asServiceRole.entities.ActivityLog.create({
-            action: 'updated_expense',
-            entityType: 'expense',
-            entityId: expenseId,
-            entityLabel: updatedExpense.description,
-            performedBy: user.email,
-            performedByName: user.full_name || user.email,
-            details: `Updated in project: ${project.name}`
-        });
 
         return Response.json({ success: true, expense: updatedExpense });
     } catch (error) {
