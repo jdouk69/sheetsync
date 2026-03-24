@@ -8,6 +8,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import CategoryCombobox from "./CategoryCombobox";
 import VendorCombobox from "./VendorCombobox";
+import VendorPaymentReminder from "./VendorPaymentReminder";
 import { format } from "date-fns";
 import { useLanguage } from "../LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,7 +17,7 @@ import { Sparkles } from "lucide-react";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 
-export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }) {
+export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, onRecordPayment }) {
     const { t } = useLanguage();
     const { currentProjectId, currentProject } = useProject();
     const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
@@ -61,6 +62,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
         paidCash: false
     });
     const [isPartialPayment, setIsPartialPayment] = useState(false);
+    const [reminderDismissed, setReminderDismissed] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [suggestingCategory, setSuggestingCategory] = useState(false);
     const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
@@ -198,9 +200,18 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser }
                         </label>
                         <VendorCombobox
                             value={formData.vendor}
-                            onChange={(value) => setFormData({...formData, vendor: value})}
+                            onChange={(value) => { setFormData({...formData, vendor: value}); setReminderDismissed(false); }}
                             existingVendors={existingVendors}
                         />
+                        {!expense && onRecordPayment && !reminderDismissed && (
+                            <VendorPaymentReminder
+                                vendorName={formData.vendor}
+                                projectExpenses={projectExpenses}
+                                currency={currentProject?.currency}
+                                onSelectExpense={(exp) => onRecordPayment(exp)}
+                                onDismiss={() => setReminderDismissed(true)}
+                            />
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">

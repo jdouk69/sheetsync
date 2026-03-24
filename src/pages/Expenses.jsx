@@ -434,6 +434,10 @@ export default function ExpensesPage() {
                                 setEditingExpense(null);
                             }}
                             currentUser={user}
+                            onRecordPayment={(exp) => {
+                                setEditingExpense(exp);
+                                setShowForm(true);
+                            }}
                         />
                     )}
                 </div>
