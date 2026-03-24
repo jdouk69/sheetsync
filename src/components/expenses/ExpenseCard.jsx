@@ -47,9 +47,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     });
 
     const paymentsTotal = payments.reduce((sum, p) => sum + p.amount, 0);
-    // If no Payment records yet, fall back to depositAmount or expense.amount as the total paid.
-    const legacyPaid = expense.depositAmount || (expense.totalAmount ? expense.amount || 0 : 0);
-    const totalPaid = paymentsTotal > 0 ? paymentsTotal : legacyPaid;
+    // Fallback to expense.amount (running total paid) if no Payment records exist yet
+    const totalPaid = paymentsTotal > 0 ? paymentsTotal : (expense.amount || 0);
     const balanceDue = expense.totalAmount ? expense.totalAmount - totalPaid : 0;
     const isFullyPaid = expense.totalAmount ? totalPaid >= expense.totalAmount : (expense.paymentStatus === 'fully_paid' || expense.isPaid);
 
