@@ -63,7 +63,15 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     });
     // In edit mode, derive checkbox state from real payment data
     const isEditMode = !!expense;
-    const derivedIsPartial = isEditMode && !!expense?.totalAmount;
+    // Derive partial state from actual payment status, not just totalAmount existence.
+    // totalAmount = quoted total, amount = paid so far.
+    // Only 'deposit_paid' means partial — unpaid and fully_paid should show unchecked.
+    const total = Number(expense?.totalAmount || 0);
+    const paid = Number(expense?.amount || 0);
+    const derivedIsPartial = isEditMode && (
+        expense?.paymentStatus === 'deposit_paid' ||
+        (total > 0 && paid > 0 && paid < total)
+    );
     const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [reminderDismissed, setReminderDismissed] = useState(false);
     const [uploading, setUploading] = useState(false);
