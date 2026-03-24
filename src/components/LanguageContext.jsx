@@ -185,6 +185,9 @@ const translations = {
         deleteAccountConfirm: "Are you sure you want to delete your account? This action cannot be undone and you will lose access immediately.",
         deleting: "Deleting...",
         paidCash: "Paid Cash",
+        expenseIsPartiallyPaid: "Expense is partially paid",
+        recordWithDeposit: "Record this expense with an initial deposit / partial payment",
+        paymentStatusAutomatic: "Payment status is determined automatically from recorded payments.",
         },
     el: {
         // Layout
@@ -370,6 +373,9 @@ const translations = {
         deleteAccountConfirm: "Είστε σίγουροι ότι θέλετε να διαγράψετε τον λογαριασμό σας; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί και θα χάσετε αμέσως την πρόσβασή σας.",
         deleting: "Διαγραφή...",
         paidCash: "Πληρωμή Μετρητά",
+        expenseIsPartiallyPaid: "Η δαπάνη έχει μερική πληρωμή",
+        recordWithDeposit: "Καταχωρήστε αυτή τη δαπάνη με αρχική προκαταβολή / μερική πληρωμή",
+        paymentStatusAutomatic: "Η κατάσταση πληρωμής ορίζεται αυτόματα από τις καταγεγραμμένες πληρωμές.",
         }
 };
 

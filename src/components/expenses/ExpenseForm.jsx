@@ -268,12 +268,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                             className={`text-sm font-medium ${isEditMode ? 'text-slate-500 cursor-not-allowed' : 'text-amber-800 cursor-pointer'}`}
                         >
                             {isEditMode
-                                ? 'Expense is partially paid'
-                                : 'Record this expense with an initial deposit / partial payment'
+                                ? t('expenseIsPartiallyPaid')
+                                : t('recordWithDeposit')
                             }
                         </label>
                         {isEditMode && (
-                            <p className="text-xs text-slate-400 mt-0.5">Payment status is determined automatically from recorded payments.</p>
+                            <p className="text-xs text-slate-400 mt-0.5">{t('paymentStatusAutomatic')}</p>
                         )}
                     </div>
                 </div>
