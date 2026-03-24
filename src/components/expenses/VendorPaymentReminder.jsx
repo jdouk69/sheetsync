@@ -33,7 +33,7 @@ export default function VendorPaymentReminder({ vendorName, projectExpenses, cur
                         <div className="space-y-2">
                             {outstanding.map(exp => {
                                 const balance = exp.totalAmount
-                                    ? exp.totalAmount - (exp.depositAmount || exp.amount || 0)
+                                    ? exp.totalAmount - (exp.amount || 0)
                                     : null;
                                 return (
                                     <div key={exp.id} className="flex items-center justify-between gap-3 bg-white rounded border border-amber-200 px-3 py-2">
