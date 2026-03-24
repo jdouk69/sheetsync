@@ -395,19 +395,19 @@ export default function ReportsPage() {
                 {/* ── Summary KPIs ── */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-white rounded-lg shadow-sm p-5">
-                        <p className="text-sm text-slate-500 mb-1">Total Project Value</p>
+                        <p className="text-sm text-slate-500 mb-1">{t('totalProjectValue')}</p>
                         <p className="text-2xl font-bold text-slate-900">{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalProjectValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                         <p className="text-xs text-slate-400 mt-1">{expenses.length} expenses (quoted/total amounts)</p>
                     </div>
                     <div className="bg-white rounded-lg shadow-sm p-5">
-                        <p className="text-sm text-slate-500 mb-1">Paid So Far</p>
+                        <p className="text-sm text-slate-500 mb-1">{t('paidSoFar')}</p>
                         <p className="text-2xl font-bold text-green-700">{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                        <p className="text-xs text-slate-400 mt-1">{fullyPaidCount} fully paid · {partiallyPaidCount} partially paid</p>
+                        <p className="text-xs text-slate-400 mt-1">{fullyPaidCount} {t('fullyPaidDot')} · {partiallyPaidCount} {t('partialDot')}</p>
                     </div>
                     <div className={`bg-white rounded-lg shadow-sm p-5 ${totalRemaining > 0 ? 'border-l-4 border-red-400' : 'border-l-4 border-green-400'}`}>
-                        <p className="text-sm text-slate-500 mb-1">Remaining Balance</p>
+                        <p className="text-sm text-slate-500 mb-1">{t('remainingBalance')}</p>
                         <p className={`text-2xl font-bold ${totalRemaining > 0 ? 'text-red-700' : 'text-green-700'}`}>{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                        <p className="text-xs text-slate-400 mt-1">{outstandingExpenses.length} expenses with outstanding balance</p>
+                        <p className="text-xs text-slate-400 mt-1">{outstandingExpenses.length} {t('expensesWithBalance')}</p>
                     </div>
                 </div>
 
@@ -509,7 +509,7 @@ export default function ReportsPage() {
                             <PieChart className="w-5 h-5 text-blue-600" />
                             <h2 className="text-xl font-semibold">{t('expensesByCategory')}</h2>
                         </div>
-                        <p className="text-xs text-slate-400 mb-4">Project value (quoted totals)</p>
+                        <p className="text-xs text-slate-400 mb-4">{t('projectValueNote')}</p>
                         {categoryData.length > 0 ? (
                             <ResponsiveContainer width="100%" height={380}>
                                 <RechartsPie>
@@ -531,7 +531,7 @@ export default function ReportsPage() {
                             <BarChart3 className="w-5 h-5 text-blue-600" />
                             <h2 className="text-xl font-semibold">{t('monthlySpending')}</h2>
                         </div>
-                        <p className="text-xs text-slate-400 mb-4">Project value by month (quoted totals)</p>
+                        <p className="text-xs text-slate-400 mb-4">{t('projectValueByMonth')}</p>
                         {monthlyData.length > 0 ? (
                             <ResponsiveContainer width="100%" height={300}>
                                 <BarChart data={monthlyData}>
@@ -551,7 +551,7 @@ export default function ReportsPage() {
                 {/* ── Category Breakdown ── */}
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-1">{t('categoryBreakdown')}</h2>
-                    <p className="text-xs text-slate-400 mb-4">Based on project value (quoted totals)</p>
+                    <p className="text-xs text-slate-400 mb-4">{t('basedOnProjectValue')}</p>
                     <div className="space-y-3">
                         {categoryData.map((cat, index) => {
                             const percentage = totalProjectValue > 0 ? (cat.value / totalProjectValue) * 100 : 0;
@@ -591,9 +591,9 @@ export default function ReportsPage() {
                                         <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('description')}</th>
                                         <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('vendor')}</th>
                                         <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('category')}</th>
-                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">Quoted / Total</th>
-                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">Paid So Far</th>
-                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">Remaining</th>
+                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('quotedTotalHeader')}</th>
+                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('paidSoFar')}</th>
+                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('remainingHeader')}</th>
                                         <th className="text-center py-2 px-2 font-semibold text-slate-700">Status</th>
                                     </tr>
                                 </thead>
@@ -642,13 +642,13 @@ export default function ReportsPage() {
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <XCircle className="w-5 h-5 text-red-600" />
-                        <h2 className="text-xl font-semibold">Outstanding Balances</h2>
+                        <h2 className="text-xl font-semibold">{t('outstandingBalances')}</h2>
                     </div>
                     {outstandingExpenses.length > 0 ? (
                         <div className="space-y-2">
                             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-red-900">Total Remaining Balance:</span>
+                                    <span className="text-sm font-medium text-red-900">{t('totalRemainingBalance')}:</span>
                                     <span className="text-xl font-bold text-red-700">
                                         {currencySymbol}{totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                     </span>
@@ -665,9 +665,9 @@ export default function ReportsPage() {
                                             <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('description')}</th>
                                             <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('vendor')}</th>
                                             <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('category')}</th>
-                                            <th className="text-right py-2 px-2 font-semibold text-slate-700">Quoted Total</th>
-                                            <th className="text-right py-2 px-2 font-semibold text-slate-700">Paid So Far</th>
-                                            <th className="text-right py-2 px-2 font-semibold text-slate-700">Remaining Balance</th>
+                                            <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('quotedTotal2')}</th>
+                                            <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('paidSoFar')}</th>
+                                            <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('remainingBalance2')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
