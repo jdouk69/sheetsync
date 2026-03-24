@@ -523,7 +523,6 @@ export default function ExpensesPage() {
                     </div>
                 )}
             </div>
-            </div>
 
             <PaymentForm
                 open={!!directPaymentExpense}
@@ -531,5 +530,6 @@ export default function ExpensesPage() {
                 onSubmit={(data) => addPaymentMutation.mutate(data)}
                 balanceDue={directPaymentExpense?.totalAmount ? directPaymentExpense.totalAmount - directPaymentExpense.amount : 0}
             />
+        </div>
     );
 }
