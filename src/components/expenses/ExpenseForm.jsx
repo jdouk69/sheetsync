@@ -61,6 +61,9 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
         isPaid: false,
         paidCash: false
     });
+    // In edit mode, derive checkbox state from real payment data
+    const isEditMode = !!expense;
+    const derivedIsPartial = isEditMode && !!expense?.totalAmount;
     const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [reminderDismissed, setReminderDismissed] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -230,20 +233,33 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                 </div>
 
                 {/* Partial Payment Toggle */}
-                <div className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className={`flex items-start gap-3 p-3 rounded-lg border ${isEditMode && derivedIsPartial ? 'bg-slate-50 border-slate-200' : 'bg-amber-50 border-amber-200'}`}>
                     <Checkbox
                         id="isPartialPayment"
-                        checked={isPartialPayment}
-                        onCheckedChange={(checked) => {
+                        checked={isEditMode ? derivedIsPartial : isPartialPayment}
+                        disabled={isEditMode}
+                        onCheckedChange={isEditMode ? undefined : (checked) => {
                             setIsPartialPayment(checked);
                             if (!checked) {
                                 setFormData(prev => ({ ...prev, totalAmount: "", depositAmount: "", paymentStatus: "unpaid" }));
                             }
                         }}
+                        className={isEditMode ? 'opacity-60 cursor-not-allowed' : ''}
                     />
-                    <label htmlFor="isPartialPayment" className="text-sm font-medium text-amber-800 cursor-pointer">
-                        This expense has a deposit / partial payment
-                    </label>
+                    <div>
+                        <label
+                            htmlFor="isPartialPayment"
+                            className={`text-sm font-medium ${isEditMode ? 'text-slate-500 cursor-not-allowed' : 'text-amber-800 cursor-pointer'}`}
+                        >
+                            {isEditMode
+                                ? 'Expense has a deposit / partial payment'
+                                : 'Record this expense with an initial deposit / partial payment'
+                            }
+                        </label>
+                        {isEditMode && (
+                            <p className="text-xs text-slate-400 mt-0.5">Payment status is determined automatically from recorded payments.</p>
+                        )}
+                    </div>
                 </div>
 
                 {isPartialPayment && (
