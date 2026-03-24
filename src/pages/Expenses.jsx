@@ -524,5 +524,12 @@ export default function ExpensesPage() {
                 )}
             </div>
             </div>
+
+            <PaymentForm
+                open={!!directPaymentExpense}
+                onClose={() => setDirectPaymentExpense(null)}
+                onSubmit={(data) => addPaymentMutation.mutate(data)}
+                balanceDue={directPaymentExpense?.totalAmount ? directPaymentExpense.totalAmount - directPaymentExpense.amount : 0}
+            />
     );
 }
