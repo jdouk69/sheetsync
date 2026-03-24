@@ -64,6 +64,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [reminderDismissed, setReminderDismissed] = useState(false);
     const [finalPaymentAmount, setFinalPaymentAmount] = useState("");
+    const [finalPaymentError, setFinalPaymentError] = useState("");
     const [uploading, setUploading] = useState(false);
     const [suggestingCategory, setSuggestingCategory] = useState(false);
     const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
@@ -172,18 +173,34 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // RECORD PAYMENT MODE: update depositAmount + amount and mark fully paid
-        if (isRecordingPayment && finalPaymentAmount) {
-            const finalAmt = parseFloat(finalPaymentAmount);
-            const prevDeposit = parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0;
+        // RECORD PAYMENT MODE: smart payment math
+        if (isRecordingPayment) {
+            const finalAmt = parseFloat(finalPaymentAmount) || 0;
+            const prevPaid = parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0;
+            const total = parseFloat(formData.totalAmount) || null;
+            const newPaidTotal = prevPaid + finalAmt;
+            const remaining = total ? total - prevPaid : null;
+
+            if (finalAmt <= 0) {
+                setFinalPaymentError("Payment amount must be greater than 0.");
+                return;
+            }
+            if (remaining !== null && finalAmt > remaining) {
+                setFinalPaymentError(`Payment cannot exceed remaining balance (${currencySymbol}${remaining.toLocaleString('en-US', {minimumFractionDigits:2})}).`);
+                return;
+            }
+
+            setFinalPaymentError("");
+            const isNowFullyPaid = total ? newPaidTotal >= total : true;
             onSubmit({
                 ...formData,
-                amount: prevDeposit + finalAmt,
-                depositAmount: prevDeposit,
-                paymentStatus: 'fully_paid',
-                isPaid: true,
-                paidAt: new Date().toISOString(),
-                paidBy: currentUser?.email,
+                amount: newPaidTotal,
+                depositAmount: prevPaid,
+                totalAmount: formData.totalAmount, // never overwrite
+                paymentStatus: isNowFullyPaid ? 'fully_paid' : 'deposit_paid',
+                isPaid: isNowFullyPaid,
+                paidAt: isNowFullyPaid ? new Date().toISOString() : formData.paidAt,
+                paidBy: isNowFullyPaid ? currentUser?.email : formData.paidBy,
             });
             return;
         }
@@ -221,14 +238,16 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                     <div className="mt-3">
                         <label className="block text-sm font-medium text-green-800 mb-1">Final Payment Amount *</label>
                         <Input
-                            required
                             type="number"
                             step="0.01"
                             value={finalPaymentAmount}
-                            onChange={(e) => setFinalPaymentAmount(e.target.value)}
+                            onChange={(e) => { setFinalPaymentAmount(e.target.value); setFinalPaymentError(""); }}
                             placeholder={formData.totalAmount ? `${(parseFloat(formData.totalAmount) - (parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0)).toFixed(2)}` : "0.00"}
                             className="bg-white"
                         />
+                        {finalPaymentError && (
+                            <p className="text-xs text-red-600 mt-1">{finalPaymentError}</p>
+                        )}
                     </div>
                 </div>
             )}

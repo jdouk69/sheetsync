@@ -177,6 +177,7 @@ export default function ExpensesPage() {
                 queryClient.invalidateQueries({ queryKey: ['expenses'] });
                 setShowForm(false);
                 setEditingExpense(null);
+                setRecordingPaymentFor(false); // FIX: reset after successful save
                 toast.success("Expense updated successfully");
             } catch (error) {
                 toast.error("Failed to update expense. Please try again.");
