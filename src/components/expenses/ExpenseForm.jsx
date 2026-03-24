@@ -194,9 +194,9 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
             const isNowFullyPaid = total ? newPaidTotal >= total : true;
             onSubmit({
                 ...formData,
-                amount: newPaidTotal,
-                depositAmount: prevPaid,
-                totalAmount: formData.totalAmount, // never overwrite
+                amount: newPaidTotal,                    // total paid so far (accumulates)
+                // depositAmount intentionally NOT set — preserves original deposit
+                totalAmount: formData.totalAmount,       // never overwrite
                 paymentStatus: isNowFullyPaid ? 'fully_paid' : 'deposit_paid',
                 isPaid: isNowFullyPaid,
                 paidAt: isNowFullyPaid ? new Date().toISOString() : formData.paidAt,
