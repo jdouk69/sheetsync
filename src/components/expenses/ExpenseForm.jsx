@@ -17,7 +17,7 @@ import { Sparkles } from "lucide-react";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 
-export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, onRecordPayment }) {
+export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, onRecordPayment, isRecordingPayment }) {
     const { t } = useLanguage();
     const { currentProjectId, currentProject } = useProject();
     const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
@@ -63,6 +63,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     });
     const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [reminderDismissed, setReminderDismissed] = useState(false);
+    const [finalPaymentAmount, setFinalPaymentAmount] = useState("");
     const [uploading, setUploading] = useState(false);
     const [suggestingCategory, setSuggestingCategory] = useState(false);
     const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
@@ -170,6 +171,23 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // RECORD PAYMENT MODE: update depositAmount + amount and mark fully paid
+        if (isRecordingPayment && finalPaymentAmount) {
+            const finalAmt = parseFloat(finalPaymentAmount);
+            const prevDeposit = parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0;
+            onSubmit({
+                ...formData,
+                amount: prevDeposit + finalAmt,
+                depositAmount: prevDeposit,
+                paymentStatus: 'fully_paid',
+                isPaid: true,
+                paidAt: new Date().toISOString(),
+                paidBy: currentUser?.email,
+            });
+            return;
+        }
+
         const totalAmt = isPartialPayment ? parseFloat(formData.totalAmount) : null;
         const depositAmt = isPartialPayment ? parseFloat(formData.depositAmount) : null;
         const paymentStatus = isPartialPayment ? formData.paymentStatus : (formData.isPaid ? "fully_paid" : "unpaid");
@@ -189,8 +207,33 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     return (
         <div ref={formContainerRef} className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            {isRecordingPayment && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-300 rounded-lg">
+                    <p className="text-sm font-semibold text-green-800">Recording Final Payment</p>
+                    <p className="text-xs text-green-700">{formData.vendor} — {formData.description}</p>
+                    {formData.totalAmount && (
+                        <p className="text-xs text-green-700 mt-1">
+                            Total: {currencySymbol}{parseFloat(formData.totalAmount).toLocaleString('en-US', {minimumFractionDigits:2})} &nbsp;|&nbsp;
+                            Deposit paid: {currencySymbol}{(parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0).toLocaleString('en-US', {minimumFractionDigits:2})} &nbsp;|&nbsp;
+                            <strong>Balance due: {currencySymbol}{(parseFloat(formData.totalAmount) - (parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0)).toLocaleString('en-US', {minimumFractionDigits:2})}</strong>
+                        </p>
+                    )}
+                    <div className="mt-3">
+                        <label className="block text-sm font-medium text-green-800 mb-1">Final Payment Amount *</label>
+                        <Input
+                            required
+                            type="number"
+                            step="0.01"
+                            value={finalPaymentAmount}
+                            onChange={(e) => setFinalPaymentAmount(e.target.value)}
+                            placeholder={formData.totalAmount ? `${(parseFloat(formData.totalAmount) - (parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0)).toFixed(2)}` : "0.00"}
+                            className="bg-white"
+                        />
+                    </div>
+                </div>
+            )}
             <h2 className="text-xl font-semibold mb-4">
-                {expense ? t('editExpense') : t('addNewExpense')}
+                {isRecordingPayment ? 'Record Final Payment' : expense ? t('editExpense') : t('addNewExpense')}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">

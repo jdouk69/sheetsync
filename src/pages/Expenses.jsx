@@ -21,6 +21,7 @@ export default function ExpensesPage() {
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
+    const [recordingPaymentFor, setRecordingPaymentFor] = useState(false);
     const [filters, setFilters] = useState({ category: "all", vendor: "all", startDate: null, endDate: null, search: "", unpaidOnly: false });
     const [selectedIds, setSelectedIds] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -432,12 +433,15 @@ export default function ExpensesPage() {
                             onCancel={() => {
                                 setShowForm(false);
                                 setEditingExpense(null);
+                                setRecordingPaymentFor(false);
                             }}
                             currentUser={user}
                             onRecordPayment={(exp) => {
                                 setEditingExpense(exp);
+                                setRecordingPaymentFor(true);
                                 setShowForm(true);
                             }}
+                            isRecordingPayment={recordingPaymentFor}
                         />
                     )}
                 </div>
