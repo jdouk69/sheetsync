@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Filter, Download } from "lucide-react";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import ExpenseCard from "../components/expenses/ExpenseCard";
+import PaymentForm from "../components/expenses/PaymentForm";
 import ExpenseFilters from "../components/expenses/ExpenseFilters";
 import ExpenseSummary from "../components/expenses/ExpenseSummary";
 import ImportExpenses from "../components/expenses/ImportExpenses";
@@ -21,7 +22,7 @@ export default function ExpensesPage() {
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
-    const [recordingPaymentFor, setRecordingPaymentFor] = useState(false);
+    const [directPaymentExpense, setDirectPaymentExpense] = useState(null);
     const [filters, setFilters] = useState({ category: "all", vendor: "all", startDate: null, endDate: null, search: "", unpaidOnly: false });
     const [selectedIds, setSelectedIds] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -128,6 +129,49 @@ export default function ExpensesPage() {
         },
     });
 
+    const addPaymentMutation = useMutation({
+        mutationFn: async (paymentData) => {
+            const expense = directPaymentExpense;
+            if (!expense) return;
+            // Migrate legacy deposit to Payment record if no Payment records exist yet
+            const existingPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
+            if (existingPayments.length === 0 && expense.depositAmount > 0) {
+                await base44.entities.Payment.create({
+                    expenseId: expense.id,
+                    amount: expense.depositAmount,
+                    date: expense.depositPaidAt ? expense.depositPaidAt.split('T')[0] : expense.date,
+                    method: "Deposit",
+                    notes: "Initial deposit",
+                    paidBy: expense.created_by,
+                    paidByName: expense.createdByName || expense.created_by,
+                });
+            }
+            const payment = await base44.entities.Payment.create({
+                ...paymentData,
+                expenseId: expense.id,
+                paidBy: user?.email,
+                paidByName: user?.full_name || user?.email,
+            });
+            const freshPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
+            const newTotalPaid = freshPayments.reduce((sum, p) => sum + p.amount, 0);
+            const isNowFull = expense.totalAmount && newTotalPaid >= expense.totalAmount;
+            await base44.entities.Expense.update(expense.id, {
+                amount: newTotalPaid,
+                paymentStatus: isNowFull ? 'fully_paid' : 'deposit_paid',
+                isPaid: !!isNowFull,
+                paidAt: isNowFull ? new Date().toISOString() : expense.paidAt,
+            });
+            return payment;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['payments'] });
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            setDirectPaymentExpense(null);
+            toast.success("Payment recorded successfully");
+        },
+        onError: () => toast.error("Failed to record payment"),
+    });
+
     const deleteMutation = useMutation({
         mutationFn: (expense) => base44.entities.Expense.delete(expense.id).then(() => expense),
         onMutate: async (expense) => {
@@ -171,17 +215,7 @@ export default function ExpensesPage() {
             updatedByName: user?.full_name || user?.email
         };
         if (editingExpense) {
-            // Use direct entity update for simple field changes
-            try {
-                await base44.entities.Expense.update(editingExpense.id, expenseData);
-                queryClient.invalidateQueries({ queryKey: ['expenses'] });
-                setShowForm(false);
-                setEditingExpense(null);
-                setRecordingPaymentFor(false); // FIX: reset after successful save
-                toast.success("Expense updated successfully");
-            } catch (error) {
-                toast.error("Failed to update expense. Please try again.");
-            }
+            updateMutation.mutate({ id: editingExpense.id, data: expenseData });
         } else {
             createMutation.mutate(expenseData);
         }
@@ -434,15 +468,9 @@ export default function ExpensesPage() {
                             onCancel={() => {
                                 setShowForm(false);
                                 setEditingExpense(null);
-                                setRecordingPaymentFor(false);
                             }}
                             currentUser={user}
-                            onRecordPayment={(exp) => {
-                                setEditingExpense(exp);
-                                setRecordingPaymentFor(true);
-                                setShowForm(true);
-                            }}
-                            isRecordingPayment={recordingPaymentFor}
+                            onOpenPaymentFor={(exp) => setDirectPaymentExpense(exp)}
                         />
                     )}
                 </div>
