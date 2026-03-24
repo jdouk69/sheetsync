@@ -17,7 +17,7 @@ import { Sparkles } from "lucide-react";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 
-export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, onRecordPayment, isRecordingPayment }) {
+export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, onOpenPaymentFor }) {
     const { t } = useLanguage();
     const { currentProjectId, currentProject } = useProject();
     const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
@@ -63,8 +63,6 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     });
     const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [reminderDismissed, setReminderDismissed] = useState(false);
-    const [finalPaymentAmount, setFinalPaymentAmount] = useState("");
-    const [finalPaymentError, setFinalPaymentError] = useState("");
     const [uploading, setUploading] = useState(false);
     const [suggestingCategory, setSuggestingCategory] = useState(false);
     const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
@@ -173,38 +171,6 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // RECORD PAYMENT MODE: smart payment math
-        if (isRecordingPayment) {
-            const finalAmt = parseFloat(finalPaymentAmount) || 0;
-            const prevPaid = parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0;
-            const total = parseFloat(formData.totalAmount) || null;
-            const newPaidTotal = prevPaid + finalAmt;
-            const remaining = total ? total - prevPaid : null;
-
-            if (finalAmt <= 0) {
-                setFinalPaymentError("Payment amount must be greater than 0.");
-                return;
-            }
-            if (remaining !== null && finalAmt > remaining) {
-                setFinalPaymentError(`Payment cannot exceed remaining balance (${currencySymbol}${remaining.toLocaleString('en-US', {minimumFractionDigits:2})}).`);
-                return;
-            }
-
-            setFinalPaymentError("");
-            const isNowFullyPaid = total ? newPaidTotal >= total : true;
-            onSubmit({
-                ...formData,
-                amount: newPaidTotal,                    // total paid so far (accumulates)
-                // depositAmount intentionally NOT set — preserves original deposit
-                totalAmount: formData.totalAmount,       // never overwrite
-                paymentStatus: isNowFullyPaid ? 'fully_paid' : 'deposit_paid',
-                isPaid: isNowFullyPaid,
-                paidAt: isNowFullyPaid ? new Date().toISOString() : formData.paidAt,
-                paidBy: isNowFullyPaid ? currentUser?.email : formData.paidBy,
-            });
-            return;
-        }
-
         const totalAmt = isPartialPayment ? parseFloat(formData.totalAmount) : null;
         const depositAmt = isPartialPayment ? parseFloat(formData.depositAmount) : null;
         const paymentStatus = isPartialPayment ? formData.paymentStatus : (formData.isPaid ? "fully_paid" : "unpaid");
@@ -224,35 +190,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     return (
         <div ref={formContainerRef} className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            {isRecordingPayment && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-300 rounded-lg">
-                    <p className="text-sm font-semibold text-green-800">Recording Final Payment</p>
-                    <p className="text-xs text-green-700">{formData.vendor} — {formData.description}</p>
-                    {formData.totalAmount && (
-                        <p className="text-xs text-green-700 mt-1">
-                            Total: {currencySymbol}{parseFloat(formData.totalAmount).toLocaleString('en-US', {minimumFractionDigits:2})} &nbsp;|&nbsp;
-                            Deposit paid: {currencySymbol}{(parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0).toLocaleString('en-US', {minimumFractionDigits:2})} &nbsp;|&nbsp;
-                            <strong>Balance due: {currencySymbol}{(parseFloat(formData.totalAmount) - (parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0)).toLocaleString('en-US', {minimumFractionDigits:2})}</strong>
-                        </p>
-                    )}
-                    <div className="mt-3">
-                        <label className="block text-sm font-medium text-green-800 mb-1">Final Payment Amount *</label>
-                        <Input
-                            type="number"
-                            step="0.01"
-                            value={finalPaymentAmount}
-                            onChange={(e) => { setFinalPaymentAmount(e.target.value); setFinalPaymentError(""); }}
-                            placeholder={formData.totalAmount ? `${(parseFloat(formData.totalAmount) - (parseFloat(formData.depositAmount) || parseFloat(formData.amount) || 0)).toFixed(2)}` : "0.00"}
-                            className="bg-white"
-                        />
-                        {finalPaymentError && (
-                            <p className="text-xs text-red-600 mt-1">{finalPaymentError}</p>
-                        )}
-                    </div>
-                </div>
-            )}
-            <h2 className="text-xl font-semibold mb-4">
-                {isRecordingPayment ? 'Record Final Payment' : expense ? t('editExpense') : t('addNewExpense')}
+                <h2 className="text-xl font-semibold mb-4">
+                {expense ? t('editExpense') : t('addNewExpense')}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -265,12 +204,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                             onChange={(value) => { setFormData({...formData, vendor: value}); setReminderDismissed(false); }}
                             existingVendors={existingVendors}
                         />
-                        {!expense && onRecordPayment && !reminderDismissed && (
+                        {!expense && onOpenPaymentFor && !reminderDismissed && (
                             <VendorPaymentReminder
                                 vendorName={formData.vendor}
                                 projectExpenses={projectExpenses}
                                 currency={currentProject?.currency}
-                                onSelectExpense={(exp) => onRecordPayment(exp)}
+                                onSelectExpense={(exp) => onOpenPaymentFor(exp)}
                                 onDismiss={() => setReminderDismissed(true)}
                             />
                         )}
