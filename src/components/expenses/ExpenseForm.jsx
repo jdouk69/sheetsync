@@ -63,6 +63,13 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     });
     // In edit mode, derive checkbox state from real payment data
     const isEditMode = !!expense;
+    // Hide deposit checkbox in create mode when vendor already has an open/partial expense.
+    // Reuses projectExpenses (already computed above) + formData.vendor.
+    const hasOpenVendorExpense = !isEditMode && !!formData.vendor && projectExpenses.some(exp =>
+        exp.vendor?.toLowerCase().trim() === formData.vendor?.toLowerCase().trim() &&
+        (exp.paymentStatus === 'deposit_paid' ||
+            (exp.totalAmount && (exp.amount || 0) < exp.totalAmount))
+    );
     // Derive partial state from actual payment status, not just totalAmount existence.
     // totalAmount = quoted total, amount = paid so far.
     // Only 'deposit_paid' means partial — unpaid and fully_paid should show unchecked.
@@ -240,7 +247,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                     </div>
                 </div>
 
-                {/* Partial Payment Toggle */}
+                {/* Partial Payment Toggle — hidden in create mode when vendor has an open partial expense */}
+                {(isEditMode || !hasOpenVendorExpense) && (
                 <div className={`flex items-start gap-3 p-3 rounded-lg border ${isEditMode && derivedIsPartial ? 'bg-slate-50 border-slate-200' : 'bg-amber-50 border-amber-200'}`}>
                     <Checkbox
                         id="isPartialPayment"
@@ -269,6 +277,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                         )}
                     </div>
                 </div>
+                )}
 
                 {isPartialPayment && (
                     <div className="grid md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
