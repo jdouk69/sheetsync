@@ -370,7 +370,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
             </Dialog>
 
             <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
-                <DialogContent className="max-w-5xl">
+                <DialogContent className="max-w-3xl w-full">
                     <DialogHeader>
                         <DialogTitle className="flex items-center justify-between">
                             <span>Photo</span>
@@ -391,11 +391,13 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                             </Button>
                         </DialogTitle>
                     </DialogHeader>
-                    <img
-                        src={selectedPhoto}
-                        alt="Full size"
-                        className="w-full h-auto"
-                    />
+                    <div className="overflow-auto max-h-[70vh] flex items-center justify-center">
+                        <img
+                            src={selectedPhoto}
+                            alt="Full size"
+                            className="max-w-full max-h-[65vh] object-contain rounded-lg"
+                        />
+                    </div>
                 </DialogContent>
             </Dialog>
         </>
