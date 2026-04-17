@@ -79,7 +79,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue, editP
                 <DialogHeader>
                     <DialogTitle>{editPayment ? t('editPayment') || 'Edit Payment' : t('recordPayment')}</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+                <form onSubmit={handleSubmit} className="space-y-4 mt-2 overflow-y-auto max-h-[70vh] pr-1">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">{t('paymentAmount')} *</label>
                         <Input
