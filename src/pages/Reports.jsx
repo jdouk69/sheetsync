@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, PieChart, BarChart3, FileText, Filter, Search, Calendar, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Download, PieChart, BarChart3, FileText, Filter, Search, Calendar, CheckCircle, XCircle, Clock, RefreshCw } from "lucide-react";
 import { BarChart, Bar, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, endOfDay } from "date-fns";
 import { el as elLocale } from 'date-fns/locale';
@@ -74,13 +74,14 @@ export default function ReportsPage() {
         checkAuth();
     }, []);
 
-    const { data: allExpenses = [] } = useQuery({
+    const { data: allExpenses = [], refetch: refetchExpenses, isFetching } = useQuery({
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
             if (!currentProjectId || !user) return [];
             return base44.entities.Expense.filter({ projectId: currentProjectId }, '-date');
         },
         enabled: !!currentProjectId && !!user,
+        staleTime: 0,
     });
 
     const [filters, setFilters] = useState({
@@ -405,6 +406,9 @@ export default function ReportsPage() {
                         <p className="text-slate-600 mt-1">{t('visualBreakdown')}</p>
                     </div>
                     <div className="flex gap-2">
+                        <Button onClick={() => refetchExpenses()} variant="outline" disabled={isFetching} title="Refresh data">
+                            <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+                        </Button>
                         <Button onClick={handleExportCSV} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
                             <FileText className="w-4 h-4 mr-2" />
                             {t('exportCsv')}
