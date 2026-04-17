@@ -283,8 +283,12 @@ export default function ExpensesPage() {
     // Reset to page 1 when filters change
     React.useEffect(() => { setCurrentPage(1); }, [filters, currentProjectId]);
 
-    // Scroll to top when page changes
-    React.useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [currentPage]);
+    // Scroll to top of expense list when page changes
+    React.useEffect(() => {
+        if (formRef.current) {
+            formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [currentPage]);
 
     const filteredExpenses = expenses
         .filter(expense => {
