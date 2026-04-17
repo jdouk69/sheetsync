@@ -27,7 +27,7 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }
                             <CreditCard className="w-3.5 h-3.5 text-slate-400" />
                             <span className="font-semibold text-slate-800">€{payment.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             <span className="text-slate-500">·</span>
-                            <span className="text-slate-600">{format(new Date(payment.date), "dd MMM yyyy")}</span>
+                            <span className="text-slate-600">{format(new Date(payment.date + 'T00:00:00'), "dd MMM yyyy")}</span>
                             <span className="text-slate-500">·</span>
                             <span className="text-slate-600">{t(METHOD_KEYS[payment.method] || 'other')}</span>
                             {payment.referenceNumber && (
