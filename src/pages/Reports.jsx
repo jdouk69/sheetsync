@@ -400,7 +400,7 @@ export default function ReportsPage() {
                 </div>
 
                 {/* ── Summary KPIs ── */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className={`grid grid-cols-1 gap-4 mb-6 ${totalOverpaid > 0 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
                     <div className="bg-white rounded-lg shadow-sm p-5">
                         <p className="text-sm text-slate-500 mb-1">{t('totalProjectValue')}</p>
                         <p className="text-2xl font-bold text-slate-900">{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalProjectValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
