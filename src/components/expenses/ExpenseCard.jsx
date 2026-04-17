@@ -79,16 +79,18 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
             const freshPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
             const newTotalPaid = freshPayments.reduce((sum, p) => sum + p.amount, 0);
 
-            if (expense.totalAmount && newTotalPaid >= expense.totalAmount) {
+            // Always update expense.amount to reflect total paid, regardless of totalAmount
+            if (expense.totalAmount) {
+                const newStatus = newTotalPaid >= expense.totalAmount ? 'fully_paid' : 'deposit_paid';
                 await base44.entities.Expense.update(expense.id, {
-                    paymentStatus: 'fully_paid',
-                    isPaid: true,
-                    paidAt: new Date().toISOString(),
+                    paymentStatus: newStatus,
+                    isPaid: newStatus === 'fully_paid',
+                    paidAt: newStatus === 'fully_paid' ? new Date().toISOString() : null,
                     amount: newTotalPaid,
                 });
-            } else if (expense.totalAmount) {
+            } else {
+                // No totalAmount — still update amount so Reports reflects latest paid
                 await base44.entities.Expense.update(expense.id, {
-                    paymentStatus: 'deposit_paid',
                     amount: newTotalPaid,
                 });
             }
