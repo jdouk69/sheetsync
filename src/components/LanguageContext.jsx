@@ -210,6 +210,7 @@ const translations = {
         enablePaymentTracking: "Enable payment tracking",
         legacyAmountWillBeMigrated: "Existing amount ({amount}) will be recorded as the first payment",
         totalQuotedAmount: "Total Quoted Amount",
+        overpayment: "Overpayment",
         },
     el: {
         // Layout
@@ -420,6 +421,7 @@ const translations = {
         enablePaymentTracking: "Ενεργοποίηση παρακολούθησης πληρωμών",
         legacyAmountWillBeMigrated: "Το υπάρχον ποσό ({amount}) θα καταχωρηθεί ως η πρώτη πληρωμή",
         totalQuotedAmount: "Συνολική Προσφερόμενη Αξία",
+        overpayment: "Υπερπληρωμή",
         }
 };
 

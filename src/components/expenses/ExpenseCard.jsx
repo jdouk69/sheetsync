@@ -228,9 +228,14 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                             <div className="text-sm text-green-700 font-medium">
                                                 {t('totalPaid')}: {currencySymbol}{totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </div>
-                                            {!isFullyPaid && balanceDue > 0 && (
+                                            {balanceDue > 0 && (
                                                 <div className="text-sm text-red-600 font-semibold">
                                                     {t('balanceDue')}: {currencySymbol}{balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </div>
+                                            )}
+                                            {balanceDue < 0 && (
+                                                <div className="text-sm text-amber-600 font-semibold">
+                                                    {t('overpayment')}: {currencySymbol}{Math.abs(balanceDue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                 </div>
                                             )}
                                         </div>
