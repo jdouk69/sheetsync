@@ -21,8 +21,8 @@ const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr
 const expenseValue = (exp) => exp.totalAmount || exp.amount;
 // paidSoFar = how much has actually been paid (always expense.amount)
 const paidSoFar = (exp) => exp.amount || 0;
-// remainingBalance = what is still owed
-const remainingBalance = (exp) => exp.totalAmount ? Math.max(exp.totalAmount - (exp.amount || 0), 0) : 0;
+// remainingBalance = what is still owed (can be negative = overpayment)
+const remainingBalance = (exp) => exp.totalAmount ? exp.totalAmount - (exp.amount || 0) : 0;
 // paymentLabel for display
 const paymentLabel = (exp) => {
     if (exp.paymentStatus === 'fully_paid' || exp.isPaid) return 'Fully Paid';
@@ -128,10 +128,16 @@ export default function ReportsPage() {
     // ─── Summary Metrics ─────────────────────────────────────────────────────
     const totalProjectValue = expenses.reduce((sum, exp) => sum + expenseValue(exp), 0);
     const totalPaid = expenses.reduce((sum, exp) => sum + paidSoFar(exp), 0);
-    const totalRemaining = expenses.reduce((sum, exp) => sum + remainingBalance(exp), 0);
+
     const fullyPaidCount = expenses.filter(exp => exp.paymentStatus === 'fully_paid' || exp.isPaid).length;
     const partiallyPaidCount = expenses.filter(exp => exp.paymentStatus === 'deposit_paid').length;
     const unpaidCount = expenses.filter(exp => exp.paymentStatus === 'unpaid' || (!exp.paymentStatus && !exp.isPaid && exp.paymentStatus !== 'deposit_paid')).length;
+
+    // Overpayments: expenses where paid > quoted total
+    const overpaidExpenses = expenses.filter(exp => exp.totalAmount && remainingBalance(exp) < 0);
+    const totalOverpaid = overpaidExpenses.reduce((sum, exp) => sum + Math.abs(remainingBalance(exp)), 0);
+    // For remaining balance summary, clamp at 0 so overpayments don't reduce the total
+    const totalRemaining = expenses.reduce((sum, exp) => sum + Math.max(remainingBalance(exp), 0), 0);
 
     // ─── Chart Data — uses expenseValue (project cost, not just cash paid) ──
     const categoryData = expenses.reduce((acc, exp) => {
@@ -153,6 +159,7 @@ export default function ReportsPage() {
 
     // ─── Expenses with outstanding balance ────────────────────────────────────
     const outstandingExpenses = expenses.filter(exp => remainingBalance(exp) > 0);
+
 
     // ─── PDF Export ──────────────────────────────────────────────────────────
     const handleExportPDF = async () => {
@@ -258,7 +265,7 @@ export default function ReportsPage() {
                             <td>${exp.vendor || '-'}</td>
                             <td class="amount-cell">${currencySymbol}${expenseValue(exp).toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
                             <td class="amount-cell">${currencySymbol}${paidSoFar(exp).toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
-                            <td class="amount-cell">${remainingBalance(exp) > 0 ? currencySymbol + remainingBalance(exp).toLocaleString(locale, { minimumFractionDigits: 2 }) : '-'}</td>
+                            <td class="amount-cell" style="${remainingBalance(exp) < 0 ? 'color:#d97706;' : remainingBalance(exp) > 0 ? 'color:#b91c1c;' : ''}">${remainingBalance(exp) > 0 ? currencySymbol + remainingBalance(exp).toLocaleString(locale, { minimumFractionDigits: 2 }) : remainingBalance(exp) < 0 ? 'Overpayment ' + currencySymbol + Math.abs(remainingBalance(exp)).toLocaleString(locale, { minimumFractionDigits: 2 }) : '-'}</td>
                             <td class="${statusClass}">${label}</td>
                             <td>${exp.paidCash ? '✓' : '-'}</td>
                         </tr>`;
@@ -409,6 +416,13 @@ export default function ReportsPage() {
                         <p className={`text-2xl font-bold ${totalRemaining > 0 ? 'text-red-700' : 'text-green-700'}`}>{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                         <p className="text-xs text-slate-400 mt-1">{outstandingExpenses.length} {t('expensesWithBalance')}</p>
                     </div>
+                    {totalOverpaid > 0 && (
+                        <div className="bg-white rounded-lg shadow-sm p-5 border-l-4 border-amber-400">
+                            <p className="text-sm text-slate-500 mb-1">{t('overpayment')}</p>
+                            <p className="text-2xl font-bold text-amber-600">{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalOverpaid.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                            <p className="text-xs text-slate-400 mt-1">{overpaidExpenses.length} overpaid expense{overpaidExpenses.length !== 1 ? 's' : ''}</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* ── Filters ── */}
@@ -620,6 +634,8 @@ export default function ReportsPage() {
                                                 <td className="py-2 px-2 text-right font-medium">
                                                     {rem > 0
                                                         ? <span className="text-red-600">{currencySymbol}{rem.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                                                        : rem < 0
+                                                        ? <span className="text-amber-600 font-semibold">{t('overpayment')} {currencySymbol}{Math.abs(rem).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                                                         : <span className="text-slate-300">—</span>}
                                                 </td>
                                                 <td className="py-2 px-2 text-center">
@@ -632,6 +648,46 @@ export default function ReportsPage() {
                                             </tr>
                                         );
                                     })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── Overpaid Expenses ── */}
+                {overpaidExpenses.length > 0 && (
+                    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <div className="flex items-center gap-2 mb-4">
+                            <CheckCircle className="w-5 h-5 text-amber-500" />
+                            <h2 className="text-xl font-semibold">{t('overpayment')}</h2>
+                        </div>
+                        <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg flex justify-between items-center">
+                            <span className="text-sm font-medium text-amber-900">Total overpaid across {overpaidExpenses.length} expense{overpaidExpenses.length !== 1 ? 's' : ''}:</span>
+                            <span className="text-xl font-bold text-amber-600">{currencySymbol}{totalOverpaid.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b-2 border-slate-200">
+                                        <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('date')}</th>
+                                        <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('description')}</th>
+                                        <th className="text-left py-2 px-2 font-semibold text-slate-700">{t('vendor')}</th>
+                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('quotedTotal2')}</th>
+                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('paidSoFar')}</th>
+                                        <th className="text-right py-2 px-2 font-semibold text-slate-700">{t('overpayment')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {overpaidExpenses.map(exp => (
+                                        <tr key={exp.id} className="border-b border-slate-100 hover:bg-amber-50">
+                                            <td className="py-3 px-2 text-slate-600">{format(new Date(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}</td>
+                                            <td className="py-3 px-2 font-medium text-slate-900">{exp.description}</td>
+                                            <td className="py-3 px-2 text-slate-600">{exp.vendor || '-'}</td>
+                                            <td className="py-3 px-2 text-right font-semibold text-slate-900">{currencySymbol}{expenseValue(exp).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                                            <td className="py-3 px-2 text-right text-green-700 font-medium">{currencySymbol}{paidSoFar(exp).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                                            <td className="py-3 px-2 text-right font-bold text-amber-600">{currencySymbol}{Math.abs(remainingBalance(exp)).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
