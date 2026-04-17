@@ -45,7 +45,7 @@ function LayoutContent({ children, currentPageName }) {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 overflow-y-auto" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <div className="h-screen bg-slate-50 flex flex-col overflow-hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <style>{`
             html, body { overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
             button, [role="tab"], nav, [role="navigation"] { user-select: none; -webkit-user-select: none; }
@@ -160,7 +160,7 @@ function LayoutContent({ children, currentPageName }) {
                 </div>
             </nav>
 
-            <main className="pb-16 md:pb-0">
+            <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentPageName}
