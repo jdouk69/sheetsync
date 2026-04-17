@@ -1,0 +1,68 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "expenseId": {
+      "type": "string",
+      "description": "ID of the associated expense - SECURITY: Immutable after creation"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Payment amount in project currency"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date payment was made"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "Bank Transfer",
+        "Credit Card",
+        "Cash",
+        "Check",
+        "Deposit",
+        "Other"
+      ],
+      "description": "Payment method"
+    },
+    "referenceNumber": {
+      "type": "string",
+      "description": "Reference number, check number, or transaction ID"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about this payment"
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Receipt or proof of payment photo URLs"
+    },
+    "paidBy": {
+      "type": "string",
+      "description": "Email of the user who recorded the payment - SECURITY: Auto-set, not user-editable"
+    },
+    "paidByName": {
+      "type": "string",
+      "description": "Full name of the user who recorded the payment - SECURITY: Auto-set, not user-editable"
+    }
+  },
+  "required": [
+    "expenseId",
+    "amount",
+    "date",
+    "method"
+  ],
+  "x-security": {
+    "notes": [
+      "expenseId must be set on creation and cannot be changed",
+      "Access should inherit from parent Expense > Project chain",
+      "paidBy and paidByName should be auto-set from authenticated user",
+      "Users can only see/manage payments for expenses they have access to"
+    ]
+  }
+}

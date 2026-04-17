@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { format } from "date-fns";
-import { CreditCard, Trash2, Pencil } from "lucide-react";
+import { CreditCard, Trash2, Pencil, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLanguage } from "../LanguageContext";
 
 const METHOD_KEYS = {
@@ -15,6 +16,7 @@ const METHOD_KEYS = {
 
 export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }) {
     const { t } = useLanguage();
+    const [viewingPhotos, setViewingPhotos] = useState(null);
     if (!payments || payments.length === 0) return null;
 
     return (
@@ -37,31 +39,57 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }
                                 </>
                             )}
                         </div>
-                        {canDelete && (
-                            <div className="flex items-center gap-1">
-                                {onEdit && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 w-6 p-0 text-slate-400 hover:text-blue-600"
-                                        onClick={(e) => { e.stopPropagation(); onEdit(payment); }}
-                                    >
-                                        <Pencil className="w-3 h-3" />
-                                    </Button>
-                                )}
+                        <div className="flex items-center gap-1">
+                            {payment.photos?.length > 0 && (
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
-                                    onClick={(e) => { e.stopPropagation(); onDelete(payment); }}
+                                    className="h-6 w-6 p-0 text-slate-400 hover:text-blue-600"
+                                    onClick={(e) => { e.stopPropagation(); setViewingPhotos(payment.photos); }}
+                                    title="View receipts"
                                 >
-                                    <Trash2 className="w-3 h-3" />
+                                    <ImageIcon className="w-3 h-3" />
                                 </Button>
-                            </div>
-                        )}
+                            )}
+                            {canDelete && (
+                                <>
+                                    {onEdit && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 w-6 p-0 text-slate-400 hover:text-blue-600"
+                                            onClick={(e) => { e.stopPropagation(); onEdit(payment); }}
+                                        >
+                                            <Pencil className="w-3 h-3" />
+                                        </Button>
+                                    )}
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
+                                        onClick={(e) => { e.stopPropagation(); onDelete(payment); }}
+                                    >
+                                        <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                </>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
         </div>
+
+        <Dialog open={!!viewingPhotos} onOpenChange={() => setViewingPhotos(null)}>
+            <DialogContent className="max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Payment Receipts</DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-3 max-h-96 overflow-auto">
+                    {viewingPhotos?.map((photo, i) => (
+                        <img key={i} src={photo} alt={`Receipt ${i + 1}`} className="w-full h-40 object-cover rounded-lg cursor-pointer hover:opacity-90" onClick={() => window.open(photo, '_blank')} />
+                    ))}
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
