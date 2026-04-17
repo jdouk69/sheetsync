@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
@@ -115,6 +115,10 @@ export default function ReportsPage() {
                 statusMatch = exp.paymentStatus === 'deposit_paid';
             } else if (filters.paymentStatus === 'unpaid') {
                 statusMatch = exp.paymentStatus === 'unpaid' || (!exp.paymentStatus && !exp.isPaid);
+            } else if (filters.paymentStatus === 'outstanding') {
+                statusMatch = remainingBalance(exp) > 0;
+            } else if (filters.paymentStatus === 'overpaid') {
+                statusMatch = exp.totalAmount && remainingBalance(exp) < 0;
             }
 
             return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch && statusMatch && userMatch;
@@ -156,6 +160,19 @@ export default function ReportsPage() {
         else acc.push({ name: monthYear, amount: val });
         return acc;
     }, []).sort((a, b) => new Date(a.name) - new Date(b.name));
+
+    // ─── Refs for scroll-to ───────────────────────────────────────────────────
+    const outstandingRef = useRef(null);
+    const overpaidRef = useRef(null);
+    const filtersRef = useRef(null);
+
+    const scrollAndFilter = (status) => {
+        setFilters(f => ({ ...f, paymentStatus: status }));
+        setTimeout(() => {
+            const target = status === 'overpaid' ? overpaidRef.current : outstandingRef.current;
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+    };
 
     // ─── Expenses with outstanding balance ────────────────────────────────────
     const outstandingExpenses = expenses.filter(exp => remainingBalance(exp) > 0);
@@ -411,16 +428,28 @@ export default function ReportsPage() {
                         <p className="text-2xl font-bold text-green-700">{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                         <p className="text-xs text-slate-400 mt-1">{fullyPaidCount} {t('fullyPaidDot')} · {partiallyPaidCount} {t('partialDot')}</p>
                     </div>
-                    <div className={`bg-white rounded-lg shadow-sm p-5 ${totalRemaining > 0 ? 'border-l-4 border-red-400' : 'border-l-4 border-green-400'}`}>
+                    <div
+                        className={`bg-white rounded-lg shadow-sm p-5 cursor-pointer transition-all hover:shadow-md ${totalRemaining > 0 ? 'border-l-4 border-red-400' : 'border-l-4 border-green-400'} ${filters.paymentStatus === 'outstanding' ? 'ring-2 ring-red-400' : ''}`}
+                        onClick={() => filters.paymentStatus === 'outstanding' ? setFilters(f => ({...f, paymentStatus: 'all'})) : scrollAndFilter('outstanding')}
+                        title="Click to filter by outstanding balances"
+                    >
                         <p className="text-sm text-slate-500 mb-1">{t('remainingBalance')}</p>
                         <p className={`text-2xl font-bold ${totalRemaining > 0 ? 'text-red-700' : 'text-green-700'}`}>{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                         <p className="text-xs text-slate-400 mt-1">{outstandingExpenses.length} {t('expensesWithBalance')}</p>
+                        {filters.paymentStatus === 'outstanding' && <p className="text-xs text-red-500 font-medium mt-1">● Filtering active — click to clear</p>}
+                        {filters.paymentStatus !== 'outstanding' && totalRemaining > 0 && <p className="text-xs text-slate-400 mt-1">↓ Click to view details</p>}
                     </div>
                     {totalOverpaid > 0 && (
-                        <div className="bg-white rounded-lg shadow-sm p-5 border-l-4 border-amber-400">
+                        <div
+                            className={`bg-white rounded-lg shadow-sm p-5 border-l-4 border-amber-400 cursor-pointer transition-all hover:shadow-md ${filters.paymentStatus === 'overpaid' ? 'ring-2 ring-amber-400' : ''}`}
+                            onClick={() => filters.paymentStatus === 'overpaid' ? setFilters(f => ({...f, paymentStatus: 'all'})) : scrollAndFilter('overpaid')}
+                            title="Click to filter by overpaid expenses"
+                        >
                             <p className="text-sm text-slate-500 mb-1">{t('overpayment')}</p>
                             <p className="text-2xl font-bold text-amber-600">{CURRENCY_SYMBOLS[currentProject?.currency] || '€'}{totalOverpaid.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                             <p className="text-xs text-slate-400 mt-1">{overpaidExpenses.length} overpaid expense{overpaidExpenses.length !== 1 ? 's' : ''}</p>
+                            {filters.paymentStatus === 'overpaid' && <p className="text-xs text-amber-500 font-medium mt-1">● Filtering active — click to clear</p>}
+                            {filters.paymentStatus !== 'overpaid' && <p className="text-xs text-slate-400 mt-1">↓ Click to view details</p>}
                         </div>
                     )}
                 </div>
@@ -487,10 +516,12 @@ export default function ReportsPage() {
                             <Select value={filters.paymentStatus} onValueChange={(value) => setFilters({...filters, paymentStatus: value})}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">{t('all')}</SelectItem>
-                                    <SelectItem value="fully_paid">Fully Paid</SelectItem>
-                                    <SelectItem value="deposit_paid">Partially Paid</SelectItem>
-                                    <SelectItem value="unpaid">{t('unpaid')}</SelectItem>
+                                   <SelectItem value="all">{t('all')}</SelectItem>
+                                   <SelectItem value="fully_paid">Fully Paid</SelectItem>
+                                   <SelectItem value="deposit_paid">Partially Paid</SelectItem>
+                                   <SelectItem value="unpaid">{t('unpaid')}</SelectItem>
+                                   <SelectItem value="outstanding">Outstanding Balance</SelectItem>
+                                   <SelectItem value="overpaid">Overpaid</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -656,7 +687,7 @@ export default function ReportsPage() {
 
                 {/* ── Overpaid Expenses ── */}
                 {overpaidExpenses.length > 0 && (
-                    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div ref={overpaidRef} className="bg-white rounded-lg shadow-sm p-6 mb-6">
                         <div className="flex items-center gap-2 mb-4">
                             <CheckCircle className="w-5 h-5 text-amber-500" />
                             <h2 className="text-xl font-semibold">{t('overpayment')}</h2>
@@ -695,7 +726,7 @@ export default function ReportsPage() {
                 )}
 
                 {/* ── Outstanding Balances ── */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div ref={outstandingRef} className="bg-white rounded-lg shadow-sm p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <XCircle className="w-5 h-5 text-red-600" />
                         <h2 className="text-xl font-semibold">{t('outstandingBalances')}</h2>
