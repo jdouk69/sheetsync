@@ -313,7 +313,7 @@ export default function ExpensesPage() {
 
             return categoryMatch && vendorMatch && startDateMatch && endDateMatch && searchMatch && unpaidMatch;
         })
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+        .sort((a, b) => new Date(b.updated_date || b.created_date) - new Date(a.updated_date || a.created_date));
 
     const totalPages = Math.ceil(filteredExpenses.length / PAGE_SIZE);
     const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
