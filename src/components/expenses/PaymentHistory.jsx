@@ -20,6 +20,7 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }
     if (!payments || payments.length === 0) return null;
 
     return (
+        <>
         <div className="mt-3 border-t border-slate-100 pt-3">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{t('paymentHistory')}</p>
             <div className="space-y-1.5">
@@ -91,5 +92,6 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }
                 </div>
             </DialogContent>
         </Dialog>
+        </>
     );
 }
