@@ -55,7 +55,9 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const addPaymentMutation = useMutation({
         mutationFn: async (paymentData) => {
             // If this is the first payment and there's a legacy deposit, migrate it to a Payment record first
-            if (payments.length === 0 && expense.depositAmount > 0) {
+            // Use a fresh live DB fetch (not the React Query cache) to avoid duplicate migration on early render
+            const existingPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
+            if (existingPayments.length === 0 && expense.depositAmount > 0) {
                 await base44.entities.Payment.create({
                     expenseId: expense.id,
                     amount: expense.depositAmount,
