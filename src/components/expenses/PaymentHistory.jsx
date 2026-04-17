@@ -14,7 +14,7 @@ const METHOD_KEYS = {
     "Other": "other",
 };
 
-export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }) {
+export default function PaymentHistory({ payments, canDelete, onDelete, onEdit, currencySymbol = '€' }) {
     const { t } = useLanguage();
     const [viewingPhotos, setViewingPhotos] = useState(null);
     if (!payments || payments.length === 0) return null;
@@ -28,7 +28,7 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }
                     <div key={payment.id} className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2 text-sm">
                         <div className="flex items-center gap-2">
                             <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-                            <span className="font-semibold text-slate-800">€{payment.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="font-semibold text-slate-800">{currencySymbol}{payment.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             <span className="text-slate-500">·</span>
                             <span className="text-slate-600">{format(new Date(payment.date + 'T00:00:00'), "dd MMM yyyy")}</span>
                             <span className="text-slate-500">·</span>
@@ -83,7 +83,7 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit }
         <Dialog open={!!viewingPhotos} onOpenChange={() => setViewingPhotos(null)}>
             <DialogContent className="max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>Payment Receipts</DialogTitle>
+                    <DialogTitle>{t('paymentReceipts')}</DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-3 max-h-96 overflow-auto">
                     {viewingPhotos?.map((photo, i) => (

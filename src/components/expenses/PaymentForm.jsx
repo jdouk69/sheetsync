@@ -77,7 +77,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue, editP
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>{editPayment ? t('editPayment') || 'Edit Payment' : t('recordPayment')}</DialogTitle>
+                    <DialogTitle>{editPayment ? t('editPayment') : t('recordPayment')}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-2 overflow-y-auto max-h-[70vh] pr-1">
                     <div>
@@ -147,7 +147,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue, editP
                                             <button
                                                 type="button"
                                                 onClick={() => removePhoto(index)}
-                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                             >
                                                 <X className="w-3 h-3" />
                                             </button>
@@ -173,7 +173,7 @@ export default function PaymentForm({ open, onClose, onSubmit, balanceDue, editP
                     </div>
                     <div className="flex gap-3 pt-2">
                         <Button type="button" variant="outline" onClick={onClose} className="flex-1">{t('cancel')}</Button>
-                        <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">{editPayment ? t('save') || 'Save' : t('recordPayment')}</Button>
+                        <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">{editPayment ? t('save') : t('recordPayment')}</Button>
                     </div>
                 </form>
             </DialogContent>

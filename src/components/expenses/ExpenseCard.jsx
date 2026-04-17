@@ -132,7 +132,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const deletePaymentMutation = useMutation({
         mutationFn: async (payment) => {
             await base44.entities.Payment.delete(payment.id);
-            const newTotalPaid = totalPaid - payment.amount;
+            const freshPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
+            const newTotalPaid = freshPayments.reduce((sum, p) => sum + p.amount, 0);
             let newStatus = 'unpaid';
             if (expense.totalAmount) {
                 if (newTotalPaid >= expense.totalAmount) newStatus = 'fully_paid';
@@ -141,7 +142,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
             await base44.entities.Expense.update(expense.id, {
                 paymentStatus: newStatus,
                 isPaid: newStatus === 'fully_paid',
-                amount: newTotalPaid || expense.depositAmount || expense.amount,
+                amount: newTotalPaid,
             });
         },
         onSuccess: () => {
@@ -265,6 +266,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 canDelete={canEdit}
                                 onDelete={(payment) => deletePaymentMutation.mutate(payment)}
                                 onEdit={(payment) => { setEditingPayment(payment); setShowPaymentForm(true); }}
+                                currencySymbol={currencySymbol}
                             />
 
                             {expense.totalAmount && !isFullyPaid && canEdit && (
