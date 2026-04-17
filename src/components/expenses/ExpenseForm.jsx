@@ -44,6 +44,13 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
         queryFn: () => base44.entities.Expense.list(),
     });
 
+    // Read-only: needed to determine if this is a true legacy expense (no Payment records yet)
+    const { data: existingPayments = [] } = useQuery({
+        queryKey: ['payments', expense?.id],
+        queryFn: () => base44.entities.Payment.filter({ expenseId: expense.id }, 'date'),
+        enabled: !!expense?.id,
+    });
+
     const projectExpenses = allExpenses.filter(exp => exp.projectId === currentProjectId);
     const existingCategories = [...new Set(projectExpenses.map(exp => exp.category).filter(Boolean))];
     const existingVendors = [...new Set(projectExpenses.map(exp => exp.vendor).filter(Boolean))];
@@ -79,6 +86,9 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
         expense?.paymentStatus === 'deposit_paid' ||
         (total > 0 && paid > 0 && paid < total)
     );
+
+    // True legacy expense: in edit mode, has no totalAmount, and has no Payment records yet
+    const isLegacyUpgradeable = isEditMode && !expense?.totalAmount && existingPayments.length === 0;
     const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [reminderDismissed, setReminderDismissed] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -189,6 +199,21 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Legacy upgrade path: amount stays as-is, totalAmount comes from form, depositAmount auto-derived
+        if (isLegacyUpgradeable && isPartialPayment) {
+            const totalAmt = parseFloat(formData.totalAmount);
+            onSubmit({
+                ...formData,
+                amount: parseFloat(expense.amount), // unchanged — running total paid so far
+                totalAmount: totalAmt,
+                depositAmount: parseFloat(expense.amount), // auto-derived from old amount
+                paymentStatus: 'deposit_paid',
+                isPaid: false,
+                migrateLegacyAmount: true,
+            });
+            return;
+        }
+
         const totalAmt = isPartialPayment ? parseFloat(formData.totalAmount) : null;
         const depositAmt = isPartialPayment ? parseFloat(formData.depositAmount) : null;
         const paymentStatus = isPartialPayment ? formData.paymentStatus : (formData.isPaid ? "fully_paid" : "unpaid");
@@ -234,7 +259,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            {isPartialPayment ? 'Total Quoted Amount *' : `${t('amount')} *`}
+                            {isPartialPayment ? `${t('totalQuotedAmount')} *` : `${t('amount')} *`}
                         </label>
                         <Input
                             required
@@ -249,30 +274,45 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
                 {/* Partial Payment Toggle — hidden in create mode when vendor has an open partial expense */}
                 {(isEditMode || !hasOpenVendorExpense) && (
-                <div className={`flex items-start gap-3 p-3 rounded-lg border ${isEditMode && derivedIsPartial ? 'bg-slate-50 border-slate-200' : 'bg-amber-50 border-amber-200'}`}>
+                <div className={`flex items-start gap-3 p-3 rounded-lg border ${
+                    isLegacyUpgradeable ? 'bg-amber-50 border-amber-200' :
+                    isEditMode && derivedIsPartial ? 'bg-slate-50 border-slate-200' :
+                    'bg-amber-50 border-amber-200'
+                }`}>
                     <Checkbox
                         id="isPartialPayment"
-                        checked={isEditMode ? derivedIsPartial : isPartialPayment}
-                        disabled={isEditMode}
-                        onCheckedChange={isEditMode ? undefined : (checked) => {
+                        checked={isEditMode && !isLegacyUpgradeable ? derivedIsPartial : isPartialPayment}
+                        disabled={isEditMode && !isLegacyUpgradeable}
+                        onCheckedChange={(isEditMode && !isLegacyUpgradeable) ? undefined : (checked) => {
                             setIsPartialPayment(checked);
                             if (!checked) {
                                 setFormData(prev => ({ ...prev, totalAmount: "", depositAmount: "", paymentStatus: "unpaid" }));
                             }
                         }}
-                        className={isEditMode ? 'opacity-60 cursor-not-allowed' : ''}
+                        className={(isEditMode && !isLegacyUpgradeable) ? 'opacity-60 cursor-not-allowed' : ''}
                     />
                     <div>
                         <label
                             htmlFor="isPartialPayment"
-                            className={`text-sm font-medium ${isEditMode ? 'text-slate-500 cursor-not-allowed' : 'text-amber-800 cursor-pointer'}`}
+                            className={`text-sm font-medium ${
+                                isLegacyUpgradeable ? 'text-amber-800 cursor-pointer' :
+                                isEditMode ? 'text-slate-500 cursor-not-allowed' :
+                                'text-amber-800 cursor-pointer'
+                            }`}
                         >
-                            {isEditMode
-                                ? t('expenseIsPartiallyPaid')
-                                : t('recordWithDeposit')
+                            {isLegacyUpgradeable
+                                ? t('enablePaymentTracking')
+                                : isEditMode
+                                    ? t('expenseIsPartiallyPaid')
+                                    : t('recordWithDeposit')
                             }
                         </label>
-                        {isEditMode && (
+                        {isLegacyUpgradeable && isPartialPayment && (
+                            <p className="text-xs text-amber-700 mt-0.5">
+                                {t('legacyAmountWillBeMigrated', { amount: `${currencySymbol}${Number(expense.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` })}
+                            </p>
+                        )}
+                        {isEditMode && !isLegacyUpgradeable && (
                             <p className="text-xs text-slate-400 mt-0.5">{t('paymentStatusAutomatic')}</p>
                         )}
                     </div>
@@ -281,12 +321,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
                 {isPartialPayment && (
                     <div className="grid md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <div>
+                        {!isLegacyUpgradeable && <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Deposit Amount Paid *
                             </label>
                             <Input
-                                required={isPartialPayment}
+                                required={isPartialPayment && !isLegacyUpgradeable}
                                 type="number"
                                 step="0.01"
                                 value={formData.depositAmount}
@@ -298,7 +338,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                                     Balance due: {currencySymbol}{(parseFloat(formData.totalAmount) - parseFloat(formData.depositAmount)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </p>
                             )}
-                        </div>
+                        </div>}
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Payment Status

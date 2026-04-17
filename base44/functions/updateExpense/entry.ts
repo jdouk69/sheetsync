@@ -46,6 +46,10 @@ Deno.serve(async (req) => {
         // SECURITY: Prevent modification of protected fields
         const secureUpdates = { ...updates };
         
+        // Extract migration flag before sanitizing — it's a signal, not a data field
+        const migrateLegacyAmount = !!secureUpdates.migrateLegacyAmount;
+        delete secureUpdates.migrateLegacyAmount;
+
         // Auto-update audit fields
         secureUpdates.updated_by = user.email;
         secureUpdates.updatedByName = user.full_name || user.email;
@@ -60,6 +64,22 @@ Deno.serve(async (req) => {
 
         // Update expense
         const updatedExpense = await base44.asServiceRole.entities.Expense.update(expenseId, secureUpdates);
+
+        // MIGRATION: Create first Payment record from legacy amount — exactly once
+        if (migrateLegacyAmount) {
+            const existingPayments = await base44.asServiceRole.entities.Payment.filter({ expenseId });
+            if (existingPayments.length === 0) {
+                await base44.asServiceRole.entities.Payment.create({
+                    expenseId,
+                    amount: expense.amount,
+                    date: expense.date,
+                    method: "Deposit",
+                    notes: "Migrated from legacy amount",
+                    paidBy: expense.created_by,
+                    paidByName: expense.createdByName || expense.created_by,
+                });
+            }
+        }
 
         return Response.json({ success: true, expense: updatedExpense });
     } catch (error) {

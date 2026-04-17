@@ -207,6 +207,9 @@ const translations = {
         projectValueNote: "Project value (quoted totals)",
         projectValueByMonth: "Project value by month (quoted totals)",
         basedOnProjectValue: "Based on project value (quoted totals)",
+        enablePaymentTracking: "Enable payment tracking",
+        legacyAmountWillBeMigrated: "Existing amount ({amount}) will be recorded as the first payment",
+        totalQuotedAmount: "Total Quoted Amount",
         },
     el: {
         // Layout
@@ -414,6 +417,9 @@ const translations = {
         projectValueNote: "Αξία έργου (συνολικές προσφορές)",
         projectValueByMonth: "Αξία έργου ανά μήνα (συνολικές προσφορές)",
         basedOnProjectValue: "Βάσει αξίας έργου (συνολικές προσφορές)",
+        enablePaymentTracking: "Ενεργοποίηση παρακολούθησης πληρωμών",
+        legacyAmountWillBeMigrated: "Το υπάρχον ποσό ({amount}) θα καταχωρηθεί ως η πρώτη πληρωμή",
+        totalQuotedAmount: "Συνολική Προσφερόμενη Αξία",
         }
 };
 
