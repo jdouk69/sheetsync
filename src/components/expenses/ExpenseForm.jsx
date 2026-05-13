@@ -72,7 +72,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     const isEditMode = !!expense;
     // Hide deposit checkbox in create mode when vendor already has an open/partial expense.
     // Reuses projectExpenses (already computed above) + formData.vendor.
-    const hasOpenVendorExpense = !isEditMode && !!formData.vendor && projectExpenses.some(exp =>
+    const hasOpenVendorExpense = !isEditMode && !reminderDismissed && !!formData.vendor && projectExpenses.some(exp =>
         exp.vendor?.toLowerCase().trim() === formData.vendor?.toLowerCase().trim() &&
         (exp.paymentStatus === 'deposit_paid' ||
             (exp.totalAmount && (exp.amount || 0) < exp.totalAmount))
@@ -254,6 +254,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                                 currency={currentProject?.currency}
                                 onSelectExpense={(exp) => onOpenPaymentFor(exp)}
                                 onDismiss={() => setReminderDismissed(true)}
+                                onContinueNew={() => setReminderDismissed(true)}
                             />
                         )}
                     </div>

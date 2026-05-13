@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 
-export default function VendorPaymentReminder({ vendorName, projectExpenses, currency, onSelectExpense, onDismiss }) {
+export default function VendorPaymentReminder({ vendorName, projectExpenses, currency, onSelectExpense, onDismiss, onContinueNew }) {
     if (!vendorName || !projectExpenses?.length) return null;
 
     const currencySymbol = CURRENCY_SYMBOLS[currency] || '€';
@@ -65,6 +65,17 @@ export default function VendorPaymentReminder({ vendorName, projectExpenses, cur
                     <X className="w-4 h-4" />
                 </button>
             </div>
+            {onContinueNew && (
+                <div className="mt-3 pt-3 border-t border-amber-200">
+                    <button
+                        type="button"
+                        onClick={onContinueNew}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-medium underline underline-offset-2"
+                    >
+                        + Continue with new expense for "{vendorName}"
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
