@@ -89,8 +89,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     // True legacy expense: in edit mode, has no totalAmount, and has no Payment records yet
     const isLegacyUpgradeable = isEditMode && !expense?.totalAmount && existingPayments.length === 0;
-    const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [reminderDismissed, setReminderDismissed] = useState(false);
+    const [isPartialPayment, setIsPartialPayment] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [suggestingCategory, setSuggestingCategory] = useState(false);
     const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
@@ -518,7 +518,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                     </div>
                 )}
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-3 pt-4 pb-safe">
                     <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
                         {t('cancel')}
                     </Button>
@@ -526,6 +526,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                         {expense ? t('update') : t('add')} {t('expense')}
                     </Button>
                 </div>
+                <div className="md:hidden h-16" />
             </form>
         </div>
     );
