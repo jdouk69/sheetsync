@@ -70,6 +70,12 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     });
     // In edit mode, derive checkbox state from real payment data
     const isEditMode = !!expense;
+    // useState declarations must come before any computed values that reference them
+    const [reminderDismissed, setReminderDismissed] = useState(false);
+    const [isPartialPayment, setIsPartialPayment] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [suggestingCategory, setSuggestingCategory] = useState(false);
+    const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
     // Hide deposit checkbox in create mode when vendor already has an open/partial expense.
     // Reuses projectExpenses (already computed above) + formData.vendor.
     const hasOpenVendorExpense = !isEditMode && !reminderDismissed && !!formData.vendor && projectExpenses.some(exp =>
@@ -89,11 +95,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     // True legacy expense: in edit mode, has no totalAmount, and has no Payment records yet
     const isLegacyUpgradeable = isEditMode && !expense?.totalAmount && existingPayments.length === 0;
-    const [reminderDismissed, setReminderDismissed] = useState(false);
-    const [isPartialPayment, setIsPartialPayment] = useState(false);
-    const [uploading, setUploading] = useState(false);
-    const [suggestingCategory, setSuggestingCategory] = useState(false);
-    const [categoryJustSuggested, setCategoryJustSuggested] = useState(false);
+
 
     useEffect(() => {
         if (expense) {
