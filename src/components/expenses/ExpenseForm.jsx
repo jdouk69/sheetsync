@@ -478,7 +478,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                     </div>
                 </div>
 
-                {(!isPartialPayment || isEditMode) && (
+                {(true) && (
                     <div className="space-y-3">
                         {isAdmin && !isPartialPayment && (
                             <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
