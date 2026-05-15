@@ -276,7 +276,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                 </div>
 
                 {/* Partial Payment Toggle — hidden in create mode when vendor has an open partial expense */}
-                {(isEditMode || !hasOpenVendorExpense) && (
+                {(isEditMode || reminderDismissed || !hasOpenVendorExpense) && (
                 <div className={`flex items-start gap-3 p-3 rounded-lg border ${
                     isLegacyUpgradeable ? 'bg-amber-50 border-amber-200' :
                     isEditMode && derivedIsPartial ? 'bg-slate-50 border-slate-200' :
