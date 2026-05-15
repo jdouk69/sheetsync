@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { Home, LogOut, Languages, ChevronLeft, Shield, Trash2 } from "lucide-react";
@@ -160,18 +159,8 @@ function LayoutContent({ children, currentPageName }) {
                 </div>
             </nav>
 
-            <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentPageName}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                    >
-                        {children}
-                    </motion.div>
-                </AnimatePresence>
+            <main className="flex-1 overflow-y-auto pb-16 md:pb-0" style={{ WebkitOverflowScrolling: 'touch' }}>
+                {children}
             </main>
             <MobileTabBar currentPageName={currentPageName} />
             <Toaster position="bottom-right" richColors />

@@ -507,7 +507,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                     </div>
                 )}
 
-                <div className="flex gap-3 pt-4 pb-safe">
+                <div className="flex gap-3 pt-4" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
                     <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
                         {t('cancel')}
                     </Button>
