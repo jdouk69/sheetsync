@@ -24,20 +24,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     const isAdmin = currentUser?.role === 'admin';
     const formContainerRef = React.useRef(null);
 
-    // iOS Safari: scroll focused input into view above keyboard
-    useEffect(() => {
-        const handleFocusIn = (e) => {
-            const el = e.target;
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                setTimeout(() => {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            }
-        };
-        const container = formContainerRef.current;
-        if (container) container.addEventListener('focusin', handleFocusIn);
-        return () => { if (container) container.removeEventListener('focusin', handleFocusIn); };
-    }, []);
+
 
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses'],
