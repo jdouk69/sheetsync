@@ -112,13 +112,15 @@ function BudgetExpenseForm({ budgetId, projectId, onSuccess, onCancel, t, isPend
 
     return (
         <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-                <label className="text-sm font-medium text-slate-700 block mb-1">{t("date")} *</label>
-                <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required />
-            </div>
-            <div>
-                <label className="text-sm font-medium text-slate-700 block mb-1">{t("amount")} *</label>
-                <Input type="number" min="0" step="0.01" placeholder="0.00" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="min-w-0">
+                    <label className="text-sm font-medium text-slate-700 block mb-1">{t("date")} *</label>
+                    <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required className="w-full" />
+                </div>
+                <div className="min-w-0">
+                    <label className="text-sm font-medium text-slate-700 block mb-1">{t("amount")} *</label>
+                    <Input type="number" min="0" step="0.01" placeholder="0.00" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required className="w-full" />
+                </div>
             </div>
             <div>
                 <label className="text-sm font-medium text-slate-700 block mb-1">{t("description")} *</label>
