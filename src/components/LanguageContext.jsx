@@ -211,6 +211,28 @@ const translations = {
         legacyAmountWillBeMigrated: "Existing amount ({amount}) will be recorded as the first payment",
         totalQuotedAmount: "Total Quoted Amount",
         overpayment: "Overpayment",
+
+        // Budget Tracker
+        budgetTracker: "Budget Tracker",
+        budgetProject: "Project",
+        noBudgetSet: "No budget set for {month}.",
+        setBudget: "Set Budget",
+        setBudgetTitle: "Set Monthly Budget",
+        editBudgetTitle: "Edit Budget",
+        budgetAmount: "Budget Amount ({currency})",
+        budgetNotes: "Notes (optional)",
+        budgetNotesPlaceholder: "Any notes about this budget...",
+        createBudget: "Create Budget",
+        saveChanges: "Save Changes",
+        deleteBudgetConfirm: "Delete this budget?",
+        spent: "Spent",
+        percentUsed: "{percent}% used",
+        overBudget: "Over Budget!",
+        exceededBy: "Exceeded by {amount}",
+        remaining: "Remaining",
+        remainingLeft: "{amount} left",
+        expensesThisMonth: "Expenses this month",
+        selectProjectForBudget: "Please select a project to manage its budget.",
         },
     el: {
         // Layout
@@ -422,6 +444,28 @@ const translations = {
         legacyAmountWillBeMigrated: "Το υπάρχον ποσό ({amount}) θα καταχωρηθεί ως η πρώτη πληρωμή",
         totalQuotedAmount: "Συνολική Προσφερόμενη Αξία",
         overpayment: "Υπερπληρωμή",
+
+        // Budget Tracker
+        budgetTracker: "Παρακολούθηση Προϋπολογισμού",
+        budgetProject: "Έργο",
+        noBudgetSet: "Δεν έχει οριστεί προϋπολογισμός για {month}.",
+        setBudget: "Ορισμός Προϋπολογισμού",
+        setBudgetTitle: "Ορισμός Μηνιαίου Προϋπολογισμού",
+        editBudgetTitle: "Επεξεργασία Προϋπολογισμού",
+        budgetAmount: "Ποσό Προϋπολογισμού ({currency})",
+        budgetNotes: "Σημειώσεις (προαιρετικά)",
+        budgetNotesPlaceholder: "Τυχόν σημειώσεις για τον προϋπολογισμό...",
+        createBudget: "Δημιουργία Προϋπολογισμού",
+        saveChanges: "Αποθήκευση Αλλαγών",
+        deleteBudgetConfirm: "Διαγραφή αυτού του προϋπολογισμού;",
+        spent: "Δαπανήθηκε",
+        percentUsed: "{percent}% χρησιμοποιήθηκε",
+        overBudget: "Υπέρβαση Προϋπολογισμού!",
+        exceededBy: "Υπέρβαση κατά {amount}",
+        remaining: "Υπόλοιπο",
+        remainingLeft: "{amount} απομένει",
+        expensesThisMonth: "Έξοδα αυτόν τον μήνα",
+        selectProjectForBudget: "Επιλέξτε ένα έργο για διαχείριση του προϋπολογισμού του.",
         }
 };
 

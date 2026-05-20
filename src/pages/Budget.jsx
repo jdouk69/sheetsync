@@ -132,7 +132,7 @@ export default function BudgetPage() {
     };
 
     const handleDelete = () => {
-        if (budget && window.confirm("Delete this budget?")) {
+        if (budget && window.confirm(t('deleteBudgetConfirm'))) {
             deleteBudget.mutate(budget.id);
         }
     };
@@ -140,7 +140,7 @@ export default function BudgetPage() {
     if (!projectId) {
         return (
             <div className="max-w-xl mx-auto px-4 py-12 text-center text-slate-500">
-                Please select a project to manage its budget.
+                {t('selectProjectForBudget')}
             </div>
         );
     }
@@ -148,7 +148,7 @@ export default function BudgetPage() {
     return (
         <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-slate-800">Budget Tracker</h1>
+                <h1 className="text-2xl font-bold text-slate-800">{t('budgetTracker')}</h1>
                 <input
                     type="month"
                     value={selectedMonth}
@@ -158,7 +158,7 @@ export default function BudgetPage() {
             </div>
 
             <p className="text-sm text-slate-500">
-                Project: <span className="font-medium text-slate-700">{currentProject?.name}</span>
+                {t('budgetProject')}: <span className="font-medium text-slate-700">{currentProject?.name}</span>
             </p>
 
             {loadingBudget || loadingExpenses ? (
@@ -186,7 +186,7 @@ export default function BudgetPage() {
                             {/* Progress Bar */}
                             <div>
                                 <div className="flex justify-between text-sm mb-1">
-                                    <span className="text-slate-500">Spent</span>
+                                    <span className="text-slate-500">{t('spent')}</span>
                                     <span className={isOverBudget ? "text-red-600 font-semibold" : "text-slate-700"}>
                                         {formatCurrency(totalSpent, currency)} / {formatCurrency(budget.amount, currency)}
                                     </span>
@@ -198,8 +198,8 @@ export default function BudgetPage() {
                                     />
                                 </div>
                                 <div className="flex justify-between text-xs text-slate-400 mt-1">
-                                    <span>{percentUsed.toFixed(1)}% used</span>
-                                    <span>{expenses.length} expense{expenses.length !== 1 ? "s" : ""}</span>
+                                    <span>{t('percentUsed', { percent: percentUsed.toFixed(1) })}</span>
+                                    <span>{expenses.length} {t('expenses')}</span>
                                 </div>
                             </div>
 
@@ -208,9 +208,9 @@ export default function BudgetPage() {
                                 <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
                                     <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
                                     <div>
-                                        <p className="text-sm font-semibold text-red-700">Over Budget!</p>
+                                        <p className="text-sm font-semibold text-red-700">{t('overBudget')}</p>
                                         <p className="text-xs text-red-500">
-                                            Exceeded by {formatCurrency(Math.abs(remaining), currency)}
+                                            {t('exceededBy', { amount: formatCurrency(Math.abs(remaining), currency) })}
                                         </p>
                                     </div>
                                 </div>
@@ -218,8 +218,8 @@ export default function BudgetPage() {
                                 <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
                                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                                     <div>
-                                        <p className="text-sm font-semibold text-green-700">Remaining</p>
-                                        <p className="text-xs text-green-600">{formatCurrency(remaining, currency)} left</p>
+                                        <p className="text-sm font-semibold text-green-700">{t('remaining')}</p>
+                                        <p className="text-xs text-green-600">{t('remainingLeft', { amount: formatCurrency(remaining, currency) })}</p>
                                     </div>
                                 </div>
                             )}
@@ -234,7 +234,7 @@ export default function BudgetPage() {
                     {expenses.length > 0 && (
                         <Card>
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-sm text-slate-600">Expenses this month</CardTitle>
+                                <CardTitle className="text-sm text-slate-600">{t('expensesThisMonth')}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2">
                                 {expenses.map((e) => (
@@ -250,10 +250,10 @@ export default function BudgetPage() {
             ) : (
                 <Card className="border-dashed border-slate-300">
                     <CardContent className="py-10 text-center space-y-3">
-                        <p className="text-slate-500 text-sm">No budget set for {format(new Date(selectedMonth + "-01"), "MMMM yyyy")}.</p>
+                        <p className="text-slate-500 text-sm">{t('noBudgetSet', { month: format(new Date(selectedMonth + "-01"), "MMMM yyyy") })}</p>
                         <Button onClick={handleOpenCreate} className="gap-2">
                             <PlusCircle className="w-4 h-4" />
-                            Set Budget
+                            {t('setBudget')}
                         </Button>
                     </CardContent>
                 </Card>
@@ -263,13 +263,13 @@ export default function BudgetPage() {
             {showForm && (
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-base">{editing ? "Edit Budget" : "Set Monthly Budget"}</CardTitle>
+                        <CardTitle className="text-base">{editing ? t('editBudgetTitle') : t('setBudgetTitle')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="text-sm font-medium text-slate-700 block mb-1">
-                                    Budget Amount ({currency})
+                                    {t('budgetAmount', { currency })}
                                 </label>
                                 <Input
                                     type="number"
@@ -282,9 +282,9 @@ export default function BudgetPage() {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium text-slate-700 block mb-1">Notes (optional)</label>
+                                <label className="text-sm font-medium text-slate-700 block mb-1">{t('budgetNotes')}</label>
                                 <Textarea
-                                    placeholder="Any notes about this budget..."
+                                    placeholder={t('budgetNotesPlaceholder')}
                                     value={formNotes}
                                     onChange={(e) => setFormNotes(e.target.value)}
                                     rows={2}
@@ -292,13 +292,13 @@ export default function BudgetPage() {
                             </div>
                             <div className="flex gap-2 justify-end">
                                 <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                                    Cancel
+                                    {t('cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={createBudget.isPending || updateBudget.isPending}
                                 >
-                                    {editing ? "Save Changes" : "Create Budget"}
+                                    {editing ? t('saveChanges') : t('createBudget')}
                                 </Button>
                             </div>
                         </form>
