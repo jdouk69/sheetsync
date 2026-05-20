@@ -1,0 +1,27 @@
+{
+  "name": "Budget",
+  "type": "object",
+  "properties": {
+    "projectId": {
+      "type": "string",
+      "description": "ID of the associated project"
+    },
+    "month": {
+      "type": "string",
+      "description": "Month for the budget in YYYY-MM format"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Monthly spending limit in project currency"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about this budget"
+    }
+  },
+  "required": [
+    "projectId",
+    "month",
+    "amount"
+  ]
+}
