@@ -376,23 +376,24 @@ export default function ExpensesPage() {
                 </div>
             )}
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-6">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">{currentProject?.name} Expenses</h1>
                         <p className="text-muted-foreground mt-1">Track and manage all your project expenses</p>
                     </div>
-                    <div className="flex flex-col gap-2 w-full">
-                        <div className="flex gap-2 w-full">
+                    <div className="flex flex-col gap-2 w-full md:w-auto">
+                        <div className="grid grid-cols-2 gap-2 w-full">
                             {selectedIds.length > 0 && canDelete && (
                                 <Button
                                     onClick={handleBulkDelete}
                                     variant="destructive"
                                     disabled={bulkDeleteMutation.isPending}
+                                    className="w-full justify-center col-span-2"
                                 >
                                     {t('deleteSelected', { count: selectedIds.length })}
                                 </Button>
                             )}
-                            {canEdit && <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />}
+                            {canEdit && <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} className="w-full justify-center" />}
                             {canEdit && (
                                 <Button
                                     onClick={() => {
@@ -402,7 +403,7 @@ export default function ExpensesPage() {
                                             formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                         }, 100);
                                     }}
-                                    className="bg-blue-600 hover:bg-blue-700"
+                                    className="bg-blue-600 hover:bg-blue-700 w-full justify-center"
                                 >
                                     <Plus className="w-4 h-4 mr-2" />
                                     {t('addExpense')}
@@ -411,7 +412,7 @@ export default function ExpensesPage() {
                         </div>
                         {canEdit && (
                             <Link to="/Budget" className="w-full">
-                                <Button variant="outline" className="w-full gap-2">
+                                <Button variant="outline" className="w-full justify-center gap-2">
                                     <PieChart className="w-4 h-4" />
                                     Budget Tracker
                                 </Button>
