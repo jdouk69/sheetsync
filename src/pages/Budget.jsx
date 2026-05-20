@@ -190,7 +190,7 @@ export default function BudgetPage() {
             </p>
 
             {loadingBudget ? (
-                <div className="text-center py-12 text-slate-400">Loading...</div>
+                <div className="text-center py-12 text-slate-400">{t("loading")}</div>
             ) : budget ? (
                 <>
                     {/* Progress Card */}

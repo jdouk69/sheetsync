@@ -233,6 +233,7 @@ const translations = {
         remainingLeft: "{amount} left",
         expensesThisMonth: "Expenses this month",
         selectProjectForBudget: "Please select a project to manage its budget.",
+        loading: "Loading...",
         },
     el: {
         // Layout
@@ -466,6 +467,7 @@ const translations = {
         remainingLeft: "{amount} απομένει",
         expensesThisMonth: "Έξοδα αυτόν τον μήνα",
         selectProjectForBudget: "Επιλέξτε ένα έργο για διαχείριση του προϋπολογισμού του.",
+        loading: "Φόρτωση...",
         }
 };
 
