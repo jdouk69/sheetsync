@@ -396,7 +396,7 @@ export default function BudgetPage() {
     }
 
     return (
-        <div className="max-w-xl md:max-w-4xl xl:max-w-6xl mx-auto px-4 md:px-8 py-6 space-y-6">
+        <div className="max-w-xl sm:max-w-3xl md:max-w-4xl xl:max-w-6xl mx-auto px-4 md:px-8 py-6 space-y-6">
             {/* If a budget is selected, show its detail view */}
             {selectedBudget ? (
                 <BudgetDetail
@@ -460,7 +460,7 @@ export default function BudgetPage() {
                             </CardContent>
                         </Card>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                             {budgets.map((b) => (
                                 <BudgetListCard
                                     key={b.id}
