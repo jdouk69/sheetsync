@@ -381,31 +381,41 @@ export default function ExpensesPage() {
                         <h1 className="text-3xl font-bold text-foreground">{currentProject?.name} Expenses</h1>
                         <p className="text-muted-foreground mt-1">Track and manage all your project expenses</p>
                     </div>
-                    <div className="flex gap-2">
-                        {selectedIds.length > 0 && canDelete && (
-                            <Button
-                                onClick={handleBulkDelete}
-                                variant="destructive"
-                                disabled={bulkDeleteMutation.isPending}
-                            >
-                                {t('deleteSelected', { count: selectedIds.length })}
-                            </Button>
-                        )}
-                        {canEdit && <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                            {selectedIds.length > 0 && canDelete && (
+                                <Button
+                                    onClick={handleBulkDelete}
+                                    variant="destructive"
+                                    disabled={bulkDeleteMutation.isPending}
+                                >
+                                    {t('deleteSelected', { count: selectedIds.length })}
+                                </Button>
+                            )}
+                            {canEdit && <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} />}
+                            {canEdit && (
+                                <Button
+                                    onClick={() => {
+                                        setEditingExpense(null);
+                                        setShowForm(true);
+                                        setTimeout(() => {
+                                            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }, 100);
+                                    }}
+                                    className="bg-blue-600 hover:bg-blue-700"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    {t('addExpense')}
+                                </Button>
+                            )}
+                        </div>
                         {canEdit && (
-                            <Button
-                                onClick={() => {
-                                    setEditingExpense(null);
-                                    setShowForm(true);
-                                    setTimeout(() => {
-                                        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    }, 100);
-                                }}
-                                className="bg-blue-600 hover:bg-blue-700"
-                            >
-                                <Plus className="w-4 h-4 mr-2" />
-                                {t('addExpense')}
-                            </Button>
+                            <Link to="/Budget" className="w-full">
+                                <Button variant="outline" className="w-full gap-2">
+                                    <PieChart className="w-4 h-4" />
+                                    Budget Tracker
+                                </Button>
+                            </Link>
                         )}
                     </div>
                 </div>
@@ -446,7 +456,7 @@ export default function ExpensesPage() {
                 />
 
                 {canEdit && !showForm && (
-                    <div className="mb-4 flex flex-col gap-2">
+                    <div className="mb-4">
                         <Button
                             onClick={() => {
                                 setEditingExpense(null);
@@ -460,12 +470,6 @@ export default function ExpensesPage() {
                             <Plus className="w-4 h-4 mr-2" />
                             {t('addExpense')}
                         </Button>
-                        <Link to="/Budget" className="w-full">
-                            <Button variant="outline" className="w-full gap-2">
-                                <PieChart className="w-4 h-4" />
-                                Budget Tracker
-                            </Button>
-                        </Link>
                     </div>
                 )}
 
