@@ -2,17 +2,21 @@
   "name": "Budget",
   "type": "object",
   "properties": {
+    "name": {
+      "type": "string",
+      "description": "Budget name (e.g. Cabinets, Labor, Plumbing)"
+    },
     "projectId": {
       "type": "string",
       "description": "ID of the associated project"
     },
     "month": {
       "type": "string",
-      "description": "Month for the budget in YYYY-MM format"
+      "description": "Optional month for the budget in YYYY-MM format"
     },
     "amount": {
       "type": "number",
-      "description": "Monthly spending limit in project currency"
+      "description": "Budget limit in project currency"
     },
     "notes": {
       "type": "string",
@@ -20,8 +24,8 @@
     }
   },
   "required": [
+    "name",
     "projectId",
-    "month",
     "amount"
   ]
 }

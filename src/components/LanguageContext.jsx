@@ -234,6 +234,11 @@ const translations = {
         expensesThisMonth: "Expenses this month",
         selectProjectForBudget: "Please select a project to manage its budget.",
         loading: "Loading...",
+        budgetName: "Budget Name",
+        budgetNamePlaceholder: "e.g. Cabinets, Plumbing, Labor",
+        month: "Month",
+        optional: "optional",
+        noBudgetsYet: "No budgets yet. Create your first budget to get started.",
         },
     el: {
         // Layout
@@ -468,6 +473,11 @@ const translations = {
         expensesThisMonth: "Έξοδα αυτόν τον μήνα",
         selectProjectForBudget: "Επιλέξτε ένα έργο για διαχείριση του προϋπολογισμού του.",
         loading: "Φόρτωση...",
+        budgetName: "Όνομα Προϋπολογισμού",
+        budgetNamePlaceholder: "π.χ. Ντουλάπια, Υδραυλικά, Εργασία",
+        month: "Μήνας",
+        optional: "προαιρετικό",
+        noBudgetsYet: "Δεν υπάρχουν προϋπολογισμοί ακόμα. Δημιουργήστε τον πρώτο σας.",
         }
 };
 
