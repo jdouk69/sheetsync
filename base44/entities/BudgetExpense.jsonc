@@ -1,0 +1,42 @@
+{
+  "name": "BudgetExpense",
+  "type": "object",
+  "properties": {
+    "budgetId": {
+      "type": "string",
+      "description": "ID of the associated Budget record"
+    },
+    "projectId": {
+      "type": "string",
+      "description": "ID of the associated project"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the budget expense"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the budget expense"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount of the budget expense in project currency"
+    },
+    "category": {
+      "type": "string",
+      "description": "Optional category for the budget expense"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about this budget expense"
+    }
+  },
+  "required": [
+    "budgetId",
+    "projectId",
+    "date",
+    "description",
+    "amount"
+  ]
+}
