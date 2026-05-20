@@ -303,11 +303,11 @@ function BudgetListCard({ budget, currency, onSelect, onEdit, onDelete, t }) {
             className={`cursor-pointer hover:shadow-md transition-shadow ${isOver ? "border-red-300" : "border-slate-200"}`}
             onClick={() => onSelect(budget)}
         >
-            <CardContent className="pt-4 space-y-3">
+            <CardContent className="pt-4 md:pt-6 md:pb-6 md:px-6 space-y-3 md:space-y-4">
                 <div className="flex items-start justify-between">
                     <div>
-                        <p className="font-semibold text-slate-800">{budget.name}</p>
-                        {budget.month && <p className="text-xs text-slate-400">{budget.month}</p>}
+                        <p className="font-semibold md:text-lg text-slate-800">{budget.name}</p>
+                        {budget.month && <p className="text-xs md:text-sm text-slate-400">{budget.month}</p>}
                     </div>
                     <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                         <button onClick={() => onEdit(budget)} className="text-slate-400 hover:text-blue-600 p-1"><Pencil className="w-3.5 h-3.5" /></button>
@@ -396,7 +396,7 @@ export default function BudgetPage() {
     }
 
     return (
-        <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
+        <div className="max-w-xl md:max-w-4xl xl:max-w-6xl mx-auto px-4 md:px-8 py-6 space-y-6">
             {/* If a budget is selected, show its detail view */}
             {selectedBudget ? (
                 <BudgetDetail
@@ -410,15 +410,16 @@ export default function BudgetPage() {
                 <>
                     {/* Header */}
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold text-slate-800">{t("budgetTracker")}</h1>
-                        <Button onClick={() => { setShowCreateForm(true); setEditingBudget(null); }} size="sm" className="gap-1">
-                            <Plus className="w-4 h-4" /> {t("createBudget")}
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold text-slate-800">{t("budgetTracker")}</h1>
+                            <p className="text-sm md:text-base text-slate-500 mt-1">
+                                {t("budgetProject")}: <span className="font-medium text-slate-700">{currentProject?.name}</span>
+                            </p>
+                        </div>
+                        <Button onClick={() => { setShowCreateForm(true); setEditingBudget(null); }} className="gap-1 md:text-base md:px-5 md:h-11">
+                            <Plus className="w-4 h-4 md:w-5 md:h-5" /> {t("createBudget")}
                         </Button>
                     </div>
-
-                    <p className="text-sm text-slate-500">
-                        {t("budgetProject")}: <span className="font-medium text-slate-700">{currentProject?.name}</span>
-                    </p>
 
                     {/* Create / Edit Budget Form */}
                     {(showCreateForm || editingBudget) && (
@@ -459,7 +460,7 @@ export default function BudgetPage() {
                             </CardContent>
                         </Card>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                             {budgets.map((b) => (
                                 <BudgetListCard
                                     key={b.id}
