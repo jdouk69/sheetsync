@@ -2,7 +2,8 @@ import React, { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, Download } from "lucide-react";
+import { Plus, Filter, Download, PieChart } from "lucide-react";
+import { Link } from "react-router-dom";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import ExpenseCard from "../components/expenses/ExpenseCard";
 import PaymentForm from "../components/expenses/PaymentForm";
@@ -445,7 +446,7 @@ export default function ExpensesPage() {
                 />
 
                 {canEdit && !showForm && (
-                    <div className="mb-4">
+                    <div className="mb-4 flex flex-col gap-2">
                         <Button
                             onClick={() => {
                                 setEditingExpense(null);
@@ -459,6 +460,12 @@ export default function ExpensesPage() {
                             <Plus className="w-4 h-4 mr-2" />
                             {t('addExpense')}
                         </Button>
+                        <Link to="/Budget" className="w-full">
+                            <Button variant="outline" className="w-full gap-2">
+                                <PieChart className="w-4 h-4" />
+                                Budget Tracker
+                            </Button>
+                        </Link>
                     </div>
                 )}
 
