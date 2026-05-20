@@ -13,8 +13,9 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "../LanguageContext";
 import { useProject } from "../ProjectContext";
+import { cn } from "@/lib/utils";
 
-export default function ImportExpenses({ onImportComplete }) {
+export default function ImportExpenses({ onImportComplete, className = "" }) {
     const { t } = useLanguage();
     const { currentProjectId } = useProject();
     const [open, setOpen] = useState(false);
@@ -133,7 +134,7 @@ export default function ImportExpenses({ onImportComplete }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                <Button variant="outline" className={cn("border-blue-600 text-blue-600 hover:bg-blue-50", className)}>
                     <Upload className="w-4 h-4 mr-2" />
                     {t('importCsv')}
                 </Button>
