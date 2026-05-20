@@ -115,7 +115,7 @@ function BudgetExpenseForm({ budgetId, projectId, onSuccess, onCancel, t, isPend
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="min-w-0">
                     <label className="text-sm font-medium text-slate-700 block mb-1">{t("date")} *</label>
-                    <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required className="w-full" />
+                    <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" />
                 </div>
                 <div className="min-w-0">
                     <label className="text-sm font-medium text-slate-700 block mb-1">{t("amount")} *</label>
