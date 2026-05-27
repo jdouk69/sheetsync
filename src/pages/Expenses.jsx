@@ -80,7 +80,7 @@ export default function ExpensesPage() {
             // Get all expenses for this project (regardless of who created them)
             return base44.entities.Expense.filter({ 
                 projectId: currentProjectId
-            }, '-date');
+            }, '-date', 9999);
         },
         enabled: !!currentProjectId && !authLoading,
     });
