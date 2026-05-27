@@ -491,7 +491,7 @@ export default function ExpensesPage() {
                     )}
                 </div>
 
-                <div className="grid gap-4 pb-20">
+                <div className="grid gap-4 pb-36">
                     {filteredExpenses.length === 0 ? (
                         <div className="bg-card rounded-lg shadow-sm p-12 text-center">
                             <p className="text-muted-foreground">{t('noExpensesFound')}</p>
@@ -546,6 +546,22 @@ export default function ExpensesPage() {
                 onSubmit={(data) => addPaymentMutation.mutate(data)}
                 balanceDue={directPaymentExpense?.totalAmount ? directPaymentExpense.totalAmount - directPaymentExpense.amount : 0}
             />
+
+            {selectedIds.length > 0 && canDelete && (
+                <div
+                    className="fixed left-0 right-0 z-40 bottom-16 md:bottom-0 bg-card border-t border-border shadow-lg px-4 py-3 flex items-center justify-between"
+                    style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+                >
+                    <span className="text-sm font-medium text-foreground">{selectedIds.length} {t('selected')}</span>
+                    <Button
+                        onClick={handleBulkDelete}
+                        variant="destructive"
+                        disabled={bulkDeleteMutation.isPending}
+                    >
+                        {t('deleteSelected', { count: selectedIds.length })}
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
