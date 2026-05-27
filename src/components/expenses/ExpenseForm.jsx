@@ -86,14 +86,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     useEffect(() => {
         if (expense) {
-            let dateValue = new Date().toISOString().split('T')[0];
-            if (expense.date) {
-                try {
-                    dateValue = expense.date.split('T')[0];
-                } catch (e) {
-                    console.error('Date formatting error:', e);
-                }
-            }
+            // Edit mode: preserve original date exactly. If missing/null, leave blank — never default to today.
+            const dateValue = expense.date ? expense.date.split('T')[0] : "";
             
             const hasPartial = !!(expense.totalAmount);
             setIsPartialPayment(hasPartial);
@@ -504,6 +498,17 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                                 {t('paidCash')}
                             </label>
                         </div>
+                    </div>
+                )}
+
+                {expense && (expense.createdByName || expense.updatedByName || expense.created_by || expense.updated_by) && (
+                    <div className="text-xs text-slate-400 pt-3 border-t border-slate-100 space-y-1">
+                        {(expense.createdByName || expense.created_by) && (
+                            <div>{t('createdBy')}: {expense.createdByName || expense.created_by}</div>
+                        )}
+                        {(expense.updatedByName || expense.updated_by) && expense.updated_by !== expense.created_by && (
+                            <div>{t('editedBy')}: {expense.updatedByName || expense.updated_by}</div>
+                        )}
                     </div>
                 )}
 
