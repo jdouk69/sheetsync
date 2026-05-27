@@ -212,7 +212,7 @@ export default function ExpensesPage() {
         const expenseData = { 
             ...data, 
             projectId: currentProjectId,
-            createdByName: user?.full_name || user?.email,
+            createdByName: editingExpense ? (editingExpense.createdByName || editingExpense.created_by) : (user?.full_name || user?.email),
             updatedByName: user?.full_name || user?.email
         };
         if (editingExpense) {
