@@ -17,6 +17,15 @@ export default function ExpenseFilters({ filters, onFiltersChange, availableCate
                 />
                 <span className="text-sm font-medium text-slate-700">Show Unpaid Only</span>
             </label>
+            <label className="flex items-center gap-2 cursor-pointer w-fit">
+                <input
+                    type="checkbox"
+                    checked={filters.cashOnly || false}
+                    onChange={(e) => onFiltersChange({ ...filters, cashOnly: e.target.checked })}
+                    className="w-4 h-4 rounded border-slate-300 accent-blue-600"
+                />
+                <span className="text-sm font-medium text-slate-700">Cash Only</span>
+            </label>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input

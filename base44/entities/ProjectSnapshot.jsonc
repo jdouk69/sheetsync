@@ -1,0 +1,44 @@
+{
+  "name": "ProjectSnapshot",
+  "type": "object",
+  "properties": {
+    "projectId": {
+      "type": "string",
+      "description": "ID of the original project"
+    },
+    "projectName": {
+      "type": "string",
+      "description": "Name of the project at the time of snapshot"
+    },
+    "snapshotDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the snapshot was taken"
+    },
+    "triggeredBy": {
+      "type": "string",
+      "description": "Email of user who triggered the snapshot, or 'scheduled'"
+    },
+    "data": {
+      "type": "object",
+      "description": "Full project data at the time of snapshot"
+    }
+  },
+  "required": [
+    "projectId",
+    "projectName",
+    "snapshotDate",
+    "data"
+  ],
+  "x-security": {
+    "notes": [
+      "CRITICAL: Contains complete project data including potentially sensitive information",
+      "Should only be created by service role (scheduled tasks or admin actions)",
+      "Users should NOT be able to create snapshots directly",
+      "Users should NOT be able to update or delete snapshots",
+      "Read access: Users can only see snapshots of projects they have access to",
+      "Super admins can see all snapshots",
+      "Access should check if user has access to the project referenced in 'data.created_by' and 'data.sharedWith'"
+    ]
+  }
+}

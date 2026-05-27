@@ -1,0 +1,111 @@
+{
+  "name": "Expense",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Description of the expense"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount paid so far (deposit or full amount) in project currency"
+    },
+    "totalAmount": {
+      "type": "number",
+      "description": "Total quoted amount for the expense in project currency"
+    },
+    "depositAmount": {
+      "type": "number",
+      "description": "Deposit amount paid in project currency"
+    },
+    "paymentStatus": {
+      "type": "string",
+      "enum": [
+        "unpaid",
+        "deposit_paid",
+        "fully_paid"
+      ],
+      "default": "unpaid",
+      "description": "Payment status of the expense"
+    },
+    "depositPaidAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the deposit was paid"
+    },
+    "category": {
+      "type": "string",
+      "description": "Expense category"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of expense"
+    },
+    "vendor": {
+      "type": "string",
+      "description": "Vendor or supplier name"
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Photo URLs"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "projectId": {
+      "type": "string",
+      "description": "ID of the associated project - SECURITY: Immutable after creation"
+    },
+    "updated_by": {
+      "type": "string",
+      "description": "Email of the user who last updated this expense - SECURITY: Auto-set, not user-editable"
+    },
+    "isPaid": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the expense has been fully paid"
+    },
+    "paidAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the expense was marked as fully paid"
+    },
+    "paidBy": {
+      "type": "string",
+      "description": "Email of the user who marked the expense as paid"
+    },
+    "paidCash": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the expense was paid in cash"
+    },
+    "createdByName": {
+      "type": "string",
+      "description": "Full name of the user who created this expense"
+    },
+    "updatedByName": {
+      "type": "string",
+      "description": "Full name of the user who last updated this expense"
+    }
+  },
+  "required": [
+    "description",
+    "amount",
+    "category",
+    "date",
+    "projectId"
+  ],
+  "x-security": {
+    "notes": [
+      "projectId must be set on creation and cannot be changed - prevents moving expenses between projects",
+      "created_by is auto-set and immutable - establishes who created the expense",
+      "Access should inherit from parent Project entity",
+      "Users can only CRUD expenses if they have appropriate access to the associated project"
+    ]
+  }
+}

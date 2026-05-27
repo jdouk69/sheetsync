@@ -1,0 +1,81 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Project description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "on_hold"
+      ],
+      "default": "active",
+      "description": "Project status"
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "EUR",
+        "USD",
+        "GBP",
+        "CAD",
+        "CHF"
+      ],
+      "default": "EUR",
+      "description": "Currency used for this project"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Project start date"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Project end date"
+    },
+    "sharedWith": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "editor",
+              "viewer"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "role"
+        ]
+      },
+      "default": [],
+      "description": "List of users with access and their roles - SECURITY: Only owner/admin can modify"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "x-security": {
+    "notes": [
+      "created_by field is auto-set and immutable - establishes ownership",
+      "sharedWith should only be modifiable by project owner or super admin",
+      "Users should only see projects where: created_by = user OR user in sharedWith OR role = admin"
+    ]
+  }
+}

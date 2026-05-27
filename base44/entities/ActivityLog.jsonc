@@ -1,0 +1,48 @@
+{
+  "name": "ActivityLog",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "Action performed (e.g. created_expense, deleted_project, updated_role)"
+    },
+    "entityType": {
+      "type": "string",
+      "description": "Type of entity affected (expense, project, user)"
+    },
+    "entityId": {
+      "type": "string",
+      "description": "ID of the affected entity"
+    },
+    "entityLabel": {
+      "type": "string",
+      "description": "Human-readable label of the affected entity"
+    },
+    "performedBy": {
+      "type": "string",
+      "description": "Email of the user who performed the action - SECURITY: Auto-set, immutable"
+    },
+    "performedByName": {
+      "type": "string",
+      "description": "Full name of the user who performed the action - SECURITY: Auto-set, immutable"
+    },
+    "details": {
+      "type": "string",
+      "description": "Additional details about the action"
+    }
+  },
+  "required": [
+    "action",
+    "entityType",
+    "performedBy"
+  ],
+  "x-security": {
+    "notes": [
+      "CRITICAL: This is an audit log - should be append-only",
+      "Users should NOT be able to create ActivityLog entries directly - only via service role",
+      "Users should NOT be able to update or delete log entries",
+      "Read access: Super admins can see all logs, regular users can only see logs for entities they have access to",
+      "created_date is auto-set and provides immutable timestamp"
+    ]
+  }
+}

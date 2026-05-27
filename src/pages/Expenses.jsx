@@ -24,7 +24,7 @@ export default function ExpensesPage() {
     const [showForm, setShowForm] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [directPaymentExpense, setDirectPaymentExpense] = useState(null);
-    const [filters, setFilters] = useState({ category: "all", vendor: "all", startDate: null, endDate: null, search: "", unpaidOnly: false });
+    const [filters, setFilters] = useState({ category: "all", vendor: "all", startDate: null, endDate: null, search: "", unpaidOnly: false, cashOnly: false });
     const [selectedIds, setSelectedIds] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const PAGE_SIZE = 20;
@@ -307,7 +307,9 @@ export default function ExpensesPage() {
                 expense.paymentStatus !== 'fully_paid' && !expense.isPaid
             );
 
-            return categoryMatch && vendorMatch && startDateMatch && endDateMatch && searchMatch && unpaidMatch;
+            const cashMatch = !filters.cashOnly || expense.paidCash === true;
+
+            return categoryMatch && vendorMatch && startDateMatch && endDateMatch && searchMatch && unpaidMatch && cashMatch;
         })
         .sort((a, b) => new Date(b.updated_date || b.created_date) - new Date(a.updated_date || a.created_date));
 
