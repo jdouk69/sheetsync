@@ -209,7 +209,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
             depositAmount: isPartialPayment ? depositAmt : null,
             paymentStatus,
             isPaid: isFullyPaid,
-            paidAt: isFullyPaid ? (expense?.paidAt || formData.paidAt || new Date().toISOString()) : null,
+            paidAt: isFullyPaid ? (expense?.paidAt || formData.paidAt || (expense ? null : new Date().toISOString())) : null,
             paidCash: formData.paidCash,
         });
     };
