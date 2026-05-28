@@ -220,6 +220,11 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                                 {t('unpaid')}
                                             </span>
                                         )}
+                                        {expense.paidCash && (
+                                            <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700 font-semibold">
+                                                Cash
+                                            </span>
+                                        )}
                                         </div>
                                 </div>
                                 <div className="text-left sm:text-right">
