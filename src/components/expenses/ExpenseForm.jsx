@@ -103,6 +103,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                 photos: expense.photos || [],
                 notes: expense.notes || "",
                 isPaid: expense.isPaid || false,
+                paidAt: expense.paidAt || null,
+                paidBy: expense.paidBy || null,
                 paidCash: expense.paidCash || false
             });
         } else {
@@ -470,8 +472,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                                         ...formData,
                                         isPaid: checked,
                                         paymentStatus: checked ? "fully_paid" : "unpaid",
-                                        paidAt: checked ? new Date().toISOString() : null,
-                                        paidBy: checked ? currentUser?.email : null
+                                        paidAt: checked ? (expense?.paidAt || new Date().toISOString()) : null,
+                                        paidBy: checked ? (expense?.paidBy || currentUser?.email) : null
                                     })}
                                 />
                                 <label
