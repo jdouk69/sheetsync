@@ -38,6 +38,24 @@ export default function ExpensesPage() {
 
     const queryClient = useQueryClient();
 
+    const resetScrollAfterKeyboard = () => {
+        // Blur any focused input so iOS Safari starts dismissing the keyboard
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+        // iOS Safari needs time to resize the viewport after keyboard dismisses.
+        // Use rAF + setTimeout to wait for the layout to settle, then reset
+        // the real scroll container (the <main> with overflow-y-auto in Layout)
+        // and window as a fallback.
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                const scrollContainer = document.querySelector('main.flex-1.overflow-y-auto');
+                if (scrollContainer) scrollContainer.scrollTop = 0;
+                window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            }, 350);
+        });
+    };
+
     const handleTouchStart = (e) => {
         if (window.scrollY === 0) touchStartY.current = e.touches[0].clientY;
     };
@@ -102,8 +120,7 @@ export default function ExpensesPage() {
             ]);
             setShowForm(false);
             setEditingExpense(null);
-            // Reset scroll after keyboard dismisses on mobile
-            setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 100);
+            resetScrollAfterKeyboard();
             return { previous };
         },
         onSuccess: (response) => {
@@ -124,7 +141,7 @@ export default function ExpensesPage() {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
-            setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 100);
+            resetScrollAfterKeyboard();
             toast.success("Expense updated successfully");
             logActivity({ action: "updated_expense", entityType: "expense", entityId: response?.data?.expense?.id, entityLabel: response?.data?.expense?.description, user });
         },
