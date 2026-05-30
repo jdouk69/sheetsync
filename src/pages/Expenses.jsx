@@ -102,6 +102,8 @@ export default function ExpensesPage() {
             ]);
             setShowForm(false);
             setEditingExpense(null);
+            // Reset scroll after keyboard dismisses on mobile
+            setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 100);
             return { previous };
         },
         onSuccess: (response) => {
@@ -122,6 +124,7 @@ export default function ExpensesPage() {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
+            setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 100);
             toast.success("Expense updated successfully");
             logActivity({ action: "updated_expense", entityType: "expense", entityId: response?.data?.expense?.id, entityLabel: response?.data?.expense?.description, user });
         },
