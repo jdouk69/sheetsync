@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { Home, LogOut, Languages, ChevronLeft, Shield, Trash2 } from "lucide-react";
@@ -29,21 +29,7 @@ function LayoutContent({ children, currentPageName }) {
         }
     };
 
-    // iOS Safari: keep root container height pinned to visualViewport height
-    // so the keyboard opening/closing doesn't leave white blank space.
     const rootRef = useRef(null);
-    useEffect(() => {
-        const vv = window.visualViewport;
-        if (!vv) return;
-        const onResize = () => {
-            if (rootRef.current) {
-                rootRef.current.style.height = vv.height + 'px';
-            }
-        };
-        vv.addEventListener('resize', onResize);
-        onResize(); // set initial value
-        return () => vv.removeEventListener('resize', onResize);
-    }, []);
 
     // Show back button only on sub-pages (not main nav pages)
     const mainPages = ['/', '/Expenses', '/Reports', '/Admin'];

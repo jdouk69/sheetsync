@@ -338,7 +338,7 @@ export default function ExpensesPage() {
 
     if (authLoading || projectsLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-background">
+            <div className="flex items-center justify-center min-h-full bg-background">
                 <div className="text-muted-foreground">Loading...</div>
             </div>
         );
@@ -346,7 +346,7 @@ export default function ExpensesPage() {
 
     if (!user) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-background">
+            <div className="flex items-center justify-center min-h-full bg-background">
                 <div className="text-center max-w-md p-8 bg-card rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold text-foreground mb-4">Authentication Required</h2>
                     <p className="text-muted-foreground mb-6">You need to be logged in to view expenses.</p>
@@ -363,7 +363,7 @@ export default function ExpensesPage() {
 
     if (projects.length === 0 || !currentProjectId) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-6">
+            <div className="min-h-full bg-gradient-to-br from-background to-muted p-4 md:p-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="flex items-center justify-center min-h-[60vh]">
                         <div className="text-center">
@@ -378,7 +378,7 @@ export default function ExpensesPage() {
 
     return (
         <div
-            className="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-6"
+            className="min-h-full bg-gradient-to-br from-background to-muted p-4 md:p-6"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
