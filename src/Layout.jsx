@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { Home, LogOut, Languages, ChevronLeft, Shield, Trash2 } from "lucide-react";
@@ -29,6 +29,22 @@ function LayoutContent({ children, currentPageName }) {
         }
     };
 
+    // iOS Safari: keep root container height pinned to visualViewport height
+    // so the keyboard opening/closing doesn't leave white blank space.
+    const rootRef = useRef(null);
+    useEffect(() => {
+        const vv = window.visualViewport;
+        if (!vv) return;
+        const onResize = () => {
+            if (rootRef.current) {
+                rootRef.current.style.height = vv.height + 'px';
+            }
+        };
+        vv.addEventListener('resize', onResize);
+        onResize(); // set initial value
+        return () => vv.removeEventListener('resize', onResize);
+    }, []);
+
     // Show back button only on sub-pages (not main nav pages)
     const mainPages = ['/', '/Expenses', '/Reports', '/Admin'];
     const canGoBack = !mainPages.includes(window.location.pathname);
@@ -44,7 +60,14 @@ function LayoutContent({ children, currentPageName }) {
     };
 
     return (
-        <div className="h-screen bg-slate-50 flex flex-col overflow-hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <div
+            ref={rootRef}
+            className="bg-slate-50 flex flex-col overflow-hidden"
+            style={{
+                height: '100dvh',
+                paddingTop: "env(safe-area-inset-top)"
+            }}
+        >
         <style>{`
             html, body { overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
             button, [role="tab"], nav, [role="navigation"] { user-select: none; -webkit-user-select: none; }
