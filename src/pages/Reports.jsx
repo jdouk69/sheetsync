@@ -78,7 +78,7 @@ export default function ReportsPage() {
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
             if (!currentProjectId || !user) return [];
-            return base44.entities.Expense.filter({ projectId: currentProjectId }, '-date');
+            return base44.entities.Expense.filter({ projectId: currentProjectId }, '-date', 9999);
         },
         enabled: !!currentProjectId && !!user,
         staleTime: 0,
@@ -364,7 +364,7 @@ export default function ReportsPage() {
 
     if (authLoading || projectsLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center min-h-full">
                 <div className="text-slate-600">Loading...</div>
             </div>
         );
@@ -372,7 +372,7 @@ export default function ReportsPage() {
 
     if (!user) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-50">
+            <div className="flex items-center justify-center min-h-full bg-slate-50">
                 <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold text-slate-900 mb-4">Authentication Required</h2>
                     <p className="text-slate-600 mb-6">You need to be logged in to view reports.</p>
@@ -384,7 +384,7 @@ export default function ReportsPage() {
 
     if (projects.length === 0 || !currentProjectId) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
+            <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="flex items-center justify-center min-h-[60vh]">
                         <div className="text-center">
@@ -398,7 +398,7 @@ export default function ReportsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
+        <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>

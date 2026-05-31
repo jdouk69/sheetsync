@@ -250,7 +250,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         </div>
                                     ) : (
                                         <div className="text-2xl font-bold text-foreground">
-                                            {currencySymbol}{expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            {currencySymbol}{(expense.amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </div>
                                     )}
                                 </div>
