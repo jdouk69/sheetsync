@@ -157,7 +157,7 @@ export default function ReportsPage() {
 
             return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch && statusMatch && userMatch;
         });
-    }, [allExpenses, filters]);
+    }, [allExpenses, filters, paymentTotalsMap]);
 
     const uniqueVendors = useMemo(() => [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))], [allExpenses]);
     const uniqueCategories = useMemo(() => [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))], [allExpenses]);
