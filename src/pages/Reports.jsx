@@ -23,12 +23,7 @@ const expenseValue = (exp) => exp.totalAmount || exp.amount;
 const paidSoFar = (exp) => exp.amount || 0;
 // remainingBalance = what is still owed (can be negative = overpayment)
 const remainingBalance = (exp) => exp.totalAmount ? exp.totalAmount - (exp.amount || 0) : 0;
-// paymentLabel for display
-const paymentLabel = (exp) => {
-    if (exp.paymentStatus === 'fully_paid' || exp.isPaid) return 'Fully Paid';
-    if (exp.paymentStatus === 'deposit_paid') return 'Partially Paid';
-    return 'Unpaid';
-};
+// paymentLabel is defined inside the component (needs access to t())
 
 const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, name, percent }) => {
     if (percent < 0.03) return null;
@@ -55,6 +50,11 @@ const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, name, percent }) => 
 
 export default function ReportsPage() {
     const { t, language } = useLanguage();
+    const paymentLabel = (exp) => {
+        if (exp.paymentStatus === 'fully_paid' || exp.isPaid) return t('fullyPaid');
+        if (exp.paymentStatus === 'deposit_paid') return t('partiallyPaid');
+        return t('unpaid');
+    };
     const { currentProjectId, projects, currentProject, isLoading: projectsLoading } = useProject();
     const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
     const [user, setUser] = useState(null);
@@ -231,8 +231,8 @@ export default function ReportsPage() {
             </head>
             <body>
             <div class="action-buttons">
-                <button class="action-button" onclick="window.print()">🖨️ Print</button>
-                <button class="action-button close-button" onclick="window.close()">✕ Close</button>
+                <button class="action-button" onclick="window.print()">🖨️ ${t('print')}</button>
+                <button class="action-button close-button" onclick="window.close()">✕ ${t('close')}</button>
             </div>
             <div class="container">
             <div class="report-header">
@@ -242,19 +242,19 @@ export default function ReportsPage() {
 
             <div class="summary-grid">
                 <div class="summary-box">
-                    <div class="summary-label">Total Project Value</div>
+                    <div class="summary-label">${t('totalProjectValue')}</div>
                     <div class="summary-value">${currencySymbol}${totalProjectValue.toLocaleString(locale, { minimumFractionDigits: 2 })}</div>
                     <div class="summary-sub">${expenses.length} expenses</div>
                 </div>
                 <div class="summary-box">
-                    <div class="summary-label">Paid So Far</div>
+                    <div class="summary-label">${t('paidSoFar')}</div>
                     <div class="summary-value">${currencySymbol}${totalPaid.toLocaleString(locale, { minimumFractionDigits: 2 })}</div>
-                    <div class="summary-sub">${fullyPaidCount} fully paid · ${partiallyPaidCount} partial</div>
+                    <div class="summary-sub">${fullyPaidCount} ${t('fullyPaidDot')} · ${partiallyPaidCount} ${t('partialDot')}</div>
                 </div>
                 <div class="summary-box" style="border-color: ${totalRemaining > 0 ? '#fecaca' : '#bbf7d0'};">
-                    <div class="summary-label">Remaining Balance</div>
+                    <div class="summary-label">${t('remainingBalance')}</div>
                     <div class="summary-value" style="color: ${totalRemaining > 0 ? '#b91c1c' : '#15803d'};">${currencySymbol}${totalRemaining.toLocaleString(locale, { minimumFractionDigits: 2 })}</div>
-                    <div class="summary-sub">${unpaidCount} unpaid · ${outstandingExpenses.length} with balance due</div>
+                    <div class="summary-sub">${unpaidCount} ${t('unpaidItems')} · ${outstandingExpenses.length} ${t('expensesWithBalance')}</div>
                 </div>
             </div>
 
@@ -272,17 +272,17 @@ export default function ReportsPage() {
                         <th>${t('description')}</th>
                         <th>${t('category')}</th>
                         <th>${t('vendor')}</th>
-                        <th class="amount-cell">Quoted / Total</th>
-                        <th class="amount-cell">Paid So Far</th>
-                        <th class="amount-cell">Remaining</th>
-                        <th>Status</th>
+                        <th class="amount-cell">${t('quotedTotalHeader')}</th>
+                        <th class="amount-cell">${t('paidSoFar')}</th>
+                        <th class="amount-cell">${t('remainingHeader')}</th>
+                        <th>${t('status')}</th>
                         <th>${t('paidCash')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${expenses.map(exp => {
                         const label = paymentLabel(exp);
-                        const statusClass = label === 'Fully Paid' ? 'status-full' : label === 'Partially Paid' ? 'status-partial' : 'status-unpaid';
+                        const statusClass = exp.paymentStatus === 'fully_paid' || exp.isPaid ? 'status-full' : exp.paymentStatus === 'deposit_paid' ? 'status-partial' : 'status-unpaid';
                         return `
                         <tr>
                             <td>${format(new Date(exp.date), 'dd/MM/yyyy', { locale: dateLocale })}</td>
@@ -291,7 +291,7 @@ export default function ReportsPage() {
                             <td>${exp.vendor || '-'}</td>
                             <td class="amount-cell">${currencySymbol}${expenseValue(exp).toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
                             <td class="amount-cell">${currencySymbol}${paidSoFar(exp).toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
-                            <td class="amount-cell" style="${remainingBalance(exp) < 0 ? 'color:#d97706;' : remainingBalance(exp) > 0 ? 'color:#b91c1c;' : ''}">${remainingBalance(exp) > 0 ? currencySymbol + remainingBalance(exp).toLocaleString(locale, { minimumFractionDigits: 2 }) : remainingBalance(exp) < 0 ? 'Overpayment ' + currencySymbol + Math.abs(remainingBalance(exp)).toLocaleString(locale, { minimumFractionDigits: 2 }) : '-'}</td>
+                            <td class="amount-cell" style="${remainingBalance(exp) < 0 ? 'color:#d97706;' : remainingBalance(exp) > 0 ? 'color:#b91c1c;' : ''}">${remainingBalance(exp) > 0 ? currencySymbol + remainingBalance(exp).toLocaleString(locale, { minimumFractionDigits: 2 }) : remainingBalance(exp) < 0 ? t('overpayment') + ' ' + currencySymbol + Math.abs(remainingBalance(exp)).toLocaleString(locale, { minimumFractionDigits: 2 }) : '-'}</td>
                             <td class="${statusClass}">${label}</td>
                             <td>${exp.paidCash ? '✓' : '-'}</td>
                         </tr>`;
@@ -300,7 +300,7 @@ export default function ReportsPage() {
             </table>
 
             ${outstandingExpenses.length > 0 ? `
-            <h2 class="section-title">Outstanding Balances</h2>
+            <h2 class="section-title">${t('outstandingBalances')}</h2>
             <table>
                 <thead>
                     <tr>
@@ -308,9 +308,9 @@ export default function ReportsPage() {
                         <th>${t('description')}</th>
                         <th>${t('category')}</th>
                         <th>${t('vendor')}</th>
-                        <th class="amount-cell">Quoted Total</th>
-                        <th class="amount-cell">Paid So Far</th>
-                        <th class="amount-cell">Remaining Balance</th>
+                        <th class="amount-cell">${t('quotedTotal2')}</th>
+                        <th class="amount-cell">${t('paidSoFar')}</th>
+                        <th class="amount-cell">${t('remainingBalance2')}</th>
                     </tr>
                 </thead>
                 <tbody>

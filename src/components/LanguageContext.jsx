@@ -211,6 +211,8 @@ const translations = {
         legacyAmountWillBeMigrated: "Existing amount ({amount}) will be recorded as the first payment",
         totalQuotedAmount: "Total Quoted Amount",
         overpayment: "Overpayment",
+        print: "Print",
+        close: "Close",
 
         // Budget Tracker
         budgetTracker: "Budget Tracker",
@@ -450,6 +452,8 @@ const translations = {
         legacyAmountWillBeMigrated: "Το υπάρχον ποσό ({amount}) θα καταχωρηθεί ως η πρώτη πληρωμή",
         totalQuotedAmount: "Συνολική Προσφερόμενη Αξία",
         overpayment: "Υπερπληρωμή",
+        print: "Εκτύπωση",
+        close: "Κλείσιμο",
 
         // Budget Tracker
         budgetTracker: "Παρακολούθηση Προϋπολογισμού",
