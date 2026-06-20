@@ -681,9 +681,9 @@ export default function ReportsPage() {
                                                         : <span className="text-slate-300">—</span>}
                                                 </td>
                                                 <td className="py-2 px-2 text-center">
-                                                    {label === 'Fully Paid'
+                                                    {exp.paymentStatus === 'fully_paid' || exp.isPaid
                                                         ? <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium"><CheckCircle className="w-3 h-3" />Paid</span>
-                                                        : label === 'Partially Paid'
+                                                        : exp.paymentStatus === 'deposit_paid'
                                                         ? <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium"><Clock className="w-3 h-3" />Partial</span>
                                                         : <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-medium"><XCircle className="w-3 h-3" />Unpaid</span>}
                                                 </td>
