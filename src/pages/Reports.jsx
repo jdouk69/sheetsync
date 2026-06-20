@@ -19,10 +19,8 @@ const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr
 // ─── Payment Model Helpers ─────────────────────────────────────────────────
 // expenseValue = the full quoted/project cost of an expense
 const expenseValue = (exp) => exp.totalAmount || exp.amount;
-// paidSoFar = how much has actually been paid (always expense.amount)
-const paidSoFar = (exp) => exp.amount || 0;
-// remainingBalance = what is still owed (can be negative = overpayment)
-const remainingBalance = (exp) => exp.totalAmount ? exp.totalAmount - (exp.amount || 0) : 0;
+// paidSoFar and remainingBalance are redefined inside the component
+// using the live paymentTotalsMap so they reflect all Payment records.
 // paymentLabel is defined inside the component (needs access to t())
 
 const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, name, percent }) => {
@@ -83,6 +81,41 @@ export default function ReportsPage() {
         enabled: !!currentProjectId && !!user,
         staleTime: 0,
     });
+
+    // Fetch all Payment records for this project so Reports can compute
+    // the true total paid per expense (same as ExpenseCard does).
+    const { data: allPayments = [], refetch: refetchPayments } = useQuery({
+        queryKey: ['payments-for-reports', currentProjectId],
+        queryFn: async () => {
+            if (!currentProjectId || !user) return [];
+            // Payment has no projectId — fetch all and filter client-side by expenseId
+            return base44.entities.Payment.list('-date', 9999);
+        },
+        enabled: !!currentProjectId && !!user,
+        staleTime: 0,
+    });
+
+    // Build a map: expenseId -> total paid (sum of all Payment records)
+    const paymentTotalsMap = useMemo(() => {
+        const map = {};
+        allPayments.forEach(p => {
+            if (!p.expenseId) return;
+            map[p.expenseId] = (map[p.expenseId] || 0) + (p.amount || 0);
+        });
+        return map;
+    }, [allPayments]);
+
+    // Helpers that use live Payment data where available,
+    // falling back to exp.amount for legacy/untracked expenses.
+    const paidSoFar = (exp) => {
+        const fromPayments = paymentTotalsMap[exp.id];
+        if (fromPayments !== undefined) return fromPayments;
+        return exp.amount || 0;
+    };
+    const remainingBalance = (exp) => {
+        const total = expenseValue(exp);
+        return total - paidSoFar(exp);
+    };
 
     const [filters, setFilters] = useState({
         category: 'all',
@@ -413,7 +446,7 @@ export default function ReportsPage() {
                         <p className="text-slate-600 mt-1">{t('visualBreakdown')}</p>
                     </div>
                     <div className="flex gap-2">
-                        <Button onClick={() => refetchExpenses()} variant="outline" disabled={isFetching} title="Refresh data">
+                        <Button onClick={() => { refetchExpenses(); refetchPayments(); }} variant="outline" disabled={isFetching} title="Refresh data">
                             <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
                         </Button>
                         <Button onClick={handleExportCSV} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
