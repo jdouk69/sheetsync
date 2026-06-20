@@ -180,9 +180,17 @@ export default function ReportsPage() {
 
 
     // ─── PDF Export ──────────────────────────────────────────────────────────
-    const handleExportPDF = async () => {
+    const handleExportPDF = () => {
         const locale = language === 'el' ? 'el-GR' : 'en-US';
         const dateLocale = language === 'el' ? elLocale : undefined;
+
+        // Open the window synchronously (before any async work) so iOS Safari
+        // treats it as a direct user gesture and doesn't block the popup.
+        const newWindow = window.open('', '_blank');
+        if (!newWindow) {
+            alert('Please allow pop-ups for this site to use the print/export feature.');
+            return;
+        }
 
         const htmlContent = `
             <!DOCTYPE html>
@@ -321,7 +329,6 @@ export default function ReportsPage() {
 
             </div></body></html>`;
 
-        const newWindow = window.open('', '_blank');
         newWindow.document.write(htmlContent);
         newWindow.document.close();
     };
