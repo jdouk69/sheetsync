@@ -48,9 +48,9 @@ function LayoutContent({ children, currentPageName }) {
     return (
         <div
             ref={rootRef}
-            className="bg-slate-50 flex flex-col overflow-hidden"
+            className="bg-slate-50 flex flex-col overflow-x-hidden"
             style={{
-                height: '100dvh',
+                minHeight: '100svh',
                 paddingTop: "env(safe-area-inset-top)"
             }}
         >
