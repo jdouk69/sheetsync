@@ -310,6 +310,7 @@ export default function ReportsPage() {
                         <th class="amount-cell">${t('remainingHeader')}</th>
                         <th>${t('status')}</th>
                         <th>${t('paidCash')}</th>
+                        <th class="amount-cell">Tax Amount</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -327,6 +328,7 @@ export default function ReportsPage() {
                             <td class="amount-cell" style="${remainingBalance(exp) < 0 ? 'color:#d97706;' : remainingBalance(exp) > 0 ? 'color:#b91c1c;' : ''}">${remainingBalance(exp) > 0 ? currencySymbol + remainingBalance(exp).toLocaleString(locale, { minimumFractionDigits: 2 }) : remainingBalance(exp) < 0 ? t('overpayment') + ' ' + currencySymbol + Math.abs(remainingBalance(exp)).toLocaleString(locale, { minimumFractionDigits: 2 }) : '-'}</td>
                             <td class="${statusClass}">${label}</td>
                             <td>${exp.paidCash ? '✓' : '-'}</td>
+                            <td class="amount-cell">${exp.taxAmount > 0 ? currencySymbol + Number(exp.taxAmount).toFixed(2) : ''}</td>
                         </tr>`;
                     }).join('')}
                 </tbody>
