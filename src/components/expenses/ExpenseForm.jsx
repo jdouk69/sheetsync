@@ -46,6 +46,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
         amount: "",
         totalAmount: "",
         depositAmount: "",
+        taxAmount: "",
         paymentStatus: "unpaid",
         category: "Materials",
         date: new Date().toISOString().split('T')[0],
@@ -96,6 +97,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                 amount: expense.amount || "",
                 totalAmount: expense.totalAmount || "",
                 depositAmount: expense.depositAmount || "",
+                taxAmount: expense.taxAmount || "",
                 paymentStatus: expense.paymentStatus || "unpaid",
                 category: expense.category || "Materials",
                 date: dateValue,
@@ -114,6 +116,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                 amount: "",
                 totalAmount: "",
                 depositAmount: "",
+                taxAmount: "",
                 paymentStatus: "unpaid",
                 category: "Materials",
                 date: new Date().toISOString().split('T')[0],
@@ -409,6 +412,19 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                         onChange={(e) => setFormData({...formData, notes: e.target.value})}
                         placeholder={t('notesPlaceholder')}
                         rows={3}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Tax / VAT Amount
+                    </label>
+                    <Input
+                        type="number"
+                        step="0.01"
+                        value={formData.taxAmount}
+                        onChange={(e) => setFormData({...formData, taxAmount: e.target.value})}
+                        placeholder="0.00 (optional)"
                     />
                 </div>
 

@@ -18,6 +18,10 @@
       "type": "number",
       "description": "Deposit amount paid in project currency"
     },
+    "taxAmount": {
+      "type": "number",
+      "description": "Tax/VAT amount shown on the invoice in project currency"
+    },
     "paymentStatus": {
       "type": "string",
       "enum": [

@@ -371,7 +371,7 @@ export default function ReportsPage() {
         const headers = [
             t('date'), t('description'), t('category'), t('vendor'),
             'Quoted/Total Amount', 'Paid So Far', 'Remaining Balance',
-            'Payment Status', t('paidCash'), t('notes')
+            'Payment Status', t('paidCash'), t('notes'), 'Tax Amount'
         ];
         const rows = expenses.map(exp => [
             format(new Date(exp.date), 'yyyy-MM-dd'),
@@ -384,6 +384,7 @@ export default function ReportsPage() {
             paymentLabel(exp),
             exp.paidCash ? 'Yes' : 'No',
             exp.notes || '',
+            exp.taxAmount ? Number(exp.taxAmount).toFixed(2) : '',
         ]);
 
         const csvContent = [
@@ -836,6 +837,104 @@ export default function ReportsPage() {
                     )}
                 </div>
             </div>
+
+                {/* ── Tax Report ── */}
+                {(() => {
+                    const now = new Date();
+                    const currentMonth = now.getMonth();
+                    const currentYear = now.getFullYear();
+
+                    const taxExpenses = expenses.filter(exp => exp.taxAmount > 0);
+                    if (taxExpenses.length === 0) return null;
+
+                    const totalTaxMonth = taxExpenses
+                        .filter(exp => {
+                            const d = new Date(exp.date);
+                            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+                        })
+                        .reduce((sum, exp) => sum + Number(exp.taxAmount), 0);
+
+                    const totalTaxYear = taxExpenses
+                        .filter(exp => new Date(exp.date).getFullYear() === currentYear)
+                        .reduce((sum, exp) => sum + Number(exp.taxAmount), 0);
+
+                    const taxByVendor = taxExpenses.reduce((acc, exp) => {
+                        const key = exp.vendor || '(No Vendor)';
+                        acc[key] = (acc[key] || 0) + Number(exp.taxAmount);
+                        return acc;
+                    }, {});
+
+                    const taxByCategory = taxExpenses.reduce((acc, exp) => {
+                        const key = exp.category || '(No Category)';
+                        acc[key] = (acc[key] || 0) + Number(exp.taxAmount);
+                        return acc;
+                    }, {});
+
+                    const taxByProject = projects.reduce((acc, proj) => {
+                        const projTax = taxExpenses
+                            .filter(exp => exp.projectId === proj.id)
+                            .reduce((sum, exp) => sum + Number(exp.taxAmount), 0);
+                        if (projTax > 0) acc[proj.name] = projTax;
+                        return acc;
+                    }, {});
+
+                    return (
+                        <div className="bg-white rounded-lg shadow-sm p-6 mb-6 mt-6">
+                            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                                <span className="text-blue-600">%</span> Tax / VAT Report
+                            </h2>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div className="bg-slate-50 rounded-lg p-4">
+                                    <p className="text-sm text-slate-500 mb-1">Total Tax This Month</p>
+                                    <p className="text-2xl font-bold text-slate-900">{currencySymbol}{totalTaxMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                </div>
+                                <div className="bg-slate-50 rounded-lg p-4">
+                                    <p className="text-sm text-slate-500 mb-1">Total Tax This Year</p>
+                                    <p className="text-2xl font-bold text-slate-900">{currencySymbol}{totalTaxYear.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <h3 className="text-sm font-semibold text-slate-700 mb-2">Tax by Vendor</h3>
+                                    <div className="space-y-2">
+                                        {Object.entries(taxByVendor).sort((a,b) => b[1]-a[1]).map(([vendor, tax]) => (
+                                            <div key={vendor} className="flex justify-between text-sm py-1 border-b border-slate-100">
+                                                <span className="text-slate-700 truncate mr-2">{vendor}</span>
+                                                <span className="font-medium text-slate-900 shrink-0">{currencySymbol}{tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-semibold text-slate-700 mb-2">Tax by Category</h3>
+                                    <div className="space-y-2">
+                                        {Object.entries(taxByCategory).sort((a,b) => b[1]-a[1]).map(([cat, tax]) => (
+                                            <div key={cat} className="flex justify-between text-sm py-1 border-b border-slate-100">
+                                                <span className="text-slate-700 truncate mr-2">{cat}</span>
+                                                <span className="font-medium text-slate-900 shrink-0">{currencySymbol}{tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {Object.keys(taxByProject).length > 0 && (
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-slate-700 mb-2">Tax by Project</h3>
+                                        <div className="space-y-2">
+                                            {Object.entries(taxByProject).sort((a,b) => b[1]-a[1]).map(([proj, tax]) => (
+                                                <div key={proj} className="flex justify-between text-sm py-1 border-b border-slate-100">
+                                                    <span className="text-slate-700 truncate mr-2">{proj}</span>
+                                                    <span className="font-medium text-slate-900 shrink-0">{currencySymbol}{tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })()}
 
             <div className="mt-8 mb-20 text-center text-sm text-slate-400">
                 <Link to={createPageUrl("PrivacyPolicy")} className="hover:text-blue-600 transition-colors">
