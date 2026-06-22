@@ -260,7 +260,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                 <p className="text-sm text-muted-foreground mt-2">{expense.notes}</p>
                             )}
                             {expense.taxAmount > 0 && (
-                                <p className="text-xs text-slate-500 mt-1">Tax / VAT: {currencySymbol}{Number(expense.taxAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                <p className="text-xs text-slate-500 mt-1">{t('taxAmount')}: {currencySymbol}{Number(expense.taxAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                             )}
 
                             <div className="flex flex-wrap gap-2 mt-3 text-xs">

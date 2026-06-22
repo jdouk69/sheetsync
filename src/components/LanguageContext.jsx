@@ -213,6 +213,16 @@ const translations = {
         overpayment: "Overpayment",
         print: "Print",
         close: "Close",
+        taxAmount: "Tax / VAT Amount",
+        taxAmountPlaceholder: "0.00 (optional)",
+        taxVatReport: "Tax / VAT Report",
+        totalTaxThisMonth: "Total Tax This Month",
+        totalTaxThisYear: "Total Tax This Year",
+        taxByVendor: "Tax by Vendor",
+        taxByCategory: "Tax by Category",
+        taxByProject: "Tax by Project",
+        noVendorFallback: "(No Vendor)",
+        noCategoryFallback: "(No Category)",
 
         // Budget Tracker
         budgetTracker: "Budget Tracker",
@@ -454,6 +464,16 @@ const translations = {
         overpayment: "Υπερπληρωμή",
         print: "Εκτύπωση",
         close: "Κλείσιμο",
+        taxAmount: "Ποσό ΦΠΑ",
+        taxAmountPlaceholder: "0,00 (προαιρετικό)",
+        taxVatReport: "Αναφορά ΦΠΑ",
+        totalTaxThisMonth: "Συνολικό ΦΠΑ αυτού του μήνα",
+        totalTaxThisYear: "Συνολικό ΦΠΑ αυτού του έτους",
+        taxByVendor: "ΦΠΑ ανά Προμηθευτή",
+        taxByCategory: "ΦΠΑ ανά Κατηγορία",
+        taxByProject: "ΦΠΑ ανά Έργο",
+        noVendorFallback: "(Χωρίς Προμηθευτή)",
+        noCategoryFallback: "(Χωρίς Κατηγορία)",
 
         // Budget Tracker
         budgetTracker: "Παρακολούθηση Προϋπολογισμού",

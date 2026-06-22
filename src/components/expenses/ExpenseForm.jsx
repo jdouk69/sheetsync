@@ -417,14 +417,14 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Tax / VAT Amount
+                        {t('taxAmount')}
                     </label>
                     <Input
                         type="number"
                         step="0.01"
                         value={formData.taxAmount}
                         onChange={(e) => setFormData({...formData, taxAmount: e.target.value})}
-                        placeholder="0.00 (optional)"
+                        placeholder={t('taxAmountPlaceholder')}
                     />
                 </div>
 

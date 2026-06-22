@@ -859,13 +859,13 @@ export default function ReportsPage() {
                         .reduce((sum, exp) => sum + Number(exp.taxAmount), 0);
 
                     const taxByVendor = taxExpenses.reduce((acc, exp) => {
-                        const key = exp.vendor || '(No Vendor)';
+                        const key = exp.vendor || t('noVendorFallback');
                         acc[key] = (acc[key] || 0) + Number(exp.taxAmount);
                         return acc;
                     }, {});
 
                     const taxByCategory = taxExpenses.reduce((acc, exp) => {
-                        const key = exp.category || '(No Category)';
+                        const key = exp.category || t('noCategoryFallback');
                         acc[key] = (acc[key] || 0) + Number(exp.taxAmount);
                         return acc;
                     }, {});
@@ -881,23 +881,23 @@ export default function ReportsPage() {
                     return (
                         <div className="bg-white rounded-lg shadow-sm p-6 mb-6 mt-6">
                             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                                <span className="text-blue-600">%</span> Tax / VAT Report
+                                <span className="text-blue-600">%</span> {t('taxVatReport')}
                             </h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 <div className="bg-slate-50 rounded-lg p-4">
-                                    <p className="text-sm text-slate-500 mb-1">Total Tax This Month</p>
+                                    <p className="text-sm text-slate-500 mb-1">{t('totalTaxThisMonth')}</p>
                                     <p className="text-2xl font-bold text-slate-900">{currencySymbol}{totalTaxMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                 </div>
                                 <div className="bg-slate-50 rounded-lg p-4">
-                                    <p className="text-sm text-slate-500 mb-1">Total Tax This Year</p>
+                                    <p className="text-sm text-slate-500 mb-1">{t('totalTaxThisYear')}</p>
                                     <p className="text-2xl font-bold text-slate-900">{currencySymbol}{totalTaxYear.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
-                                    <h3 className="text-sm font-semibold text-slate-700 mb-2">Tax by Vendor</h3>
+                                    <h3 className="text-sm font-semibold text-slate-700 mb-2">{t('taxByVendor')}</h3>
                                     <div className="space-y-2">
                                         {Object.entries(taxByVendor).sort((a,b) => b[1]-a[1]).map(([vendor, tax]) => (
                                             <div key={vendor} className="flex justify-between text-sm py-1 border-b border-slate-100">
@@ -908,7 +908,7 @@ export default function ReportsPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-slate-700 mb-2">Tax by Category</h3>
+                                    <h3 className="text-sm font-semibold text-slate-700 mb-2">{t('taxByCategory')}</h3>
                                     <div className="space-y-2">
                                         {Object.entries(taxByCategory).sort((a,b) => b[1]-a[1]).map(([cat, tax]) => (
                                             <div key={cat} className="flex justify-between text-sm py-1 border-b border-slate-100">
@@ -920,7 +920,7 @@ export default function ReportsPage() {
                                 </div>
                                 {Object.keys(taxByProject).length > 0 && (
                                     <div>
-                                        <h3 className="text-sm font-semibold text-slate-700 mb-2">Tax by Project</h3>
+                                    <h3 className="text-sm font-semibold text-slate-700 mb-2">{t('taxByProject')}</h3>
                                         <div className="space-y-2">
                                             {Object.entries(taxByProject).sort((a,b) => b[1]-a[1]).map(([proj, tax]) => (
                                                 <div key={proj} className="flex justify-between text-sm py-1 border-b border-slate-100">
