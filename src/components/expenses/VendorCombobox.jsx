@@ -114,8 +114,8 @@ export default function VendorCombobox({ value, onChange, existingVendors = [] }
             </Button>
 
             <Drawer open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
-                <DrawerContent className="min-h-[50dvh]">
-                    <div className="p-4 flex flex-col min-h-0" style={{ maxHeight: '70dvh' }}>
+                <DrawerContent className="min-h-[50svh]">
+                    <div className="p-4 flex flex-col min-h-0" style={{ maxHeight: '70svh' }}>
                         <div className="text-sm font-semibold text-foreground mb-3 shrink-0">Vendor</div>
                         <input
                             ref={inputRef}

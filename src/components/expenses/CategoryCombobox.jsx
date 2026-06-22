@@ -116,8 +116,8 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
             </Button>
 
             <Drawer open={open} onOpenChange={setOpen}>
-                <DrawerContent className="min-h-[50dvh]">
-                    <div className="p-4 flex flex-col min-h-0" style={{ maxHeight: '70dvh' }}>
+                <DrawerContent className="min-h-[50svh]">
+                    <div className="p-4 flex flex-col min-h-0" style={{ maxHeight: '70svh' }}>
                         <div className="text-sm font-semibold text-foreground mb-3">Category</div>
                         <input
                             ref={inputRef}
