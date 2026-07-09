@@ -154,9 +154,16 @@ export default function ExpensesPage() {
         mutationFn: async (paymentData) => {
             const expense = directPaymentExpense;
             if (!expense) return;
-            // Migrate legacy deposit to Payment record if no Payment records exist yet
+            // Migrate legacy deposit to Payment record if no Payment records exist yet.
+            // We fetch existing payments ONCE up front, before any writes.
             const existingPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
+            const existingTotal = existingPayments.reduce((sum, p) => sum + p.amount, 0);
+
+            // Track how much the migration adds so we can compute the total deterministically
+            // without a second DB fetch (which could miss the just-created deposit).
+            let migratedDepositAmount = 0;
             if (existingPayments.length === 0 && expense.depositAmount > 0) {
+                migratedDepositAmount = expense.depositAmount;
                 await base44.entities.Payment.create({
                     expenseId: expense.id,
                     amount: expense.depositAmount,
@@ -167,14 +174,16 @@ export default function ExpensesPage() {
                     paidByName: expense.createdByName || expense.created_by,
                 });
             }
+
             const payment = await base44.entities.Payment.create({
                 ...paymentData,
                 expenseId: expense.id,
                 paidBy: user?.email,
                 paidByName: user?.full_name || user?.email,
             });
-            const freshPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
-            const newTotalPaid = freshPayments.reduce((sum, p) => sum + p.amount, 0);
+
+            // Compute new total deterministically: no second DB fetch needed.
+            const newTotalPaid = existingTotal + migratedDepositAmount + paymentData.amount;
             const isNowFull = expense.totalAmount && newTotalPaid >= expense.totalAmount;
             await base44.entities.Expense.update(expense.id, {
                 amount: newTotalPaid,

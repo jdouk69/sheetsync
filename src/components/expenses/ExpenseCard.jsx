@@ -54,10 +54,16 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
     const addPaymentMutation = useMutation({
         mutationFn: async (paymentData) => {
-            // If this is the first payment and there's a legacy deposit, migrate it to a Payment record first
-            // Use a fresh live DB fetch (not the React Query cache) to avoid duplicate migration on early render
+            // Fetch existing payments ONCE up front, before any writes.
             const existingPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
+            const existingTotal = existingPayments.reduce((sum, p) => sum + p.amount, 0);
+
+            // If this is the first payment and there's a legacy deposit, migrate it.
+            // Track the migrated amount so we can compute the total deterministically
+            // without a second DB fetch (which could miss the just-created deposit record).
+            let migratedDepositAmount = 0;
             if (existingPayments.length === 0 && expense.depositAmount > 0) {
+                migratedDepositAmount = expense.depositAmount;
                 await base44.entities.Payment.create({
                     expenseId: expense.id,
                     amount: expense.depositAmount,
@@ -77,11 +83,9 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                 paidByName: currentUser?.full_name || currentUser?.email,
             });
 
-            // Fetch fresh payments to get accurate total (avoids stale closure values)
-            const freshPayments = await base44.entities.Payment.filter({ expenseId: expense.id }, 'date');
-            const newTotalPaid = freshPayments.reduce((sum, p) => sum + p.amount, 0);
+            // Compute new total deterministically: no second DB fetch needed.
+            const newTotalPaid = existingTotal + migratedDepositAmount + paymentData.amount;
 
-            // Always update expense.amount to reflect total paid, regardless of totalAmount
             if (expense.totalAmount) {
                 const newStatus = newTotalPaid >= expense.totalAmount ? 'fully_paid' : 'deposit_paid';
                 await base44.entities.Expense.update(expense.id, {
