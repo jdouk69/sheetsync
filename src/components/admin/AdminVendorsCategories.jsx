@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Merge, Pencil, Check, X, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import { bulkUpdateExpenseField } from "./vendorCategoryUtils";
+import RenameFieldDialog from "./RenameFieldDialog";
 
-function MergeSection({ items, label, onMerge }) {
+function MergeSection({ items, label, onMerge, onRenameClick }) {
     const [selected, setSelected] = useState([]);
     const [canonicalName, setCanonicalName] = useState("");
     const [merging, setMerging] = useState(false);
@@ -29,19 +31,38 @@ function MergeSection({ items, label, onMerge }) {
 
     return (
         <div>
+            <p className="text-xs text-slate-400 mb-2">Click a name to select it for merging, or use the pencil icon to rename a single item.</p>
             <div className="flex flex-wrap gap-2 mb-3">
                 {items.map(item => (
-                    <button
+                    <div
                         key={item}
-                        onClick={() => toggleSelect(item)}
-                        className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
-                            selected.includes(item)
-                                ? "bg-blue-600 text-white border-blue-600"
-                                : "bg-white text-slate-700 border-slate-200 hover:border-blue-400"
+                        className={`flex items-center rounded-full border overflow-hidden ${
+                            selected.includes(item) ? "border-blue-600" : "border-slate-200"
                         }`}
                     >
-                        {item}
-                    </button>
+                        <button
+                            onClick={() => toggleSelect(item)}
+                            className={`px-3 py-1.5 text-sm transition-all ${
+                                selected.includes(item)
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white text-slate-700 hover:bg-slate-50"
+                            }`}
+                        >
+                            {item}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); onRenameClick(item); }}
+                            title={`Rename "${item}"`}
+                            className={`px-2 py-1.5 border-l ${
+                                selected.includes(item)
+                                    ? "border-blue-500 bg-blue-600 text-blue-100 hover:text-white"
+                                    : "border-slate-200 bg-white text-slate-400 hover:text-blue-600 hover:bg-slate-50"
+                            }`}
+                        >
+                            <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
                 ))}
             </div>
 
@@ -70,7 +91,7 @@ function MergeSection({ items, label, onMerge }) {
     );
 }
 
-function ProjectSection({ project, expenses, onMerge, onRename }) {
+function ProjectSection({ project, expenses, onMerge, onRenameClick }) {
     const [open, setOpen] = useState(false);
 
     const projectExpenses = expenses.filter(e => e.projectId === project.id);
@@ -102,6 +123,7 @@ function ProjectSection({ project, expenses, onMerge, onRename }) {
                                 items={vendors}
                                 label="vendor"
                                 onMerge={(selected, canonical) => onMerge(project.id, "vendor", selected, canonical)}
+                                onRenameClick={(item) => onRenameClick(project.id, "vendor", item, vendors.filter(v => v !== item))}
                             />
                         ) : <p className="text-sm text-slate-400">No vendors.</p>}
                     </div>
@@ -113,6 +135,7 @@ function ProjectSection({ project, expenses, onMerge, onRename }) {
                                 items={categories}
                                 label="category"
                                 onMerge={(selected, canonical) => onMerge(project.id, "category", selected, canonical)}
+                                onRenameClick={(item) => onRenameClick(project.id, "category", item, categories.filter(c => c !== item))}
                             />
                         ) : <p className="text-sm text-slate-400">No categories.</p>}
                     </div>
@@ -124,6 +147,7 @@ function ProjectSection({ project, expenses, onMerge, onRename }) {
 
 export default function AdminVendorsCategories() {
     const queryClient = useQueryClient();
+    const [renameState, setRenameState] = useState(null);
 
     const { data: expenses = [], isLoading: loadingExpenses } = useQuery({
         queryKey: ['all-expenses'],
@@ -135,19 +159,19 @@ export default function AdminVendorsCategories() {
         queryFn: () => base44.entities.Project.list(),
     });
 
-    const handleMerge = async (projectId, field, selected, canonical) => {
-        // Find all expenses in this project with one of the selected values
-        const toUpdate = expenses.filter(
-            e => e.projectId === projectId && selected.includes(e[field])
-        );
-
-        await Promise.all(
-            toUpdate.map(e => base44.entities.Expense.update(e.id, { [field]: canonical }))
-        );
-
+    const invalidateExpenses = () => {
         queryClient.invalidateQueries({ queryKey: ['all-expenses'] });
         queryClient.invalidateQueries({ queryKey: ['expenses'] });
-        toast.success(`Merged ${toUpdate.length} expense(s) into "${canonical}"`);
+    };
+
+    const handleMerge = async (projectId, field, selected, canonical) => {
+        const count = await bulkUpdateExpenseField(expenses, projectId, field, selected, canonical);
+        invalidateExpenses();
+        toast.success(`Merged ${count} expense(s) into "${canonical}"`);
+    };
+
+    const handleRenameClick = (projectId, field, value, otherValues) => {
+        setRenameState({ projectId, field, value, otherValues });
     };
 
     if (loadingExpenses || loadingProjects) {
@@ -157,7 +181,10 @@ export default function AdminVendorsCategories() {
     return (
         <div className="space-y-4">
             <div className="mb-2">
-                <p className="text-sm text-slate-500">Select multiple items to merge them into one. Changes apply to all expenses in the project.</p>
+                <p className="text-sm text-slate-500">
+                    <span className="font-semibold text-slate-700">Rename</span> a single vendor or category using the pencil icon, or{" "}
+                    <span className="font-semibold text-slate-700">Merge</span> multiple variants into one by selecting them below. Changes apply to all expenses in the project.
+                </p>
             </div>
 
             {projects.map(project => (
@@ -166,8 +193,23 @@ export default function AdminVendorsCategories() {
                     project={project}
                     expenses={expenses}
                     onMerge={handleMerge}
+                    onRenameClick={handleRenameClick}
                 />
             ))}
+
+            {renameState && (
+                <RenameFieldDialog
+                    open={!!renameState}
+                    onOpenChange={(o) => { if (!o) setRenameState(null); }}
+                    fieldLabel={renameState.field === "vendor" ? "Vendor" : "Category"}
+                    currentValue={renameState.value}
+                    otherValues={renameState.otherValues}
+                    expenses={expenses}
+                    projectId={renameState.projectId}
+                    field={renameState.field}
+                    onSuccess={invalidateExpenses}
+                />
+            )}
         </div>
     );
 }
