@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "../LanguageContext";
+import { findCanonicalValue } from "../admin/vendorCategoryUtils";
 
 function useIsMobile() {
     const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 767px)").matches);
@@ -44,7 +45,11 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
     const handleCreate = () => {
         const val = search.trim();
         if (val) {
-            onChange(val);
+            // Prefer an existing project category (case/whitespace-insensitive match);
+            // fall back to a matching suggested category; otherwise keep the new value as typed.
+            const viaProject = findCanonicalValue(existingCategories, val);
+            const canonical = viaProject !== val ? viaProject : findCanonicalValue(suggestedCategories, val);
+            onChange(canonical);
             setOpen(false);
             setSearch("");
         }

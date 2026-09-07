@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "../LanguageContext";
+import { findCanonicalValue } from "../admin/vendorCategoryUtils";
 
 function useIsMobile() {
     const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 767px)").matches);
@@ -38,7 +39,9 @@ export default function VendorCombobox({ value, onChange, existingVendors = [] }
     const handleCreate = () => {
         const val = search.trim();
         if (val) {
-            onChange(val);
+            // Defensive canonicalization: if a case/whitespace-equivalent vendor already
+            // exists, use its exact stored spelling instead of creating a near-duplicate.
+            onChange(findCanonicalValue(vendors, val));
             setOpen(false);
             setSearch("");
         }

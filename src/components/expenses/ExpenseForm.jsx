@@ -14,6 +14,7 @@ import { useLanguage } from "../LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useProject } from "../ProjectContext";
 import { Sparkles } from "lucide-react";
+import { findCanonicalValue } from "../admin/vendorCategoryUtils";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
 
@@ -187,11 +188,19 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Final save-path safety net: canonicalize vendor/category against this project's
+        // existing values (case/whitespace-insensitive) so UI edge cases, autofill, or pasted
+        // text can't slip a near-duplicate into the database. Empty vendor stays empty.
+        const canonicalVendor = formData.vendor ? findCanonicalValue(existingVendors, formData.vendor) : formData.vendor;
+        const canonicalCategory = findCanonicalValue(existingCategories, formData.category);
+
         // Legacy upgrade path: amount stays as-is, totalAmount comes from form, depositAmount auto-derived
         if (isLegacyUpgradeable && isPartialPayment) {
             const totalAmt = parseFloat(formData.totalAmount);
             onSubmit({
                 ...formData,
+                vendor: canonicalVendor,
+                category: canonicalCategory,
                 amount: parseFloat(expense.amount), // unchanged — running total paid so far
                 totalAmount: totalAmt,
                 depositAmount: parseFloat(expense.amount), // auto-derived from old amount
@@ -210,6 +219,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
         onSubmit({
             ...formData,
+            vendor: canonicalVendor,
+            category: canonicalCategory,
             amount: isPartialPayment ? (depositAmt || parseFloat(formData.amount)) : parseFloat(formData.amount),
             totalAmount: isPartialPayment ? totalAmt : null,
             depositAmount: isPartialPayment ? depositAmt : null,
