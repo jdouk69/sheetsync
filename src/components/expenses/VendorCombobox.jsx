@@ -26,7 +26,8 @@ export default function VendorCombobox({ value, onChange, existingVendors = [] }
     const isMobile = useIsMobile();
     const inputRef = useRef(null);
 
-    const vendors = [...new Set((existingVendors || []).filter(Boolean))].sort();
+    const vendors = [...new Set((existingVendors || []).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
     const filtered = vendors.filter(v => v.toLowerCase().includes(search.toLowerCase()));
     const hasExactMatch = vendors.some(v => v.toLowerCase() === search.toLowerCase().trim());
 

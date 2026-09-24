@@ -32,7 +32,8 @@ export default function CategoryCombobox({ value, onChange, existingCategories }
         t('plumber'), t('cabinetmaker'), t('concrete'), t('other')
     ];
 
-    const allCategories = [...new Set([...existingCategories, ...suggestedCategories])].sort();
+    const allCategories = [...new Set([...existingCategories, ...suggestedCategories])]
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
     const filtered = allCategories.filter(cat => cat.toLowerCase().includes(search.toLowerCase()));
     const hasExactMatch = allCategories.some(cat => cat.toLowerCase() === search.toLowerCase().trim());
 
