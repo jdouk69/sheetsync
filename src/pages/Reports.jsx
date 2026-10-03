@@ -379,7 +379,7 @@ export default function ReportsPage() {
         return htmlContent;
     };
 
-    // Download PDF: works where window.print() is unavailable (iOS in-app browsers).
+    // Download PDF: the single PDF export action (works in iOS in-app browsers too).
     const handleDownloadPDF = async () => {
         setPdfBusy(true);
         try {
@@ -390,17 +390,6 @@ export default function ReportsPage() {
             toast.error(language === 'el' ? 'Η δημιουργία PDF απέτυχε. Δοκιμάστε ξανά.' : 'Could not create the PDF. Please try again.');
         } finally {
             setPdfBusy(false);
-        }
-    };
-
-    const handleExportPDF = () => {
-        const htmlContent = buildReportHtml();
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const newWindow = window.open(url, '_blank');
-        if (!newWindow) {
-            URL.revokeObjectURL(url);
-            alert('Could not open the report. Please allow pop-ups for this site and try again.');
         }
     };
 
@@ -492,11 +481,7 @@ export default function ReportsPage() {
                             <FileText className="w-4 h-4 mr-2" />
                             {t('exportCsv')}
                         </Button>
-                        <Button onClick={handleExportPDF} className="bg-blue-600 hover:bg-blue-700">
-                            <Download className="w-4 h-4 mr-2" />
-                            {t('exportPdf')}
-                        </Button>
-                        <Button onClick={handleDownloadPDF} disabled={pdfBusy} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                        <Button onClick={handleDownloadPDF} disabled={pdfBusy} className="bg-blue-600 hover:bg-blue-700">
                             <Download className="w-4 h-4 mr-2" />
                             {pdfBusy ? '...' : (language === 'el' ? 'Λήψη PDF' : 'Download PDF')}
                         </Button>
