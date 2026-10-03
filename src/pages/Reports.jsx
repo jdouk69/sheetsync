@@ -217,19 +217,12 @@ export default function ReportsPage() {
         const locale = language === 'el' ? 'el-GR' : 'en-US';
         const dateLocale = language === 'el' ? elLocale : undefined;
 
-        // Open the window synchronously (before any async work) so iOS Safari
-        // treats it as a direct user gesture and doesn't block the popup.
-        const newWindow = window.open('', '_blank');
-        if (!newWindow) {
-            alert('Please allow pop-ups for this site to use the print/export feature.');
-            return;
-        }
-
         const htmlContent = `
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
                 <title>${t('constructionExpenseReport')}</title>
                 <style>
                     body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 40px; background: #f8fafc; }
@@ -259,7 +252,21 @@ export default function ReportsPage() {
                     .status-full { color: #16a34a; font-weight: 600; }
                     .status-partial { color: #d97706; font-weight: 600; }
                     .status-unpaid { color: #dc2626; font-weight: 600; }
-                    @media print { .action-buttons { display: none; } }
+                    .table-wrap { overflow-x: auto; }
+                    @page { size: A4 landscape; margin: 10mm; }
+                    @media (max-width: 700px) { body { padding: 12px; } .container { padding: 16px; } .summary-grid { grid-template-columns: 1fr; } .action-buttons { position: static; margin-bottom: 12px; } }
+                    @media print {
+                        .action-buttons { display: none !important; }
+                        body { background: white; padding: 0; max-width: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                        .container { box-shadow: none; padding: 0; border-radius: 0; }
+                        .summary-grid { grid-template-columns: repeat(3, 1fr); }
+                        .table-wrap { overflow: visible; }
+                        table { font-size: 9px; }
+                        th, td { word-break: break-word; }
+                        thead { display: table-header-group; }
+                        tr, .category-item, .summary-box { page-break-inside: avoid; }
+                        .section-title { page-break-after: avoid; }
+                    }
                 </style>
             </head>
             <body>
@@ -298,7 +305,7 @@ export default function ReportsPage() {
             }).join('')}
 
             <h2 class="section-title">${t('expenseDetails')}</h2>
-            <table>
+            <div class="table-wrap"><table>
                 <thead>
                     <tr>
                         <th>${t('date')}</th>
@@ -332,11 +339,11 @@ export default function ReportsPage() {
                         </tr>`;
                     }).join('')}
                 </tbody>
-            </table>
+            </table></div>
 
             ${outstandingExpenses.length > 0 ? `
             <h2 class="section-title">${t('outstandingBalances')}</h2>
-            <table>
+            <div class="table-wrap"><table>
                 <thead>
                     <tr>
                         <th>${t('date')}</th>
@@ -360,12 +367,20 @@ export default function ReportsPage() {
                         <td class="amount-cell" style="color:#b91c1c; font-weight:bold;">${currencySymbol}${remainingBalance(exp).toLocaleString(locale, { minimumFractionDigits: 2 })}</td>
                     </tr>`).join('')}
                 </tbody>
-            </table>` : ''}
+            </table></div>` : ''}
 
             </div></body></html>`;
 
-        newWindow.document.write(htmlContent);
-        newWindow.document.close();
+        // Open the report as a real Blob URL document (not a document.write'd about:blank
+        // window) so window.print() / Share > Print / Save to PDF work on iOS Safari.
+        // This handler is fully synchronous, so the open still counts as a user gesture.
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const newWindow = window.open(url, '_blank');
+        if (!newWindow) {
+            URL.revokeObjectURL(url);
+            alert('Could not open the report. Please allow pop-ups for this site and try again.');
+        }
     };
 
     // ─── CSV Export ──────────────────────────────────────────────────────────
