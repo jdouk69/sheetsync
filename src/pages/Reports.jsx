@@ -12,6 +12,9 @@ import { format, endOfDay } from "date-fns";
 import { el as elLocale } from 'date-fns/locale';
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
+import { toast } from "sonner";
+import { reportHtmlToPdfBlob } from "@/components/reports/pdfExport";
+import PdfReadyDialog from "@/components/reports/PdfReadyDialog";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6366f1', '#ec4899', '#64748b', '#ef4444', '#14b8a6', '#f97316', '#a855f7', '#06b6d4', '#84cc16', '#e11d48', '#0ea5e9', '#d97706', '#7c3aed', '#059669'];
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', CHF: 'Fr' };
@@ -57,6 +60,8 @@ export default function ReportsPage() {
     const currencySymbol = CURRENCY_SYMBOLS[currentProject?.currency] || '€';
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
+    const [pdfBusy, setPdfBusy] = useState(false);
+    const [pdfBlob, setPdfBlob] = useState(null);
 
     React.useEffect(() => {
         const checkAuth = async () => {
@@ -213,7 +218,7 @@ export default function ReportsPage() {
 
 
     // ─── PDF Export ──────────────────────────────────────────────────────────
-    const handleExportPDF = () => {
+    const buildReportHtml = () => {
         const locale = language === 'el' ? 'el-GR' : 'en-US';
         const dateLocale = language === 'el' ? elLocale : undefined;
 
@@ -371,9 +376,25 @@ export default function ReportsPage() {
 
             </div></body></html>`;
 
-        // Open the report as a real Blob URL document (not a document.write'd about:blank
-        // window) so window.print() / Share > Print / Save to PDF work on iOS Safari.
-        // This handler is fully synchronous, so the open still counts as a user gesture.
+        return htmlContent;
+    };
+
+    // Download PDF: works where window.print() is unavailable (iOS in-app browsers).
+    const handleDownloadPDF = async () => {
+        setPdfBusy(true);
+        try {
+            const blob = await reportHtmlToPdfBlob(buildReportHtml());
+            setPdfBlob(blob);
+        } catch (e) {
+            console.error(e);
+            toast.error(language === 'el' ? 'Η δημιουργία PDF απέτυχε. Δοκιμάστε ξανά.' : 'Could not create the PDF. Please try again.');
+        } finally {
+            setPdfBusy(false);
+        }
+    };
+
+    const handleExportPDF = () => {
+        const htmlContent = buildReportHtml();
         const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const newWindow = window.open(url, '_blank');
@@ -463,7 +484,7 @@ export default function ReportsPage() {
                         <h1 className="text-3xl font-bold text-slate-900">{t('reportsAnalytics')}</h1>
                         <p className="text-slate-600 mt-1">{t('visualBreakdown')}</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <Button onClick={() => { refetchExpenses(); refetchPayments(); }} variant="outline" disabled={isFetching} title="Refresh data">
                             <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
                         </Button>
@@ -475,6 +496,11 @@ export default function ReportsPage() {
                             <Download className="w-4 h-4 mr-2" />
                             {t('exportPdf')}
                         </Button>
+                        <Button onClick={handleDownloadPDF} disabled={pdfBusy} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                            <Download className="w-4 h-4 mr-2" />
+                            {pdfBusy ? '...' : (language === 'el' ? 'Λήψη PDF' : 'Download PDF')}
+                        </Button>
+                        <PdfReadyDialog blob={pdfBlob} fileName={`construction-expenses-${format(new Date(), 'yyyy-MM-dd')}.pdf`} language={language} onClose={() => setPdfBlob(null)} />
                     </div>
                 </div>
 
