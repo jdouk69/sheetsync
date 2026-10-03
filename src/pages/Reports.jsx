@@ -164,8 +164,8 @@ export default function ReportsPage() {
         });
     }, [allExpenses, filters, paymentTotalsMap]);
 
-    const uniqueVendors = useMemo(() => [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))], [allExpenses]);
-    const uniqueCategories = useMemo(() => [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))], [allExpenses]);
+    const uniqueVendors = useMemo(() => [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })), [allExpenses]);
+    const uniqueCategories = useMemo(() => [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })), [allExpenses]);
     const uniqueUsers = useMemo(() => [...new Set(allExpenses.map(exp => exp.created_by).filter(Boolean))], [allExpenses]);
 
     // ─── Summary Metrics ─────────────────────────────────────────────────────
@@ -552,7 +552,7 @@ export default function ReportsPage() {
                                 <SelectTrigger><SelectValue placeholder={t('allCategories')} /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">{t('allCategories')}</SelectItem>
-                                    {uniqueCategories.sort().map(category => (
+                                    {uniqueCategories.map(category => (
                                         <SelectItem key={category} value={category}>{category}</SelectItem>
                                     ))}
                                 </SelectContent>
