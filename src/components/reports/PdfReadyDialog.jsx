@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Share2, ExternalLink } from "lucide-react";
@@ -7,7 +7,14 @@ import { toast } from "sonner";
 // Shown after the PDF is generated. The buttons give a fresh tap (user gesture),
 // which iOS requires for opening/sharing files.
 export default function PdfReadyDialog({ blob, fileName, language, onClose }) {
-    const url = useMemo(() => (blob ? URL.createObjectURL(blob) : null), [blob]);
+    // Create the URL in an effect and revoke it only when the PDF changes or the dialog closes.
+    const [url, setUrl] = useState(null);
+    useEffect(() => {
+        if (!blob) { setUrl(null); return; }
+        const u = URL.createObjectURL(blob);
+        setUrl(u);
+        return () => URL.revokeObjectURL(u);
+    }, [blob]);
     const el = language === 'el';
 
     const handleShare = async () => {
@@ -34,7 +41,7 @@ export default function PdfReadyDialog({ blob, fileName, language, onClose }) {
                 </p>
                 <div className="flex flex-col gap-2 pt-2">
                     <Button asChild className="bg-blue-600 hover:bg-blue-700">
-                        <a href={url} target="_blank" rel="noreferrer" download={fileName}>
+                        <a href={url || undefined} target="_blank" rel="noreferrer">
                             <ExternalLink className="w-4 h-4 mr-2" />{el ? "Άνοιγμα PDF" : "Open PDF"}
                         </a>
                     </Button>
