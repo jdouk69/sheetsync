@@ -2,7 +2,8 @@ import React, { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, Download, PieChart } from "lucide-react";
+import { Plus, Filter, Download, PieChart, History } from "lucide-react";
+import RecentTransactions from "../components/expenses/RecentTransactions";
 import { Link } from "react-router-dom";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import ExpenseCard from "../components/expenses/ExpenseCard";
@@ -22,7 +23,8 @@ import {
 } from "@/lib/expenseCache";
 
 export default function ExpensesPage() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const [showRecent, setShowRecent] = useState(false);
     const { currentProjectId, currentProject, projects, isLoading: projectsLoading } = useProject();
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showForm, setShowForm] = useState(false);
@@ -493,8 +495,24 @@ export default function ExpensesPage() {
                     users={users}
                 />
 
+                <RecentTransactions
+                    open={showRecent}
+                    onClose={() => setShowRecent(false)}
+                    expenses={expenses}
+                    projectId={currentProjectId}
+                    currency={currentProject?.currency}
+                />
+
                 {canEdit && !showForm && (
-                    <div className="mb-4">
+                    <div className="mb-4 space-y-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowRecent(true)}
+                            className="w-full justify-center"
+                        >
+                            <History className="w-4 h-4 mr-2" />
+                            {language === 'el' ? "Πρόσφατες Συναλλαγές" : "Recent Transactions"}
+                        </Button>
                         <Button
                             onClick={() => {
                                 setEditingExpense(null);
