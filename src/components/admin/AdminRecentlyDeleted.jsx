@@ -10,6 +10,7 @@ import { Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "../LanguageContext";
 import RecentlyDeletedItem from "./RecentlyDeletedItem";
+import { refreshExpenseCaches, optimisticExpenseUpdate, rollbackExpenseCaches } from "@/lib/expenseCache";
 
 export default function AdminRecentlyDeleted() {
     const { language } = useLanguage();
@@ -28,24 +29,52 @@ export default function AdminRecentlyDeleted() {
     });
     const projectMap = Object.fromEntries(projects.map(p => [p.id, p.name]));
 
-    const refresh = () => {
-        queryClient.invalidateQueries({ queryKey: ['recentlyDeletedExpenses'] });
-        queryClient.invalidateQueries({ queryKey: ['expenses'] });
-        queryClient.invalidateQueries({ queryKey: ['allExpenses'] });
-        queryClient.invalidateQueries({ queryKey: ['all-expenses'] });
-        queryClient.invalidateQueries({ queryKey: ['payments-for-reports'] });
+    const removeFromTrash = (expense) => (old) => old.filter(e => e.id !== expense.id);
+    // Put the restored expense straight back into the active lists of its project
+    const addToActive = (expense) => (old, key) => {
+        const belongs = key[0] !== 'expenses' || key[1] === expense.projectId;
+        if (!belongs || old.some(e => e.id === expense.id)) return old;
+        return [{ ...expense, isDeleted: false }, ...old];
     };
 
     const restoreMutation = useMutation({
         mutationFn: (expense) => base44.functions.invoke('restoreExpense', { expenseId: expense.id }),
-        onSuccess: () => { refresh(); toast.success(el ? "Η δαπάνη επαναφέρθηκε" : "Expense restored"); },
-        onError: () => toast.error(el ? "Η επαναφορά απέτυχε" : "Failed to restore expense"),
+        onMutate: async (expense) => {
+            const snapshot = await optimisticExpenseUpdate(queryClient, {
+                recentlyDeletedExpenses: removeFromTrash(expense),
+                expenses: addToActive(expense),
+                allExpenses: addToActive(expense),
+                'all-expenses': addToActive(expense),
+            });
+            return { snapshot };
+        },
+        onSuccess: (data, expense) => {
+            toast.success(el ? "Η δαπάνη επαναφέρθηκε" : "Expense restored");
+            return refreshExpenseCaches(queryClient, { expenseId: expense.id });
+        },
+        onError: (err, expense, context) => {
+            rollbackExpenseCaches(queryClient, context?.snapshot);
+            toast.error(el ? "Η επαναφορά απέτυχε" : "Failed to restore expense");
+        },
     });
 
     const purgeMutation = useMutation({
         mutationFn: (expense) => base44.functions.invoke('purgeExpense', { expenseId: expense.id }),
-        onSuccess: () => { refresh(); setToPurge(null); toast.success(el ? "Διαγράφηκε οριστικά" : "Permanently deleted"); },
-        onError: () => toast.error(el ? "Η διαγραφή απέτυχε" : "Failed to delete permanently"),
+        onMutate: async (expense) => {
+            setToPurge(null);
+            const snapshot = await optimisticExpenseUpdate(queryClient, {
+                recentlyDeletedExpenses: removeFromTrash(expense),
+            });
+            return { snapshot };
+        },
+        onSuccess: (data, expense) => {
+            toast.success(el ? "Διαγράφηκε οριστικά" : "Permanently deleted");
+            return refreshExpenseCaches(queryClient, { expenseId: expense.id });
+        },
+        onError: (err, expense, context) => {
+            rollbackExpenseCaches(queryClient, context?.snapshot);
+            toast.error(el ? "Η διαγραφή απέτυχε" : "Failed to delete permanently");
+        },
     });
 
     const busyId = (restoreMutation.isPending && restoreMutation.variables?.id)

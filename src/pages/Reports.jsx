@@ -13,7 +13,7 @@ import { el as elLocale } from 'date-fns/locale';
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 import { toast } from "sonner";
-import { onlyActiveExpenses } from "../components/expenses/expenseVisibility";
+import { EXPENSE_KEYS, fetchProjectExpenses } from "@/lib/expenseCache";
 import { reportHtmlToPdfBlob } from "@/components/reports/pdfExport";
 import PdfReadyDialog from "@/components/reports/PdfReadyDialog";
 
@@ -79,12 +79,8 @@ export default function ReportsPage() {
     }, []);
 
     const { data: allExpenses = [], refetch: refetchExpenses, isFetching } = useQuery({
-        queryKey: ['expenses', currentProjectId],
-        queryFn: async () => {
-            if (!currentProjectId || !user) return [];
-            const list = await base44.entities.Expense.filter({ projectId: currentProjectId }, '-date', 9999);
-            return onlyActiveExpenses(list);
-        },
+        queryKey: EXPENSE_KEYS.projectExpenses(currentProjectId),
+        queryFn: () => (user ? fetchProjectExpenses(currentProjectId) : []),
         enabled: !!currentProjectId && !!user,
         staleTime: 0,
     });
@@ -92,7 +88,7 @@ export default function ReportsPage() {
     // Fetch all Payment records for this project so Reports can compute
     // the true total paid per expense (same as ExpenseCard does).
     const { data: allPayments = [], refetch: refetchPayments } = useQuery({
-        queryKey: ['payments-for-reports', currentProjectId],
+        queryKey: EXPENSE_KEYS.reportPayments(currentProjectId),
         queryFn: async () => {
             if (!currentProjectId || !user) return [];
             // Payment has no projectId — fetch all and filter client-side by expenseId

@@ -16,7 +16,10 @@ import { useProject } from "../components/ProjectContext";
 import { useProjectPermissions } from "../components/useProjectPermissions";
 import { logActivity } from "../components/activityLogger";
 import { toast } from "sonner";
-import { onlyActiveExpenses } from "../components/expenses/expenseVisibility";
+import {
+    EXPENSE_KEYS, fetchProjectExpenses, refreshExpenseCaches, optimisticExpenseUpdate,
+    rollbackExpenseCaches, onAllExpenseLists, removeIds, patchById,
+} from "@/lib/expenseCache";
 
 export default function ExpensesPage() {
     const { t } = useLanguage();
@@ -93,15 +96,8 @@ export default function ExpensesPage() {
     }, []);
 
     const { data: expenses = [], isLoading } = useQuery({
-        queryKey: ['expenses', currentProjectId],
-        queryFn: async () => {
-            if (!currentProjectId) return [];
-            // Get all expenses for this project (regardless of who created them)
-            const list = await base44.entities.Expense.filter({ 
-                projectId: currentProjectId
-            }, '-date', 9999);
-            return onlyActiveExpenses(list);
-        },
+        queryKey: EXPENSE_KEYS.projectExpenses(currentProjectId),
+        queryFn: () => fetchProjectExpenses(currentProjectId),
         enabled: !!currentProjectId && !authLoading,
     });
 
@@ -114,24 +110,22 @@ export default function ExpensesPage() {
     const createMutation = useMutation({
         mutationFn: (data) => base44.functions.invoke('createExpense', data),
         onMutate: async (newData) => {
-            await queryClient.cancelQueries({ queryKey: ['expenses', currentProjectId] });
-            const previous = queryClient.getQueryData(['expenses', currentProjectId]);
-            queryClient.setQueryData(['expenses', currentProjectId], (old = []) => [
-                { ...newData, id: `optimistic-${Date.now()}`, created_date: new Date().toISOString() },
-                ...old
-            ]);
+            const optimistic = { ...newData, id: `optimistic-${Date.now()}`, created_date: new Date().toISOString() };
+            const snapshot = await optimisticExpenseUpdate(queryClient, {
+                expenses: (old, key) => (key[1] === currentProjectId ? [optimistic, ...old] : old),
+            });
             setShowForm(false);
             setEditingExpense(null);
             resetScrollAfterKeyboard();
-            return { previous };
+            return { snapshot };
         },
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             toast.success("Expense added successfully");
             logActivity({ action: "created_expense", entityType: "expense", entityId: response?.data?.expense?.id, entityLabel: response?.data?.expense?.description, user });
+            return refreshExpenseCaches(queryClient);
         },
         onError: (err, newData, context) => {
-            queryClient.setQueryData(['expenses', currentProjectId], context?.previous);
+            rollbackExpenseCaches(queryClient, context?.snapshot);
             setShowForm(true);
             toast.error("Failed to add expense. Please try again.");
         },
@@ -139,15 +133,20 @@ export default function ExpensesPage() {
 
     const updateMutation = useMutation({
         mutationFn: ({ id, data }) => base44.functions.invoke('updateExpense', { expenseId: id, updates: data }),
+        onMutate: async ({ id, data }) => {
+            const snapshot = await optimisticExpenseUpdate(queryClient, onAllExpenseLists(patchById(id, data)));
+            return { snapshot };
+        },
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowForm(false);
             setEditingExpense(null);
             resetScrollAfterKeyboard();
             toast.success("Expense updated successfully");
             logActivity({ action: "updated_expense", entityType: "expense", entityId: response?.data?.expense?.id, entityLabel: response?.data?.expense?.description, user });
+            return refreshExpenseCaches(queryClient, { expenseId: response?.data?.expense?.id });
         },
-        onError: () => {
+        onError: (err, vars, context) => {
+            rollbackExpenseCaches(queryClient, context?.snapshot);
             toast.error("Failed to update expense. Please try again.");
         },
     });
@@ -196,10 +195,10 @@ export default function ExpensesPage() {
             return payment;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['payments'] });
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            const expenseId = directPaymentExpense?.id;
             setDirectPaymentExpense(null);
             toast.success("Payment recorded successfully");
+            return refreshExpenseCaches(queryClient, { expenseId });
         },
         onError: () => toast.error("Failed to record payment"),
     });
@@ -211,17 +210,15 @@ export default function ExpensesPage() {
             return expense;
         },
         onMutate: async (expense) => {
-            await queryClient.cancelQueries({ queryKey: ['expenses', currentProjectId] });
-            const previous = queryClient.getQueryData(['expenses', currentProjectId]);
-            queryClient.setQueryData(['expenses', currentProjectId], (old = []) => old.filter(e => e.id !== expense.id));
-            return { previous };
+            const snapshot = await optimisticExpenseUpdate(queryClient, onAllExpenseLists(removeIds([expense.id])));
+            return { snapshot };
         },
         onSuccess: (expense) => {
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             toast.success("Expense moved to Recently Deleted");
+            return refreshExpenseCaches(queryClient, { expenseId: expense.id });
         },
         onError: (err, expense, context) => {
-            queryClient.setQueryData(['expenses', currentProjectId], context?.previous);
+            rollbackExpenseCaches(queryClient, context?.snapshot);
             toast.error("Failed to delete expense. Please try again.");
         },
     });
@@ -231,12 +228,17 @@ export default function ExpensesPage() {
             const res = await base44.functions.invoke('trashExpense', { expenseIds: ids });
             if (!res.data?.success) throw new Error('Some expenses could not be deleted');
         },
+        onMutate: async (ids) => {
+            const snapshot = await optimisticExpenseUpdate(queryClient, onAllExpenseLists(removeIds(ids)));
+            return { snapshot };
+        },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setSelectedIds([]);
             toast.success("Expenses deleted successfully");
+            return refreshExpenseCaches(queryClient);
         },
-        onError: () => {
+        onError: (err, ids, context) => {
+            rollbackExpenseCaches(queryClient, context?.snapshot);
             toast.error("Failed to delete expenses. Please try again.");
         },
     });
@@ -428,7 +430,7 @@ export default function ExpensesPage() {
                                     {t('deleteSelected', { count: selectedIds.length })}
                                 </Button>
                             )}
-                            {canEdit && <ImportExpenses onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['expenses'] })} className="w-full justify-center" />}
+                            {canEdit && <ImportExpenses onImportComplete={() => refreshExpenseCaches(queryClient)} className="w-full justify-center" />}
                             {canEdit && (
                                 <Button
                                     onClick={() => {

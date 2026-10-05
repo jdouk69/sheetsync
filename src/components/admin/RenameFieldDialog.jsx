@@ -46,7 +46,7 @@ export default function RenameFieldDialog({
                     ? `${fieldLabel}s merged successfully. ${count} expense${count === 1 ? "" : "s"} updated.`
                     : `${fieldLabel} renamed successfully. ${count} expense${count === 1 ? "" : "s"} updated.`
             );
-            onSuccess();
+            await onSuccess();
             onOpenChange(false);
         } catch (e) {
             setError(e.message || "Failed to rename. Please try again.");

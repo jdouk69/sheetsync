@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { bulkUpdateExpenseField } from "./vendorCategoryUtils";
 import { onlyActiveExpenses } from "../expenses/expenseVisibility";
 import RenameFieldDialog from "./RenameFieldDialog";
+import { refreshExpenseCaches } from "@/lib/expenseCache";
 
 function MergeSection({ items, label, onMerge, onRenameClick }) {
     const [selected, setSelected] = useState([]);
@@ -160,14 +161,11 @@ export default function AdminVendorsCategories() {
         queryFn: () => base44.entities.Project.list(),
     });
 
-    const invalidateExpenses = () => {
-        queryClient.invalidateQueries({ queryKey: ['all-expenses'] });
-        queryClient.invalidateQueries({ queryKey: ['expenses'] });
-    };
+    const invalidateExpenses = () => refreshExpenseCaches(queryClient);
 
     const handleMerge = async (projectId, field, selected, canonical) => {
         const count = await bulkUpdateExpenseField(expenses, projectId, field, selected, canonical);
-        invalidateExpenses();
+        await invalidateExpenses();
         toast.success(`Merged ${count} expense(s) into "${canonical}"`);
     };
 

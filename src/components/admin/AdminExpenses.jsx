@@ -10,6 +10,7 @@ import { Receipt, Loader2, Trash2, Search, Euro } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { onlyActiveExpenses } from "../expenses/expenseVisibility";
+import { refreshExpenseCaches, optimisticExpenseUpdate, rollbackExpenseCaches, onAllExpenseLists, removeIds } from "@/lib/expenseCache";
 
 export default function AdminExpenses() {
     const [search, setSearch] = useState("");
@@ -18,7 +19,7 @@ export default function AdminExpenses() {
 
     const { data: expenses = [], isLoading } = useQuery({
         queryKey: ['allExpenses'],
-        queryFn: async () => onlyActiveExpenses(await base44.entities.Expense.list('-date', 1000)),
+        queryFn: async () => onlyActiveExpenses(await base44.entities.Expense.list('-date', 9999)),
     });
 
     const { data: projects = [] } = useQuery({
@@ -31,13 +32,18 @@ export default function AdminExpenses() {
             const res = await base44.functions.invoke('trashExpense', { expenseIds: [id] });
             if (!res.data?.success) throw new Error('Failed');
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['allExpenses'] });
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
-            queryClient.invalidateQueries({ queryKey: ['recentlyDeletedExpenses'] });
-            toast.success("Expense moved to Recently Deleted");
+        onMutate: async (id) => {
+            const snapshot = await optimisticExpenseUpdate(queryClient, onAllExpenseLists(removeIds([id])));
+            return { snapshot };
         },
-        onError: () => toast.error("Failed to delete expense"),
+        onSuccess: (data, id) => {
+            toast.success("Expense moved to Recently Deleted");
+            return refreshExpenseCaches(queryClient, { expenseId: id });
+        },
+        onError: (err, id, context) => {
+            rollbackExpenseCaches(queryClient, context?.snapshot);
+            toast.error("Failed to delete expense");
+        },
     });
 
     const handleDelete = (expense) => {

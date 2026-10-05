@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { onlyActiveExpenses } from "./expenseVisibility";
+import { EXPENSE_KEYS, fetchProjectExpenses } from "@/lib/expenseCache";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Upload, Image as ImageIcon } from "lucide-react";
@@ -28,19 +28,21 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
 
 
-    const { data: allExpenses = [] } = useQuery({
-        queryKey: ['expenses'],
-        queryFn: async () => onlyActiveExpenses(await base44.entities.Expense.list()),
+    // Shares the Expenses page's project-scoped cache: no separate list to go stale.
+    const { data: projectExpenses = [] } = useQuery({
+        queryKey: EXPENSE_KEYS.projectExpenses(currentProjectId),
+        queryFn: () => fetchProjectExpenses(currentProjectId),
+        enabled: !!currentProjectId,
+        staleTime: 60 * 1000,
     });
 
     // Read-only: needed to determine if this is a true legacy expense (no Payment records yet)
     const { data: existingPayments = [] } = useQuery({
-        queryKey: ['payments', expense?.id],
+        queryKey: EXPENSE_KEYS.expensePayments(expense?.id),
         queryFn: () => base44.entities.Payment.filter({ expenseId: expense.id }, 'date'),
         enabled: !!expense?.id,
     });
 
-    const projectExpenses = allExpenses.filter(exp => exp.projectId === currentProjectId);
     const existingCategories = [...new Set(projectExpenses.map(exp => exp.category).filter(Boolean))];
     const existingVendors = [...new Set(projectExpenses.map(exp => exp.vendor).filter(Boolean))];
     const [formData, setFormData] = useState({

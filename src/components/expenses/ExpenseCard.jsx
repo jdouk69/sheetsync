@@ -18,6 +18,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import PaymentForm from "./PaymentForm";
+import { EXPENSE_KEYS, refreshExpenseCaches } from "@/lib/expenseCache";
 import PaymentHistory from "./PaymentHistory";
 
 const categoryColors = {
@@ -42,7 +43,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const queryClient = useQueryClient();
 
     const { data: payments = [], isLoading: paymentsLoading } = useQuery({
-        queryKey: ['payments', expense.id],
+        queryKey: EXPENSE_KEYS.expensePayments(expense.id),
         queryFn: () => base44.entities.Payment.filter({ expenseId: expense.id }, 'date'),
     });
 
@@ -103,10 +104,9 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
             return payment;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['payments', expense.id] });
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setShowPaymentForm(false);
             toast.success("Payment recorded successfully");
+            return refreshExpenseCaches(queryClient, { expenseId: expense.id });
         },
         onError: () => toast.error("Failed to record payment"),
     });
@@ -128,11 +128,10 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
             });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['payments', expense.id] });
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             setEditingPayment(null);
             setShowPaymentForm(false);
             toast.success("Payment updated");
+            return refreshExpenseCaches(queryClient, { expenseId: expense.id });
         },
         onError: () => toast.error("Failed to update payment"),
     });
@@ -154,9 +153,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
             });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['payments', expense.id] });
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
             toast.success("Payment deleted");
+            return refreshExpenseCaches(queryClient, { expenseId: expense.id });
         },
         onError: () => toast.error("Failed to delete payment"),
     });
