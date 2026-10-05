@@ -13,6 +13,7 @@ import { el as elLocale } from 'date-fns/locale';
 import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 import { toast } from "sonner";
+import { onlyActiveExpenses } from "../components/expenses/expenseVisibility";
 import { reportHtmlToPdfBlob } from "@/components/reports/pdfExport";
 import PdfReadyDialog from "@/components/reports/PdfReadyDialog";
 
@@ -81,7 +82,8 @@ export default function ReportsPage() {
         queryKey: ['expenses', currentProjectId],
         queryFn: async () => {
             if (!currentProjectId || !user) return [];
-            return base44.entities.Expense.filter({ projectId: currentProjectId }, '-date', 9999);
+            const list = await base44.entities.Expense.filter({ projectId: currentProjectId }, '-date', 9999);
+            return onlyActiveExpenses(list);
         },
         enabled: !!currentProjectId && !!user,
         staleTime: 0,
@@ -103,12 +105,14 @@ export default function ReportsPage() {
     // Build a map: expenseId -> total paid (sum of all Payment records)
     const paymentTotalsMap = useMemo(() => {
         const map = {};
+        // Only payments of active (non-deleted) expenses count toward totals
+        const activeIds = new Set(allExpenses.map(e => e.id));
         allPayments.forEach(p => {
-            if (!p.expenseId) return;
+            if (!p.expenseId || !activeIds.has(p.expenseId)) return;
             map[p.expenseId] = (map[p.expenseId] || 0) + (p.amount || 0);
         });
         return map;
-    }, [allPayments]);
+    }, [allPayments, allExpenses]);
 
     // Helpers that use live Payment data where available,
     // falling back to exp.amount for legacy/untracked expenses.

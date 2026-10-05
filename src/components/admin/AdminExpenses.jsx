@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Receipt, Loader2, Trash2, Search, Euro } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { onlyActiveExpenses } from "../expenses/expenseVisibility";
 
 export default function AdminExpenses() {
     const [search, setSearch] = useState("");
@@ -17,7 +18,7 @@ export default function AdminExpenses() {
 
     const { data: expenses = [], isLoading } = useQuery({
         queryKey: ['allExpenses'],
-        queryFn: () => base44.entities.Expense.list('-date', 200),
+        queryFn: async () => onlyActiveExpenses(await base44.entities.Expense.list('-date', 1000)),
     });
 
     const { data: projects = [] } = useQuery({
@@ -26,10 +27,15 @@ export default function AdminExpenses() {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id) => base44.entities.Expense.delete(id),
+        mutationFn: async (id) => {
+            const res = await base44.functions.invoke('trashExpense', { expenseIds: [id] });
+            if (!res.data?.success) throw new Error('Failed');
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['allExpenses'] });
-            toast.success("Expense deleted");
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
+            queryClient.invalidateQueries({ queryKey: ['recentlyDeletedExpenses'] });
+            toast.success("Expense moved to Recently Deleted");
         },
         onError: () => toast.error("Failed to delete expense"),
     });

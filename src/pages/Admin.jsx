@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Shield, Users, FolderOpen, Receipt, AlertTriangle, Activity, Tags, Camera } from "lucide-react";
+import { Shield, Users, FolderOpen, Receipt, AlertTriangle, Activity, Tags, Camera, Trash2 } from "lucide-react";
+import AdminRecentlyDeleted from "../components/admin/AdminRecentlyDeleted";
+import { useLanguage } from "../components/LanguageContext";
 import AdminUsers from "../components/admin/AdminUsers";
 import AdminProjects from "../components/admin/AdminProjects";
 import AdminExpenses from "../components/admin/AdminExpenses";
@@ -14,12 +16,14 @@ const tabs = [
     { id: "projects", label: "Projects", Icon: FolderOpen },
     { id: "expenses", label: "Expenses", Icon: Receipt },
     { id: "vendors", label: "Vendors & Categories", Icon: Tags },
+    { id: "deleted", label: "Recently Deleted", labelEl: "Πρόσφατα Διαγραμμένα", Icon: Trash2 },
     { id: "snapshots", label: "Snapshots", Icon: Camera },
     { id: "activity", label: "Activity Log", Icon: Activity },
 ];
 
 export default function Admin() {
     const [activeTab, setActiveTab] = useState("users");
+    const { language } = useLanguage();
 
     const { data: user, isLoading } = useQuery({
         queryKey: ['currentUser'],
@@ -62,7 +66,7 @@ export default function Admin() {
 
             {/* Tabs */}
             <div className="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl mb-6">
-                {tabs.map(({ id, label, Icon }) => (
+                {tabs.map(({ id, label, labelEl, Icon }) => (
                     <button
                         key={id}
                         onClick={() => setActiveTab(id)}
@@ -73,7 +77,7 @@ export default function Admin() {
                         }`}
                     >
                         <Icon className="w-4 h-4" />
-                        {label}
+                        {language === 'el' && labelEl ? labelEl : label}
                     </button>
                 ))}
             </div>
@@ -83,6 +87,7 @@ export default function Admin() {
             {activeTab === "projects" && <AdminProjects />}
             {activeTab === "expenses" && <AdminExpenses />}
             {activeTab === "vendors" && <AdminVendorsCategories />}
+            {activeTab === "deleted" && <AdminRecentlyDeleted />}
             {activeTab === "snapshots" && <AdminSnapshots />}
             {activeTab === "activity" && <AdminActivityLog />}
         </div>

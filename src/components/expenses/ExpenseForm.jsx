@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { onlyActiveExpenses } from "./expenseVisibility";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Upload, Image as ImageIcon } from "lucide-react";
@@ -29,7 +30,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     const { data: allExpenses = [] } = useQuery({
         queryKey: ['expenses'],
-        queryFn: () => base44.entities.Expense.list(),
+        queryFn: async () => onlyActiveExpenses(await base44.entities.Expense.list()),
     });
 
     // Read-only: needed to determine if this is a true legacy expense (no Payment records yet)

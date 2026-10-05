@@ -1,0 +1,45 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "purge_recently_deleted_expenses",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "purge_expired": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "purgeExpiredTrash",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Purge expired expenses",
+            "description": "Only past purgeAfter"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Purge Recently Deleted Expenses",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 * * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Every hour, permanently deletes expenses (and their payments) that have been in Recently Deleted for 5 days."
+}

@@ -16,6 +16,7 @@ import { useProject } from "../components/ProjectContext";
 import { useProjectPermissions } from "../components/useProjectPermissions";
 import { logActivity } from "../components/activityLogger";
 import { toast } from "sonner";
+import { onlyActiveExpenses } from "../components/expenses/expenseVisibility";
 
 export default function ExpensesPage() {
     const { t } = useLanguage();
@@ -96,9 +97,10 @@ export default function ExpensesPage() {
         queryFn: async () => {
             if (!currentProjectId) return [];
             // Get all expenses for this project (regardless of who created them)
-            return base44.entities.Expense.filter({ 
+            const list = await base44.entities.Expense.filter({ 
                 projectId: currentProjectId
             }, '-date', 9999);
+            return onlyActiveExpenses(list);
         },
         enabled: !!currentProjectId && !authLoading,
     });
@@ -203,7 +205,11 @@ export default function ExpensesPage() {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (expense) => base44.entities.Expense.delete(expense.id).then(() => expense),
+        mutationFn: async (expense) => {
+            const res = await base44.functions.invoke('trashExpense', { expenseIds: [expense.id] });
+            if (!res.data?.success) throw new Error(res.data?.failed?.[0]?.error || 'Failed');
+            return expense;
+        },
         onMutate: async (expense) => {
             await queryClient.cancelQueries({ queryKey: ['expenses', currentProjectId] });
             const previous = queryClient.getQueryData(['expenses', currentProjectId]);
@@ -212,8 +218,7 @@ export default function ExpensesPage() {
         },
         onSuccess: (expense) => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });
-            toast.success("Expense deleted");
-            logActivity({ action: "deleted_expense", entityType: "expense", entityId: expense.id, entityLabel: expense.description, user });
+            toast.success("Expense moved to Recently Deleted");
         },
         onError: (err, expense, context) => {
             queryClient.setQueryData(['expenses', currentProjectId], context?.previous);
@@ -223,9 +228,8 @@ export default function ExpensesPage() {
 
     const bulkDeleteMutation = useMutation({
         mutationFn: async (ids) => {
-            for (const id of ids) {
-                await base44.entities.Expense.delete(id);
-            }
+            const res = await base44.functions.invoke('trashExpense', { expenseIds: ids });
+            if (!res.data?.success) throw new Error('Some expenses could not be deleted');
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['expenses'] });

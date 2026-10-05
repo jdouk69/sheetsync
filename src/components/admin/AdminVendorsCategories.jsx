@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Merge, Pencil, Check, X, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { bulkUpdateExpenseField } from "./vendorCategoryUtils";
+import { onlyActiveExpenses } from "../expenses/expenseVisibility";
 import RenameFieldDialog from "./RenameFieldDialog";
 
 function MergeSection({ items, label, onMerge, onRenameClick }) {
@@ -151,7 +152,7 @@ export default function AdminVendorsCategories() {
 
     const { data: expenses = [], isLoading: loadingExpenses } = useQuery({
         queryKey: ['all-expenses'],
-        queryFn: () => base44.entities.Expense.list(),
+        queryFn: async () => onlyActiveExpenses(await base44.entities.Expense.list()),
     });
 
     const { data: projects = [], isLoading: loadingProjects } = useQuery({

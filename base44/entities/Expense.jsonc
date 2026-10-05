@@ -95,6 +95,25 @@
     "updatedByName": {
       "type": "string",
       "description": "Full name of the user who last updated this expense"
+    },
+    "isDeleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "True while the expense is in Recently Deleted. Missing means active."
+    },
+    "deletedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the expense was moved to Recently Deleted"
+    },
+    "deletedBy": {
+      "type": "string",
+      "description": "Email of the user who deleted the expense"
+    },
+    "purgeAfter": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest time the expense may be permanently deleted (deletedAt + 5 days)"
     }
   },
   "required": [
