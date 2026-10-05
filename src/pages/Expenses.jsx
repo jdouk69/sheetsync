@@ -366,7 +366,20 @@ export default function ExpensesPage() {
         const page = Math.floor(idx / PAGE_SIZE) + 1;
         if (page !== currentPage) { setCurrentPage(page); return; }
         const timer = setTimeout(() => {
-            document.getElementById(`expense-card-${pendingOpenId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const el = document.getElementById(`expense-card-${pendingOpenId}`);
+            if (el) {
+                // Scroll so the card's top sits below the header: measure against the real scroll container (<main>).
+                const TOP_GAP = 72;
+                const main = document.querySelector('main.flex-1.overflow-y-auto');
+                const canScrollMain = main && main.scrollHeight > main.clientHeight;
+                if (canScrollMain) {
+                    const top = el.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop - TOP_GAP;
+                    main.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                } else {
+                    const top = el.getBoundingClientRect().top + window.scrollY - TOP_GAP;
+                    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                }
+            }
             setHighlightId(pendingOpenId);
             setPendingOpenId(null);
             setTimeout(() => setHighlightId(null), 2500);
