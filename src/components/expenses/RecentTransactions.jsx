@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { el as elLocale } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../LanguageContext";
 import { EXPENSE_KEYS } from "@/lib/expenseCache";
 
@@ -17,7 +17,7 @@ const parseDate = (s) => {
     return new Date(y, m - 1, d);
 };
 
-export default function RecentTransactions({ open, onClose, expenses, projectId, currency }) {
+export default function RecentTransactions({ open, onClose, expenses, projectId, currency, onOpenExpense }) {
     const { language } = useLanguage();
     const el = language === 'el';
     const symbol = CURRENCY_SYMBOLS[currency] || '€';
@@ -52,7 +52,13 @@ export default function RecentTransactions({ open, onClose, expenses, projectId,
                         <p className="text-sm text-muted-foreground py-6 text-center">{el ? "Δεν υπάρχουν συναλλαγές" : "No transactions yet"}</p>
                     )}
                     {rows.map(({ payment: p, expense: e }) => (
-                        <div key={p.id} className="border border-border rounded-lg p-3 bg-card">
+                        <button
+                            type="button"
+                            key={p.id}
+                            onClick={() => onOpenExpense?.(e.id)}
+                            className="w-full text-left flex items-center gap-2 border border-border rounded-lg p-3 min-h-[64px] bg-card hover:bg-accent active:bg-accent transition-colors"
+                        >
+                            <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-3">
                                 <div className="min-w-0">
                                     <p className="font-semibold text-foreground truncate">{e.vendor || e.description}</p>
@@ -65,7 +71,9 @@ export default function RecentTransactions({ open, onClose, expenses, projectId,
                             <p className="text-xs text-muted-foreground mt-1">
                                 {format(parseDate(p.date), 'MMM d, yyyy', { locale: el ? elLocale : undefined })} · {p.method}
                             </p>
-                        </div>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                        </button>
                     ))}
                 </div>
                 <Button variant="outline" onClick={onClose} className="w-full justify-center gap-2">

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,8 @@ import {
 export default function ExpensesPage() {
     const { t, language } = useLanguage();
     const [showRecent, setShowRecent] = useState(false);
+    const [pendingOpenId, setPendingOpenId] = useState(null);
+    const [highlightId, setHighlightId] = useState(null);
     const { currentProjectId, currentProject, projects, isLoading: projectsLoading } = useProject();
     const { canEdit, canDelete } = useProjectPermissions(currentProject);
     const [showForm, setShowForm] = useState(false);
@@ -353,6 +355,25 @@ export default function ExpensesPage() {
     const totalPages = Math.ceil(filteredExpenses.length / PAGE_SIZE);
     const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+    // Jump to an expense opened from Recent Transactions: clear filters if hiding it, go to its page, scroll, highlight.
+    useEffect(() => {
+        if (!pendingOpenId) return;
+        const idx = filteredExpenses.findIndex(e => e.id === pendingOpenId);
+        if (idx === -1) {
+            setFilters({ category: "all", vendor: "all", startDate: null, endDate: null, search: "", unpaidOnly: false, cashOnly: false });
+            return;
+        }
+        const page = Math.floor(idx / PAGE_SIZE) + 1;
+        if (page !== currentPage) { setCurrentPage(page); return; }
+        const timer = setTimeout(() => {
+            document.getElementById(`expense-card-${pendingOpenId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setHighlightId(pendingOpenId);
+            setPendingOpenId(null);
+            setTimeout(() => setHighlightId(null), 2500);
+        }, 150);
+        return () => clearTimeout(timer);
+    });
+
     if (authLoading || projectsLoading) {
         return (
             <div className="flex items-center justify-center min-h-full bg-background">
@@ -498,6 +519,7 @@ export default function ExpensesPage() {
                 <RecentTransactions
                     open={showRecent}
                     onClose={() => setShowRecent(false)}
+                    onOpenExpense={(id) => { setShowRecent(false); setPendingOpenId(id); }}
                     expenses={expenses}
                     projectId={currentProjectId}
                     currency={currentProject?.currency}
@@ -551,8 +573,12 @@ export default function ExpensesPage() {
                         </div>
                     ) : (
                         paginatedExpenses.map((expense) => (
-                            <ExpenseCard
+                            <div
                                 key={expense.id}
+                                id={`expense-card-${expense.id}`}
+                                className={`rounded-lg transition-all duration-500 ${highlightId === expense.id ? 'ring-4 ring-blue-500 ring-offset-2' : ''}`}
+                            >
+                            <ExpenseCard
                                 expense={expense}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
@@ -561,6 +587,7 @@ export default function ExpensesPage() {
                                 currentUser={user}
                                 users={users}
                             />
+                            </div>
                         ))
                     )}
                 </div>
