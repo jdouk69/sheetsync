@@ -14,6 +14,8 @@ import { useLanguage } from "../components/LanguageContext";
 import { useProject } from "../components/ProjectContext";
 import { toast } from "sonner";
 import { EXPENSE_KEYS, fetchProjectExpenses } from "@/lib/expenseCache";
+import { useProjectPaidTotals } from "@/hooks/useProjectPaidTotals";
+import { parseLocalDate } from "@/lib/dates";
 import { reportHtmlToPdfBlob } from "@/components/reports/pdfExport";
 import PdfReadyDialog from "@/components/reports/PdfReadyDialog";
 
@@ -87,36 +89,8 @@ export default function ReportsPage() {
 
     // Fetch all Payment records for this project so Reports can compute
     // the true total paid per expense (same as ExpenseCard does).
-    const { data: allPayments = [], refetch: refetchPayments } = useQuery({
-        queryKey: EXPENSE_KEYS.reportPayments(currentProjectId),
-        queryFn: async () => {
-            if (!currentProjectId || !user) return [];
-            // Payment has no projectId — fetch all and filter client-side by expenseId
-            return base44.entities.Payment.list('-date', 9999);
-        },
-        enabled: !!currentProjectId && !!user,
-        staleTime: 0,
-    });
-
-    // Build a map: expenseId -> total paid (sum of all Payment records)
-    const paymentTotalsMap = useMemo(() => {
-        const map = {};
-        // Only payments of active (non-deleted) expenses count toward totals
-        const activeIds = new Set(allExpenses.map(e => e.id));
-        allPayments.forEach(p => {
-            if (!p.expenseId || !activeIds.has(p.expenseId)) return;
-            map[p.expenseId] = (map[p.expenseId] || 0) + (p.amount || 0);
-        });
-        return map;
-    }, [allPayments, allExpenses]);
-
-    // Helpers that use live Payment data where available,
-    // falling back to exp.amount for legacy/untracked expenses.
-    const paidSoFar = (exp) => {
-        const fromPayments = paymentTotalsMap[exp.id];
-        if (fromPayments !== undefined) return fromPayments;
-        return exp.amount || 0;
-    };
+    // Same shared paid-amount calculation as the Expenses dashboard.
+    const { paidOf: paidSoFar, refetchPayments } = useProjectPaidTotals(currentProjectId, allExpenses, !!user);
     const remainingBalance = (exp) => {
         const total = expenseValue(exp);
         return total - paidSoFar(exp);
@@ -136,9 +110,9 @@ export default function ReportsPage() {
         return allExpenses.filter(exp => {
             const categoryMatch = filters.category === 'all' || exp.category === filters.category;
             const vendorMatch = filters.vendor === 'all' || exp.vendor === filters.vendor;
-            const expDate = new Date(exp.date);
-            const startMatch = !filters.startDate || expDate >= new Date(filters.startDate);
-            const endMatch = !filters.endDate || expDate <= endOfDay(new Date(filters.endDate));
+            const expDate = parseLocalDate(exp.date);
+            const startMatch = !filters.startDate || expDate >= parseLocalDate(filters.startDate);
+            const endMatch = !filters.endDate || expDate <= endOfDay(parseLocalDate(filters.endDate));
             const searchMatch = !filters.search ||
                 exp.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
                 exp.vendor?.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -162,7 +136,7 @@ export default function ReportsPage() {
 
             return categoryMatch && vendorMatch && startMatch && endMatch && searchMatch && statusMatch && userMatch;
         });
-    }, [allExpenses, filters, paymentTotalsMap]);
+    }, [allExpenses, filters, paidSoFar]);
 
     const uniqueVendors = useMemo(() => [...new Set(allExpenses.map(exp => exp.vendor).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })), [allExpenses]);
     const uniqueCategories = useMemo(() => [...new Set(allExpenses.map(exp => exp.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })), [allExpenses]);
@@ -192,7 +166,7 @@ export default function ReportsPage() {
     }, []);
 
     const monthlyData = expenses.reduce((acc, exp) => {
-        const monthYear = format(new Date(exp.date), 'MMM yyyy', { locale: language === 'el' ? elLocale : undefined });
+        const monthYear = format(parseLocalDate(exp.date), 'MMM yyyy', { locale: language === 'el' ? elLocale : undefined });
         const existing = acc.find(item => item.name === monthYear);
         const val = expenseValue(exp);
         if (existing) existing.amount += val;
@@ -331,7 +305,7 @@ export default function ReportsPage() {
                         const statusClass = exp.paymentStatus === 'fully_paid' || exp.isPaid ? 'status-full' : exp.paymentStatus === 'deposit_paid' ? 'status-partial' : 'status-unpaid';
                         return `
                         <tr>
-                            <td>${format(new Date(exp.date), 'dd/MM/yyyy', { locale: dateLocale })}</td>
+                            <td>${format(parseLocalDate(exp.date), 'dd/MM/yyyy', { locale: dateLocale })}</td>
                             <td>${exp.description}</td>
                             <td>${exp.category}</td>
                             <td>${exp.vendor || '-'}</td>
@@ -363,7 +337,7 @@ export default function ReportsPage() {
                 <tbody>
                     ${outstandingExpenses.map(exp => `
                     <tr>
-                        <td>${format(new Date(exp.date), 'dd/MM/yyyy', { locale: dateLocale })}</td>
+                        <td>${format(parseLocalDate(exp.date), 'dd/MM/yyyy', { locale: dateLocale })}</td>
                         <td>${exp.description}</td>
                         <td>${exp.category}</td>
                         <td>${exp.vendor || '-'}</td>
@@ -401,7 +375,7 @@ export default function ReportsPage() {
             'Payment Status', t('paidCash'), t('notes'), 'Tax Amount'
         ];
         const rows = expenses.map(exp => [
-            format(new Date(exp.date), 'yyyy-MM-dd'),
+            format(parseLocalDate(exp.date), 'yyyy-MM-dd'),
             exp.description,
             exp.category,
             exp.vendor || '',
@@ -722,7 +696,7 @@ export default function ReportsPage() {
                                         return (
                                             <tr key={exp.id} className="border-b border-slate-100 hover:bg-slate-50">
                                                 <td className="py-2 px-2 text-slate-600">
-                                                    {format(new Date(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}
+                                                    {format(parseLocalDate(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}
                                                 </td>
                                                 <td className="py-2 px-2 font-medium text-slate-900">{exp.description}</td>
                                                 <td className="py-2 px-2 text-slate-600">{exp.vendor || '-'}</td>
@@ -784,7 +758,7 @@ export default function ReportsPage() {
                                 <tbody>
                                     {overpaidExpenses.map(exp => (
                                         <tr key={exp.id} className="border-b border-slate-100 hover:bg-amber-50">
-                                            <td className="py-3 px-2 text-slate-600">{format(new Date(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}</td>
+                                            <td className="py-3 px-2 text-slate-600">{format(parseLocalDate(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}</td>
                                             <td className="py-3 px-2 font-medium text-slate-900">{exp.description}</td>
                                             <td className="py-3 px-2 text-slate-600">{exp.vendor || '-'}</td>
                                             <td className="py-3 px-2 text-right font-semibold text-slate-900">{currencySymbol}{expenseValue(exp).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
@@ -834,7 +808,7 @@ export default function ReportsPage() {
                                         {outstandingExpenses.map(exp => (
                                             <tr key={exp.id} className="border-b border-slate-100 hover:bg-slate-50">
                                                 <td className="py-3 px-2 text-slate-600">
-                                                    {format(new Date(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}
+                                                    {format(parseLocalDate(exp.date), 'dd/MM/yyyy', { locale: language === 'el' ? elLocale : undefined })}
                                                 </td>
                                                 <td className="py-3 px-2 font-medium text-slate-900">{exp.description}</td>
                                                 <td className="py-3 px-2 text-slate-600">{exp.vendor || '-'}</td>
@@ -877,13 +851,13 @@ export default function ReportsPage() {
 
                     const totalTaxMonth = taxExpenses
                         .filter(exp => {
-                            const d = new Date(exp.date);
+                            const d = parseLocalDate(exp.date);
                             return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
                         })
                         .reduce((sum, exp) => sum + Number(exp.taxAmount), 0);
 
                     const totalTaxYear = taxExpenses
-                        .filter(exp => new Date(exp.date).getFullYear() === currentYear)
+                        .filter(exp => parseLocalDate(exp.date).getFullYear() === currentYear)
                         .reduce((sum, exp) => sum + Number(exp.taxAmount), 0);
 
                     const taxByVendor = taxExpenses.reduce((acc, exp) => {

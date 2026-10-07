@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import PaymentForm from "./PaymentForm";
 import { EXPENSE_KEYS, refreshExpenseCaches } from "@/lib/expenseCache";
 import PaymentHistory from "./PaymentHistory";
+import { parseLocalDate } from "@/lib/dates";
 
 const categoryColors = {
     "Materials": "bg-blue-100 text-blue-800",
@@ -49,7 +50,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
     const paymentsTotal = payments.reduce((sum, p) => sum + p.amount, 0);
     // Fallback to expense.amount (running total paid) if no Payment records exist yet
-    const totalPaid = paymentsTotal > 0 ? paymentsTotal : (expense.amount || 0);
+    const totalPaid = payments.length > 0 ? paymentsTotal : (expense.amount || 0);
     const balanceDue = expense.totalAmount ? expense.totalAmount - totalPaid : 0;
     const isFullyPaid = expense.totalAmount ? totalPaid >= expense.totalAmount : (expense.paymentStatus === 'fully_paid' || expense.isPaid);
 
@@ -203,7 +204,7 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
                                         </span>
                                         <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground flex items-center gap-1">
                                             <Calendar className="w-3 h-3" />
-                                            {format(new Date(expense.date), 'MMM d, yyyy')}
+                                            {format(parseLocalDate(expense.date), 'MMM d, yyyy')}
                                         </span>
                                         {expense.paymentStatus === 'fully_paid' || expense.isPaid ? (
                                             <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1 font-semibold" title={expense.paidAt && expense.paidBy ? `Paid by ${expense.paidBy} on ${format(new Date(expense.paidAt), 'dd/MM/yyyy HH:mm')}` : undefined}>

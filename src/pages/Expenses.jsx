@@ -17,6 +17,7 @@ import { useProject } from "../components/ProjectContext";
 import { useProjectPermissions } from "../components/useProjectPermissions";
 import { logActivity } from "../components/activityLogger";
 import { toast } from "sonner";
+import { useProjectPaidTotals } from "@/hooks/useProjectPaidTotals";
 import {
     EXPENSE_KEYS, fetchProjectExpenses, refreshExpenseCaches, optimisticExpenseUpdate,
     rollbackExpenseCaches, onAllExpenseLists, removeIds, patchById,
@@ -104,6 +105,8 @@ export default function ExpensesPage() {
         queryFn: () => fetchProjectExpenses(currentProjectId),
         enabled: !!currentProjectId && !authLoading,
     });
+
+    const { paidOf, paymentsLoading } = useProjectPaidTotals(currentProjectId, expenses, !authLoading);
 
     const { data: users = [] } = useQuery({
         queryKey: ['users'],
@@ -494,7 +497,7 @@ export default function ExpensesPage() {
                     </div>
                 </div>
 
-                <ExpenseSummary expenses={filteredExpenses} />
+                <ExpenseSummary expenses={filteredExpenses} paidOf={paidOf} paidLoading={paymentsLoading} />
 
                 <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
                     {canDelete && (
