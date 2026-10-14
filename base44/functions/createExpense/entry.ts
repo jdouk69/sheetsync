@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
-import { paymentState, paidTotal } from '../../shared/paymentState.ts';
+import { paymentState } from '../../shared/paymentState.ts';
 
 Deno.serve(async (req) => {
     try {
