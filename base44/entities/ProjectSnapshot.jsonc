@@ -22,6 +22,10 @@
     "data": {
       "type": "object",
       "description": "Full project data at the time of snapshot"
+    },
+    "backupRestoreKey": {
+      "type": "string",
+      "description": "Internal identifier for retrying copy restores"
     }
   },
   "required": [
