@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
         // Payment history controls tracked totals; form edits cannot reset them.
         const existingPayments = await base44.asServiceRole.entities.Payment.filter({ expenseId });
         const wasTracked = Number(expense.totalAmount) > 0;
-        const quotedTotal = Number(secureUpdates.totalAmount ?? expense.totalAmount ?? 0);
+        const quotedTotal = Number(Object.hasOwn(secureUpdates, 'totalAmount') ? secureUpdates.totalAmount : expense.totalAmount || 0);
         if (wasTracked && !(quotedTotal > 0)) {
             return Response.json({ error: 'Keep the quoted total. Change recorded payments through payment history.' }, { status: 400 });
         }
