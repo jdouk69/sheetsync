@@ -19,6 +19,7 @@ import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import PaymentForm from "./PaymentForm";
 import { EXPENSE_KEYS, refreshExpenseCaches } from "@/lib/expenseCache";
+import { fetchProjectPayments } from "@/lib/projectPayments";
 import PaymentHistory from "./PaymentHistory";
 import { parseLocalDate } from "@/lib/dates";
 
@@ -43,10 +44,13 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const [editingPayment, setEditingPayment] = useState(null);
     const queryClient = useQueryClient();
 
-    const { data: payments = [], isLoading: paymentsLoading } = useQuery({
-        queryKey: EXPENSE_KEYS.expensePayments(expense.id),
-        queryFn: () => base44.entities.Payment.filter({ expenseId: expense.id }, 'date'),
+    const { data: projectPayments = [], isLoading: paymentsLoading } = useQuery({
+        queryKey: EXPENSE_KEYS.reportPayments(currentProject?.id),
+        queryFn: () => fetchProjectPayments(currentProject?.id),
+        enabled: !!currentProject?.id,
+        refetchInterval: 30000,
     });
+    const payments = projectPayments.filter(payment => payment.expenseId === expense.id).sort((a, b) => String(a.date).localeCompare(String(b.date)));
 
     const paymentsTotal = payments.reduce((sum, p) => sum + p.amount, 0);
     // Fallback to expense.amount (running total paid) if no Payment records exist yet
