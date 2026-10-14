@@ -31,7 +31,7 @@ export function ProjectProvider({ children }) {
 
     // Set the first project as current when projects load
     useEffect(() => {
-        if (!currentProjectId && projects.length > 0) {
+        if ((!currentProjectId || !projects.some(project => project.id === currentProjectId)) && projects.length > 0) {
             const savedProjectId = localStorage.getItem('currentProjectId');
             if (savedProjectId && projects.find(p => p.id === savedProjectId)) {
                 setCurrentProjectId(savedProjectId);
@@ -39,7 +39,8 @@ export function ProjectProvider({ children }) {
                 setCurrentProjectId(projects[0].id);
             }
         }
-    }, [projects, currentProjectId]);
+        if (!isLoading && projects.length === 0) setCurrentProjectId(null);
+    }, [projects, currentProjectId, isLoading]);
 
     // Save current project to localStorage
     useEffect(() => {
