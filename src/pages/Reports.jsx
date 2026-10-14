@@ -82,6 +82,7 @@ export default function ReportsPage() {
 
     const { data: allExpenses = [], refetch: refetchExpenses, isFetching } = useQuery({
         queryKey: EXPENSE_KEYS.projectExpenses(currentProjectId),
+        refetchInterval: 30000,
         queryFn: () => (user ? fetchProjectExpenses(currentProjectId) : []),
         enabled: !!currentProjectId && !!user,
         staleTime: 0,
