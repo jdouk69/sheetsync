@@ -57,6 +57,7 @@ export default function ProjectManagement({ onClose }) {
         mutationFn: (data) => base44.entities.Project.create(data),
         onSuccess: (newProject) => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
+            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
             switchProject(newProject.id);
             setShowForm(false);
             resetForm();
@@ -67,6 +68,7 @@ export default function ProjectManagement({ onClose }) {
         mutationFn: ({ id, data }) => base44.entities.Project.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
+            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
             setShowForm(false);
             setEditingProject(null);
             resetForm();
