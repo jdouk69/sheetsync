@@ -14,7 +14,7 @@ const METHOD_KEYS = {
     "Other": "other",
 };
 
-export default function PaymentHistory({ payments, canDelete, onDelete, onEdit, currencySymbol = '€' }) {
+export default function PaymentHistory({ payments, canDelete, canEdit, onDelete, onEdit, currencySymbol = '€' }) {
     const { t } = useLanguage();
     const [viewingPhotos, setViewingPhotos] = useState(null);
     if (!payments || payments.length === 0) return null;
@@ -52,9 +52,9 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit, 
                                     <ImageIcon className="w-3 h-3" />
                                 </Button>
                             )}
-                            {canDelete && (
+                            {(canDelete || canEdit) && (
                                 <>
-                                    {onEdit && (
+                                    {canEdit && onEdit && (
                                         <Button
                                             variant="ghost"
                                             size="sm"
@@ -64,14 +64,14 @@ export default function PaymentHistory({ payments, canDelete, onDelete, onEdit, 
                                             <Pencil className="w-3 h-3" />
                                         </Button>
                                     )}
-                                    <Button
+                                    {canDelete && <Button
                                         variant="ghost"
                                         size="sm"
                                         className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
                                         onClick={(e) => { e.stopPropagation(); onDelete(payment); }}
                                     >
                                         <Trash2 className="w-3 h-3" />
-                                    </Button>
+                                    </Button>}
                                 </>
                             )}
                         </div>
