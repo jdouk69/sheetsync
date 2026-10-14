@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { paymentState, paidTotal } from "@/lib/paymentState";
 import { Button } from "@/components/ui/button";
 import { EXPENSE_KEYS, fetchProjectExpenses } from "@/lib/expenseCache";
 import { Input } from "@/components/ui/input";
@@ -37,7 +38,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
     });
 
     // Read-only: needed to determine if this is a true legacy expense (no Payment records yet)
-    const { data: existingPayments = [] } = useQuery({
+    const { data: existingPayments = [], isLoading: paymentsLoading, isError: paymentsError } = useQuery({
         queryKey: EXPENSE_KEYS.expensePayments(expense?.id),
         queryFn: () => base44.entities.Payment.filter({ expenseId: expense.id }, 'date'),
         enabled: !!expense?.id,
@@ -190,6 +191,10 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (expense && (paymentsLoading || paymentsError)) {
+            alert("Payment history must load before saving this expense. Please try again.");
+            return;
+        }
 
         // Final save-path safety net: canonicalize vendor/category against this project's
         // existing values (case/whitespace-insensitive) so UI edge cases, autofill, or pasted
@@ -208,23 +213,25 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                 totalAmount: totalAmt,
                 depositAmount: parseFloat(expense.amount), // auto-derived from old amount
                 taxAmount: formData.taxAmount !== "" && formData.taxAmount !== null ? parseFloat(formData.taxAmount) : undefined,
-                paymentStatus: 'deposit_paid',
-                isPaid: false,
+                ...paymentState(totalAmt, Number(expense.amount || 0)),
                 migrateLegacyAmount: true,
             });
             return;
         }
 
         const totalAmt = isPartialPayment ? parseFloat(formData.totalAmount) : null;
-        const depositAmt = isPartialPayment ? parseFloat(formData.depositAmount) : null;
-        const paymentStatus = isPartialPayment ? formData.paymentStatus : (formData.isPaid ? "fully_paid" : "unpaid");
+        const depositAmt = isPartialPayment ? Number(formData.depositAmount || 0) : null;
+        const recordedPaid = expense && expense.totalAmount
+            ? existingPayments.length > 0 ? paidTotal(existingPayments) : Number(expense.amount || 0)
+            : depositAmt;
+        const paymentStatus = isPartialPayment ? paymentState(totalAmt, recordedPaid).paymentStatus : (formData.isPaid ? "fully_paid" : "unpaid");
         const isFullyPaid = paymentStatus === "fully_paid";
 
         onSubmit({
             ...formData,
             vendor: canonicalVendor,
             category: canonicalCategory,
-            amount: isPartialPayment ? (depositAmt || parseFloat(formData.amount)) : parseFloat(formData.amount),
+            amount: isPartialPayment ? recordedPaid : parseFloat(formData.amount),
             totalAmount: isPartialPayment ? totalAmt : null,
             depositAmount: isPartialPayment ? depositAmt : null,
             taxAmount: formData.taxAmount !== "" && formData.taxAmount !== null ? parseFloat(formData.taxAmount) : undefined,
@@ -332,6 +339,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                             </label>
                             <Input
                                 required={isPartialPayment && !isLegacyUpgradeable}
+                                min="0"
+                                disabled={isEditMode && !!expense.totalAmount}
                                 type="number"
                                 step="0.01"
                                 value={formData.depositAmount}
@@ -340,7 +349,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                             />
                             {formData.totalAmount && formData.depositAmount && (
                                 <p className="text-xs text-slate-500 mt-1">
-                                    Balance due: {currencySymbol}{(parseFloat(formData.totalAmount) - parseFloat(formData.depositAmount)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    Balance due: {currencySymbol}{(parseFloat(formData.totalAmount) - (isEditMode ? existingPayments.length > 0 ? paidTotal(existingPayments) : Number(expense.amount || 0) : Number(formData.depositAmount || 0))).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </p>
                             )}
                         </div>}
@@ -349,8 +358,8 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                                 Payment Status
                             </label>
                             <Select
-                                value={formData.paymentStatus}
-                                onValueChange={(value) => setFormData({...formData, paymentStatus: value})}
+                                value={Number(formData.totalAmount) > 0 ? paymentState(Number(formData.totalAmount), isEditMode ? existingPayments.length > 0 ? paidTotal(existingPayments) : Number(expense.amount || 0) : Number(formData.depositAmount || 0)).paymentStatus : "unpaid"}
+                                disabled
                             >
                                 <SelectTrigger>
                                     <SelectValue />
@@ -361,6 +370,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                                     <SelectItem value="fully_paid">Fully Paid</SelectItem>
                                 </SelectContent>
                             </Select>
+                            <p className="text-xs text-slate-500 mt-1">{t('paymentStatusAutomatic')}</p>
                         </div>
                     </div>
                 )}
@@ -550,7 +560,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
                     <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
                         {t('cancel')}
                     </Button>
-                    <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
+                    <Button type="submit" disabled={!!expense && (paymentsLoading || paymentsError)} className="flex-1 bg-blue-600 hover:bg-blue-700">
                         {expense ? t('update') : t('add')} {t('expense')}
                     </Button>
                 </div>
