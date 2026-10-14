@@ -202,6 +202,10 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, currentUser, 
         const canonicalVendor = formData.vendor ? findCanonicalValue(existingVendors, formData.vendor) : formData.vendor;
         const canonicalCategory = findCanonicalValue(existingCategories, formData.category);
 
+        if (isPartialPayment && (!(Number(formData.totalAmount) > 0) || (!expense && !(Number(formData.depositAmount || 0) >= 0)))) {
+            alert("Enter a positive quoted total and a deposit of zero or greater.");
+            return;
+        }
         // Legacy upgrade path: amount stays as-is, totalAmount comes from form, depositAmount auto-derived
         if (isLegacyUpgradeable && isPartialPayment) {
             const totalAmt = parseFloat(formData.totalAmount);
