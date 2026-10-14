@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
+import { paymentState, paidTotal } from '../../shared/paymentState.ts';
 
 Deno.serve(async (req) => {
     try {
@@ -49,6 +50,14 @@ Deno.serve(async (req) => {
         delete secureExpenseData.id;
         delete secureExpenseData.created_date;
         delete secureExpenseData.updated_date;
+
+        // A quoted expense derives its status from the initial deposit.
+        if (Number(secureExpenseData.totalAmount) > 0) {
+            const paid = Number(secureExpenseData.depositAmount ?? 0);
+            Object.assign(secureExpenseData, paymentState(secureExpenseData.totalAmount, paid));
+            secureExpenseData.paidAt = secureExpenseData.isPaid ? new Date().toISOString() : null;
+            secureExpenseData.depositPaidAt = paid > 0 ? secureExpenseData.depositPaidAt || `${secureExpenseData.date}T00:00:00.000Z` : null;
+        }
 
         // Create expense using service role to bypass client restrictions
         const newExpense = await base44.asServiceRole.entities.Expense.create(secureExpenseData);
