@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { collectBackup, validateBackup, ORDER, APP_ID } from '../base44/shared/fullBackup.js';
+import { collectBackup, validateBackup, restoreData, ORDER, APP_ID } from '../base44/shared/fullBackup.js';
 import { sha256, zipStream, readZipIndex } from '../src/lib/backupZip.js';
 
 // Import the actual handler with only its hosted SDK/entry-point glue removed.
@@ -101,4 +101,19 @@ test('ZIP writer and reader round trip actual receipt bytes', async () => {
   const entries = await readZipIndex(blob);
   assert.equal(await sha256(await entries.get(backup.files[0].path).blob.arrayBuffer()), backup.files[0].sha256);
   assert.deepEqual(JSON.parse(await entries.get('backup.json').blob.text()), backup);
+});
+test('Legacy monthly budgets without a name can be backed up and restored without modifying the original', async () => {
+  const backup = await fixture(); delete backup.records.Budget[0].name; backup.records.Budget[0].month = '2026-05';
+  assert.equal(validateBackup(backup).count, 7);
+  const db = database(backup.records); const sessionId = await begin(db, backup);
+  await action(db, { action: 'file', sessionId, sourceUrl: url, uploadedUrl });
+  let result; do { result = await action(db, { action: 'step', sessionId }); assert.equal(result.status, 200); } while (!result.body.complete);
+  assert.equal(db.rows.Budget[1].name, 'Budget 2026-05'); assert.equal(db.rows.Budget[0].name, undefined);
+});
+test('Legacy timestamp dates retain their calendar day and empty optional project dates are omitted on restore', async () => {
+  const backup = await fixture(); backup.records.Expense[0].date = '2025-01-31 12:00:00'; backup.records.Project[0].endDate = '';
+  assert.equal(validateBackup(backup).count, 7);
+  const expense = restoreData('Expense', backup.records.Expense[0], { [id(1)]: id(90) }, { [url]: uploadedUrl }, user, 'key');
+  assert.equal(expense.date, '2025-01-31'); assert.equal(backup.records.Expense[0].date, '2025-01-31 12:00:00');
+  assert.equal(restoreData('Project', backup.records.Project[0], {}, {}, user, 'key').endDate, undefined);
 });
