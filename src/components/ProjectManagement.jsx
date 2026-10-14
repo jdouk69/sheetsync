@@ -20,6 +20,7 @@ import ProjectSharing from "./ProjectSharing";
 import InviteUser from "./InviteUser";
 import { useProjectPermissions } from "./useProjectPermissions";
 import ProjectCard from "./ProjectCard";
+import DeleteProjectDialog from "./DeleteProjectDialog";
 
 export default function ProjectManagement({ onClose }) {
     const { projects, currentProjectId, switchProject, currentProject } = useProject();
@@ -36,6 +37,7 @@ export default function ProjectManagement({ onClose }) {
     const isAdmin = user?.role === 'admin';
     const hasCreatedProject = projects.some(p => p.created_by === user?.email);
     const canInviteUsers = isAdmin || hasCreatedProject;
+    const [deletingProject, setDeletingProject] = useState(null);
     const [editingProject, setEditingProject] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [sharingProject, setSharingProject] = useState(null);
@@ -68,14 +70,6 @@ export default function ProjectManagement({ onClose }) {
             setShowForm(false);
             setEditingProject(null);
             resetForm();
-        },
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: (id) => base44.entities.Project.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['projects'] });
-            queryClient.invalidateQueries({ queryKey: ['expenses'] });
         },
     });
 
@@ -112,11 +106,7 @@ export default function ProjectManagement({ onClose }) {
         }
     };
 
-    const handleDelete = (id) => {
-        if (confirm(t('confirmDeleteProject'))) {
-            deleteMutation.mutate(id);
-        }
-    };
+    const handleDelete = (id) => setDeletingProject(projects.find(project => project.id === id));
 
     // Get the fresh project data from the projects array
     const currentSharingProject = sharingProject 
@@ -125,6 +115,7 @@ export default function ProjectManagement({ onClose }) {
 
     return (
         <div className="space-y-4 pb-8">
+            {deletingProject && <DeleteProjectDialog project={deletingProject} onClose={() => setDeletingProject(null)} />}
             <div className="flex justify-between items-center mb-4">
                 {(currentProjectPermissions.canEdit || projects.length === 0) && (
                     <Button
@@ -157,8 +148,8 @@ export default function ProjectManagement({ onClose }) {
             {currentSharingProject ? (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center justify-between">
-                            <span>Share "{currentSharingProject.name}"</span>
+                        <CardTitle className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <span className="min-w-0 break-words">Share "{currentSharingProject.name}"</span>
                             <Button
                                 variant="ghost"
                                 size="sm"
