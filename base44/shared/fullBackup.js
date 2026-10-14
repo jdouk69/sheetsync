@@ -51,11 +51,11 @@ function validateField(value, schema, label) {
   const type = schema.type;
   if (type === 'string' && typeof value !== 'string' || type === 'number' && (typeof value !== 'number' || !Number.isFinite(value)) || type === 'boolean' && typeof value !== 'boolean' || type === 'array' && !Array.isArray(value) || type === 'object' && (typeof value !== 'object' || Array.isArray(value))) throw Error(`Invalid ${label}.`);
   if (schema.enum && !schema.enum.includes(value)) throw Error(`Invalid ${label}.`);
-  if (schema.format === 'date' && !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw Error(`Invalid ${label}.`);
+  if (schema.format === 'date' && value !== '' && (!/^\d{4}-\d{2}-\d{2}(?:$|[ T]\d{2}:\d{2}:\d{2})/.test(value) || Number.isNaN(Date.parse(value)))) throw Error(`Invalid ${label}.`);
   if (schema.format === 'date-time' && Number.isNaN(Date.parse(value))) throw Error(`Invalid ${label}.`);
   if (type === 'array') for (const item of value) validateField(item, schema.items || {}, label);
   if (type === 'object') {
-    for (const field of schema.required || []) if (value[field] === undefined || value[field] === null) throw Error(`Missing ${label}.${field}.`);
+    for (const field of schema.required || []) if (value[field] === undefined || value[field] === null || schema.properties?.[field]?.format === 'date' && value[field] === '') throw Error(`Missing ${label}.${field}.`);
     for (const [field, child] of Object.entries(schema.properties || {})) validateField(value[field], child, `${label}.${field}`);
   }
 }
@@ -70,7 +70,8 @@ export function validateBackup(backup) {
     for (const row of rows) {
       if (!row || typeof row.id !== 'string' || !/^[0-9a-f]{24}$/.test(row.id) || globalIds.has(row.id) || ++count > 20000) throw Error('Invalid or duplicate record identifier.');
       globalIds.add(row.id);
-      validateField(row, schemas[name], name);
+      // Older monthly budgets predate the required name field.
+      validateField(name === 'Budget' && row.name == null ? { ...row, name: 'Monthly budget' } : row, schemas[name], name);
       for (const key of ['amount', 'totalAmount', 'depositAmount', 'taxAmount']) if (row[key] != null && (typeof row[key] !== 'number' || !Number.isFinite(row[key]) || row[key] < 0)) throw Error(`Invalid ${name} amount.`);
       local.set(row.id, row);
     }
@@ -97,12 +98,16 @@ export function restoreData(name, row, idMap, fileMap, user, restoreKey) {
   };
   // Only schema fields are writable; source audit metadata is not impersonated.
   const data = {};
-  for (const field of Object.keys(schemas[name].properties)) if (row[field] !== undefined) data[field] = remap(row[field]);
+  for (const [field, schema] of Object.entries(schemas[name].properties)) if (row[field] !== undefined) {
+    if (schema.format === 'date' && row[field] === '') continue;
+    data[field] = schema.format === 'date' && typeof row[field] === 'string' ? row[field].slice(0, 10) : remap(row[field]);
+  }
   for (const key of ['projectId','budgetId','expenseId','entityId']) if (data[key]) {
     if (!idMap[row[key]]) throw Error('Parent record has not been restored.');
     data[key] = idMap[row[key]];
   }
   if (name === 'Project') { data.name = `${row.name} (restoring)`; data.sharedWith = []; }
+  if (name === 'Budget' && data.name == null) data.name = row.month ? `Budget ${row.month}` : 'Untitled budget';
   if (name === 'Expense') { data.updated_by = user.email; data.updatedByName = user.full_name || user.email; }
   return { ...data, created_by: user.email, backupRestoreKey: restoreKey };
 }
