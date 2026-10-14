@@ -36,17 +36,17 @@ export default function ProjectSharing({ project }) {
 
         const sharedWith = project.sharedWith || [];
         
-        if (sharedWith.find(s => s.email === email)) {
+        if (sharedWith.find(s => s.email.toLowerCase() === email.trim().toLowerCase())) {
             setError("This user already has access");
             return;
         }
 
-        if (email === project.created_by) {
+        if (email.trim().toLowerCase() === project.created_by.toLowerCase()) {
             setError("Project owner already has access");
             return;
         }
 
-        const updatedSharedWith = [...sharedWith, { email, role }];
+        const updatedSharedWith = [...sharedWith, { email: email.trim().toLowerCase(), role }];
         
         try {
             await updateProjectMutation.mutateAsync({
@@ -108,18 +108,20 @@ export default function ProjectSharing({ project }) {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
             <div className="flex items-center gap-2 mb-2">
                 <UserPlus className="w-5 h-5 text-blue-600" />
                 <h3 className="font-semibold text-lg">Share Project</h3>
             </div>
             
             <div className="space-y-2">
-                <div className="flex gap-2">
-                    <div className="flex-1">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                    <div className="min-w-0 w-full sm:flex-1">
                         <Input
                             type="email"
                             placeholder="Enter user email to share"
+                            aria-label="Email address to share with"
+                            className="w-full"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && canManageSharing && handleAddUser()}
@@ -127,7 +129,7 @@ export default function ProjectSharing({ project }) {
                         />
                     </div>
                     <Select value={role} onValueChange={setRole} disabled={!canManageSharing}>
-                        <SelectTrigger className="w-32">
+                        <SelectTrigger className="w-full sm:w-32">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -139,7 +141,7 @@ export default function ProjectSharing({ project }) {
                     <Button 
                         onClick={handleAddUser}
                         disabled={updateProjectMutation.isPending || !canManageSharing}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
                     >
                         {updateProjectMutation.isPending ? "Adding..." : "Add"}
                     </Button>
@@ -158,10 +160,10 @@ export default function ProjectSharing({ project }) {
                 <p className="text-sm font-medium text-slate-700 mb-3">Project Access:</p>
                 
                 {/* Project Owner */}
-                <div className="flex items-center justify-between bg-blue-50 rounded-lg px-4 py-3 border border-blue-200">
-                    <div className="flex items-center gap-3 flex-1">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between bg-blue-50 rounded-lg px-4 py-3 border border-blue-200">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                         <Mail className="w-4 h-4 text-blue-600" />
-                        <span className="text-sm font-medium text-slate-900">{project.created_by}</span>
+                        <span className="min-w-0 flex-1 break-all text-sm font-medium text-slate-900">{project.created_by}</span>
                         <div className="flex items-center gap-2">
                             <Shield className="w-4 h-4 text-blue-600" />
                             <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-1 rounded">Owner</span>
@@ -175,23 +177,23 @@ export default function ProjectSharing({ project }) {
                         {sharedWith.map((share) => (
                             <div
                                 key={share.email}
-                                className="flex items-center justify-between bg-slate-50 rounded-lg px-4 py-3 border border-slate-200"
+                                className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-slate-50 rounded-lg px-4 py-3 border border-slate-200"
                             >
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <Mail className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                                    <span className="text-sm text-slate-700 truncate">{share.email}</span>
+                                    <span className="min-w-0 flex-1 break-all text-sm text-slate-700">{share.email}</span>
                                     <div className="flex items-center gap-1 flex-shrink-0">
                                         {getRoleIcon(share.role)}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                                <div className="flex w-full items-center gap-2 sm:w-auto sm:shrink-0">
                                     {canManageSharing && (
                                         <Select 
                                             value={share.role} 
                                             onValueChange={(newRole) => handleChangeRole(share.email, newRole)}
                                             disabled={updateProjectMutation.isPending || share.email === project.created_by}
                                         >
-                                            <SelectTrigger className="w-28 h-9 text-xs">
+                                            <SelectTrigger className="w-full sm:w-28 h-9 text-xs">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
