@@ -49,6 +49,10 @@
     "paidByName": {
       "type": "string",
       "description": "Full name of the user who recorded the payment - SECURITY: Auto-set, not user-editable"
+    },
+    "backupRestoreKey": {
+      "type": "string",
+      "description": "Internal identifier for retrying copy restores"
     }
   },
   "required": [
