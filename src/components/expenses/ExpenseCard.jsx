@@ -164,8 +164,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
     const isCreator = expense.created_by === currentUser?.email;
     const isProjectOwner = currentProject?.created_by === currentUser?.email;
     const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === currentUser?.email && s.role === 'admin');
-    const canEditThis = isCreator || isProjectOwner || isProjectAdmin;
-    const canDeleteThis = isCreator || isProjectOwner || isProjectAdmin;
+    const canEditThis = canEdit;
+    const canDeleteThis = canDelete;
 
     // Get user names - prefer stored names, fallback to lookup
     const creatorName = expense.createdByName || users.find(u => u.email === expense.created_by)?.full_name || users.find(u => u.email === expense.created_by)?.email;
