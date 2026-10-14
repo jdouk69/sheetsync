@@ -283,7 +283,8 @@ export default function ExpenseCard({ expense, onEdit, onDelete, isSelected, onT
 
                             <PaymentHistory
                                 payments={payments}
-                                canDelete={canEdit}
+                                canEdit={canEdit}
+                                canDelete={canDelete}
                                 onDelete={(payment) => deletePaymentMutation.mutate(payment)}
                                 onEdit={(payment) => { setEditingPayment(payment); setShowPaymentForm(true); }}
                                 currencySymbol={currencySymbol}
