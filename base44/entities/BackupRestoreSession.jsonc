@@ -1,0 +1,39 @@
+{
+  "name": "BackupRestoreSession",
+  "type": "object",
+  "properties": {
+    "userEmail": {
+      "type": "string"
+    },
+    "requestId": {
+      "type": "string"
+    },
+    "backupHash": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "verifying",
+        "restoring",
+        "complete"
+      ]
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "userEmail",
+    "requestId",
+    "backupHash",
+    "status",
+    "data"
+  ],
+  "rls": {
+    "create": false,
+    "read": false,
+    "update": false,
+    "delete": false
+  }
+}
