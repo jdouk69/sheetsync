@@ -114,6 +114,10 @@
       "type": "string",
       "format": "date-time",
       "description": "Earliest time the expense may be permanently deleted (deletedAt + 5 days)"
+    },
+    "backupRestoreKey": {
+      "type": "string",
+      "description": "Internal identifier for retrying copy restores"
     }
   },
   "required": [
