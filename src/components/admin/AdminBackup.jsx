@@ -45,6 +45,9 @@ export default function AdminBackup() {
         Object.assign(item, { size, sha256: await sha256(await blob.arrayBuffer()), contentType: blob.type, filename: decodeURIComponent(new URL(item.url).pathname.split('/').pop()) });
         entries.push({ name: item.path, size, open: async () => blob.stream() });
       }
+      setMessage('Checking that records stayed unchanged during the download…');
+      const current = await call('export');
+      if (JSON.stringify(current.records) !== JSON.stringify(backup.records)) throw Error('Project data changed while the backup was downloading. Please try again.');
       backup.complete = true; validateBackup(backup);
       const metadata = enc.encode(JSON.stringify(backup));
       if (metadata.length > 20 * 1024 * 1024) throw Error('Backup metadata exceeds 20 MB.');
