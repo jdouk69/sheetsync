@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FolderOpen, Loader2, Trash2, Users, Search, ChevronDown, ChevronUp, Pencil, Check, X, UserMinus, UserPlus, Calendar, UserCog } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import DeleteProjectDialog from "../DeleteProjectDialog";
 
 const statusColors = {
     active: "bg-green-100 text-green-700",
@@ -17,6 +18,7 @@ const statusColors = {
 };
 
 export default function AdminProjects() {
+    const [deletingProject, setDeletingProject] = useState(null);
     const [search, setSearch] = useState("");
     const [expandedProject, setExpandedProject] = useState(null);
     const [editingProject, setEditingProject] = useState(null); // { id, name, status }
@@ -29,15 +31,6 @@ export default function AdminProjects() {
         queryFn: () => base44.entities.Project.list('-created_date'),
     });
 
-    const deleteMutation = useMutation({
-        mutationFn: (id) => base44.entities.Project.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
-            toast.success("Project deleted");
-        },
-        onError: () => toast.error("Failed to delete project"),
-    });
-
     const updateMutation = useMutation({
         mutationFn: ({ id, data }) => base44.entities.Project.update(id, data),
         onSuccess: () => {
@@ -48,11 +41,7 @@ export default function AdminProjects() {
         onError: () => toast.error("Failed to update project"),
     });
 
-    const handleDelete = (project) => {
-        if (confirm(`Delete project "${project.name}"? Expenses will remain but won't be linked.`)) {
-            deleteMutation.mutate(project.id);
-        }
-    };
+    const handleDelete = (project) => setDeletingProject(project);
 
     const handleSaveEdit = () => {
         updateMutation.mutate({
@@ -109,6 +98,7 @@ export default function AdminProjects() {
 
     return (
         <Card>
+            {deletingProject && <DeleteProjectDialog project={deletingProject} onClose={() => setDeletingProject(null)} />}
             <CardContent className="pt-5">
                 <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
                     <h2 className="text-base font-semibold text-slate-800 flex items-center gap-2">
