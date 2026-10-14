@@ -35,6 +35,7 @@ export default function AdminProjects() {
         mutationFn: ({ id, data }) => base44.entities.Project.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['allProjects'] });
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
             toast.success("Project updated");
             setEditingProject(null);
         },
@@ -75,6 +76,7 @@ export default function AdminProjects() {
         try {
             await base44.functions.invoke('transferProjectOwnership', { projectId: project.id, newOwnerEmail: newEmail });
             queryClient.invalidateQueries({ queryKey: ['allProjects'] });
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
             toast.success(`Ownership transferred to ${newEmail}`);
             setTransferringOwner(prev => ({ ...prev, [project.id]: "" }));
         } catch (e) {
