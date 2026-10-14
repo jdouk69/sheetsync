@@ -102,6 +102,7 @@ export default function ExpensesPage() {
 
     const { data: expenses = [], isLoading } = useQuery({
         queryKey: EXPENSE_KEYS.projectExpenses(currentProjectId),
+        refetchInterval: 30000,
         queryFn: () => fetchProjectExpenses(currentProjectId),
         enabled: !!currentProjectId && !authLoading,
     });
@@ -265,16 +266,11 @@ export default function ExpensesPage() {
     };
 
     const handleEdit = (expense) => {
-        // Only expense creator, project owner, or project admin can edit
-        const isCreator = expense.created_by === user?.email;
-        const isProjectOwner = currentProject?.created_by === user?.email;
-        const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === user?.email && s.role === 'admin');
-        
-        if (!isCreator && !isProjectOwner && !isProjectAdmin) {
-            alert('You do not have permission to edit this expense. Only the creator, project owner, or project admins can edit.');
+        if (!canEdit) {
+            alert('You do not have permission to edit this expense.');
             return;
         }
-        
+
         setShowForm(true);
         setEditingExpense(expense);
         requestAnimationFrame(() => {
@@ -285,16 +281,11 @@ export default function ExpensesPage() {
     };
 
     const handleDelete = (expense) => {
-        // Only expense creator, project owner, or project admin can delete
-        const isCreator = expense.created_by === user?.email;
-        const isProjectOwner = currentProject?.created_by === user?.email;
-        const isProjectAdmin = currentProject?.sharedWith?.some(s => s.email === user?.email && s.role === 'admin');
-        
-        if (!isCreator && !isProjectOwner && !isProjectAdmin) {
-            alert('You do not have permission to delete this expense. Only the creator, project owner, or project admins can delete.');
+        if (!canDelete) {
+            alert('You do not have permission to delete this expense.');
             return;
         }
-        
+
         if (confirm('Are you sure you want to delete this expense?')) {
             deleteMutation.mutate(expense);
         }
