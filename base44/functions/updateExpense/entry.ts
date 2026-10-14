@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
+import { paymentState, paidTotal } from '../../shared/paymentState.ts';
 
 Deno.serve(async (req) => {
     try {
@@ -61,6 +62,22 @@ Deno.serve(async (req) => {
         delete secureUpdates.id;
         delete secureUpdates.created_date;
         delete secureUpdates.updated_date;
+
+        // Payment history controls tracked totals; form edits cannot reset them.
+        const existingPayments = await base44.asServiceRole.entities.Payment.filter({ expenseId });
+        const wasTracked = Number(expense.totalAmount) > 0;
+        const quotedTotal = Number(secureUpdates.totalAmount ?? expense.totalAmount ?? 0);
+        if (wasTracked && !(quotedTotal > 0)) {
+            return Response.json({ error: 'Keep the quoted total. Change recorded payments through payment history.' }, { status: 400 });
+        }
+        if (wasTracked || quotedTotal > 0) {
+            const paid = existingPayments.length > 0 ? paidTotal(existingPayments)
+                : wasTracked || migrateLegacyAmount ? Number(expense.amount || 0)
+                : Number(secureUpdates.depositAmount ?? 0);
+            Object.assign(secureUpdates, paymentState(quotedTotal, paid));
+            if (wasTracked) secureUpdates.depositAmount = expense.depositAmount ?? null;
+            secureUpdates.paidAt = secureUpdates.isPaid ? (expense.paidAt || new Date().toISOString()) : null;
+        }
 
         // Update expense
         const updatedExpense = await base44.asServiceRole.entities.Expense.update(expenseId, secureUpdates);
