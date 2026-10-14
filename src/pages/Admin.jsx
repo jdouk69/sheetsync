@@ -10,6 +10,7 @@ import AdminExpenses from "../components/admin/AdminExpenses";
 import AdminActivityLog from "../components/admin/AdminActivityLog";
 import AdminVendorsCategories from "../components/admin/AdminVendorsCategories";
 import AdminSnapshots from "../components/admin/AdminSnapshots";
+import AdminBackup from "../components/admin/AdminBackup";
 
 const tabs = [
     { id: "users", label: "Users", Icon: Users },
@@ -18,6 +19,7 @@ const tabs = [
     { id: "vendors", label: "Vendors & Categories", Icon: Tags },
     { id: "deleted", label: "Recently Deleted", labelEl: "Πρόσφατα Διαγραμμένα", Icon: Trash2 },
     { id: "snapshots", label: "Snapshots", Icon: Camera },
+    { id: "backup", label: "Backup & Restore", labelEl: "Αντίγραφα & Επαναφορά", Icon: FolderOpen },
     { id: "activity", label: "Activity Log", Icon: Activity },
 ];
 
@@ -89,6 +91,7 @@ export default function Admin() {
             {activeTab === "vendors" && <AdminVendorsCategories />}
             {activeTab === "deleted" && <AdminRecentlyDeleted />}
             {activeTab === "snapshots" && <AdminSnapshots />}
+            {activeTab === "backup" && <AdminBackup />}
             {activeTab === "activity" && <AdminActivityLog />}
         </div>
     );
