@@ -22,6 +22,7 @@ export default function ProjectSharing({ project }) {
         mutationFn: ({ id, data }) => base44.entities.Project.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
+            queryClient.invalidateQueries({ queryKey: ['allProjects'] });
         },
     });
 
