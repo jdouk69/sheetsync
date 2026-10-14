@@ -59,6 +59,7 @@ export async function handleBackup(req, client, fetchFile = fetch) {
       const key = `${session.id}:${row.id}`;
       const previous = await entities[name].filter({ backupRestoreKey: key, created_by: user.email }, 'created_date', 2);
       if (previous.length > 1) throw Error('Conflicting restored records; contact support.');
+      if (previous[0] && queue.some(item => item.row.id === previous[0].id)) throw Error('A restore key points to an original record.');
       const result = previous[0] || await entities[name].create(restoreData(name, row, state.idMap, state.fileMap, user, key));
       state.idMap[row.id] = result.id;
       state.cursor++;
