@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { fetchProjectPayments } from "@/lib/projectPayments";
 import { EXPENSE_KEYS } from "@/lib/expenseCache";
 import { buildPaymentTotals, paidAmount } from "@/lib/paidAmounts";
 
@@ -10,7 +10,7 @@ export function useProjectPaidTotals(projectId, expenses, enabled = true) {
     const { data: payments = [], isLoading, refetch } = useQuery({
         queryKey: EXPENSE_KEYS.reportPayments(projectId),
         refetchInterval: 30000,
-        queryFn: () => base44.entities.Payment.list('-date', 9999),
+        queryFn: () => fetchProjectPayments(projectId),
         enabled: !!projectId && enabled,
         staleTime: 0,
     });
