@@ -9,6 +9,7 @@ export function ProjectProvider({ children }) {
 
     const { data: projects = [], isLoading } = useQuery({
         queryKey: ['projects'],
+        refetchInterval: 30000,
         queryFn: async () => {
             const user = await base44.auth.me();
             if (!user) return [];
